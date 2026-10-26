@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "flujo_humo": [
+    {
+      "origen": "tunel_12_14",
+      "destino": "tunel_10_12"
+    }
+  ]
+}

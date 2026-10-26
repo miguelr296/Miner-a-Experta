@@ -35,6 +35,9 @@
 
 ## 5. Pruebas
 
+- Avance individual del fork: modelo de la mina, cargador estricto y motor mínimo con tres reglas de CO. Guía y alcance real en [el entregable mínimo](../plan/entregable-minimo.md).
+- La suite ejecuta casos de formato, geometría, conectividad, distancia a refugios, prioridad, refracción, separación entre entidades, umbrales y consola. Resultados de la sesión en la bitácora; esto no cierra la semana ni acredita el aprendizaje individual.
+
 ## 6. Problemas encontrados
 
 - La norma no define niveles de gas de peligro inmediato; sin ellos no hay base citable para cerrar un túnel por gases. Se resolvió con un supuesto declarado (D12).

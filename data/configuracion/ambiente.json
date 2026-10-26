@@ -1,0 +1,10 @@
+{
+  "gases": {
+    "no2_ppm": {"alerta": 3, "riesgo_alto": 5, "peligro_inmediato": 10},
+    "co2_ppm": {"alerta": 5000, "riesgo_alto": 30000, "peligro_inmediato": 60000},
+    "h2s_ppm": {"alerta": 10, "riesgo_alto": 15, "peligro_inmediato": 30},
+    "o2_porcentaje": {"alerta": 19.5, "riesgo_alto": 18, "peligro_inmediato": 16, "maximo": 22.5}
+  },
+  "ventilacion": {"minimo": 20, "minimo_anfo": 25, "maximo": 250},
+  "factores": {"alerta": 2, "riesgo_alto": 3, "ventilacion": 3}
+}

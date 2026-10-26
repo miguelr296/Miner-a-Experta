@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "nombre": "Nivel 1: NO2 con desvío",
+  "mina": "../mina_nivel1.json",
+  "umbrales": "../configuracion/umbrales.json",
+  "costos": "../configuracion/costos.json",
+  "ambiente": "../configuracion/ambiente.json",
+  "relaciones": "../configuracion/relaciones_humo.json",
+  "mineros": [
+    {
+      "id": "ana",
+      "nodo": "n13"
+    },
+    {
+      "id": "luis",
+      "nodo": "n16"
+    }
+  ],
+  "destinos": [
+    "n11"
+  ],
+  "hechos": [
+    {
+      "entidad": "tunel_12_13",
+      "atributo": "no2_ppm",
+      "valor": 11
+    }
+  ]
+}

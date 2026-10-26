@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "nombre": "Nivel 1: derrumbe con frente aislado",
+  "mina": "../mina_nivel1.json",
+  "umbrales": "../configuracion/umbrales.json",
+  "costos": "../configuracion/costos.json",
+  "ambiente": "../configuracion/ambiente.json",
+  "relaciones": "../configuracion/relaciones_humo.json",
+  "mineros": [
+    {
+      "id": "ana",
+      "nodo": "n13"
+    },
+    {
+      "id": "luis",
+      "nodo": "n16"
+    }
+  ],
+  "destinos": [
+    "n11"
+  ],
+  "hechos": [
+    {
+      "entidad": "tunel_15_16",
+      "atributo": "derrumbe_reportado",
+      "valor": true
+    },
+    {
+      "entidad": "tunel_8_16",
+      "atributo": "derrumbe_reportado",
+      "valor": true
+    }
+  ]
+}

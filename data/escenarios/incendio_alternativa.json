@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "nombre": "Incendio con recorrido alternativo",
+  "mina": "../mina_prueba.json",
+  "umbrales": "../configuracion/umbrales.json",
+  "costos": "../configuracion/costos.json",
+  "ambiente": "../configuracion/ambiente.json",
+  "mineros": [{"id": "ana", "nodo": "n5"}, {"id": "luis", "nodo": "n7"}],
+  "destinos": ["n1"],
+  "hechos": [{"entidad": "tunel_3_4", "atributo": "incendio_reportado", "valor": true}]
+}

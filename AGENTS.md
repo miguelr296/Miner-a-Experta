@@ -4,8 +4,10 @@ Proyecto académico (curso Sistemas Expertos, 2 integrantes: A y B). Todo en esp
 
 ## Estado actual
 
-- **Aún no hay código**: `src/`, `tests/` y `data/escenarios/` solo tienen `.gitkeep`. No existen manifiestos, dependencias, CI, linter ni comandos de build/test. No inventes comandos
-- Lo que existe es documentación en `docs/` más `BITACORA.md`. El plan es la fuente de verdad de lo que se debe construir.
+- **Nivel 1 implementado y validado localmente, pendiente de aceptación**: paquete `src/mina_experta/`, instalación en `pyproject.toml`, herramientas en `requirements-dev.txt`, pruebas en `tests/` y CI en `.github/workflows/pruebas.yml`.
+- Mina principal: `data/mina_nivel1.json`, con 16 nodos y 20 túneles. Hay tres escenarios Nivel 1 y cuatro ejemplos de práctica. El catálogo define 25 tipos de regla; R24 se instancia por relación dirigida.
+- Comandos desde la raíz con el entorno virtual activado: `python -m pip install -e . -r requirements-dev.txt`, `python -m pytest -q` y `python -m mina_experta --escenario data/escenarios/nivel1_riesgo_vecino.json --explicar tunel_10_12`.
+- El plan sigue siendo la fuente de alcance; Nivel 2 está pendiente. Consulta `docs/plan/nivel1-verificacion.md` y `docs/entregas/nivel-1.md` para validación y entrega.
 - Plan: 8 semanas, 4 sprints de 2 semanas. Puntos de control en las semanas 4 y 6 (reglas de recorte en `docs/plan/alcance.md`). La semana actual está en `BITACORA.md`.
 
 ## Qué se construye
@@ -40,7 +42,7 @@ Las reglas traducen sensores en costos y cierres de aristas; el planificador con
 
 ## Reglas de documentación (obligatorias)
 
-- Cada decisión de diseño va a `docs/decisiones.md` (formato `Dnn`, siguiente: D19).
+- Cada decisión de diseño va a `docs/decisiones.md` (formato `Dnn`, siguiente: D28).
 - Cada regla nueva va a `docs/reglas.md` con la plantilla (categoría, SI, ENTONCES, prioridad, fuente, tipo de fuente, justificación, prueba). Cada regla tiene al menos una prueba pytest.
 - Cada sigla o término nuevo va a `docs/glosario.md` en la misma sesión (D14).
 - Un capítulo por semana en `docs/capitulos/semana-NN.md` desde `_plantilla.md`, enlazando al tag de la semana.
@@ -50,6 +52,7 @@ Las reglas traducen sensores en costos y cierres de aristas; el planificador con
 ## Flujo de Git
 
 - `main` siempre funciona; no se hace merge si las pruebas fallan.
+- En este fork, el usuario autorizó desarrollo con el asistente y publicación de ramas, sin revisión obligatoria de un compañero. Se conserva revisión técnica y pruebas. No fusionar esta entrega ni enviar un PR al grupo en nombre del usuario: la aceptación e integración las realizará él.
 - Ramas `nombre/tarea`, PR revisado por el otro integrante, `Closes #N` para cerrar la tarjeta.
 - Un archivo, un dueño por semana (evitar conflictos).
 - Commits con prefijo `feat:`, `fix:`, `test:`, `docs:`.
@@ -58,7 +61,7 @@ Las reglas traducen sensores en costos y cierres de aristas; el planificador con
 
 ## Uso del asistente
 
-- Según `docs/plan/flujo-de-trabajo.md` (4.6), **el código lo escribe el equipo**; el asistente explica conceptos, revisa código, propone mejoras y detecta errores. Antes de implementar, confirma con el usuario si espera que escribas el código.
+- El plan grupal original asignaba el código al equipo. En este fork el usuario autorizó expresamente al asistente a implementar, iterar, probar y publicar avances; no volver a pedir esa confirmación para el trabajo ya autorizado. Explica las decisiones y conserva los límites académicos del modelo.
 - Los integrantes vienen de Java/C# y son nuevos en Python y pytest: explica las diferencias cuando sea relevante.
 - Una tarea por sesión; lo demás se anota en la bitácora.
 

@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "nombre": "Derrumbe que aísla un frente",
+  "mina": "../mina_prueba.json",
+  "umbrales": "../configuracion/umbrales.json",
+  "costos": "../configuracion/costos.json",
+  "ambiente": "../configuracion/ambiente.json",
+  "mineros": [{"id": "ana", "nodo": "n5"}, {"id": "luis", "nodo": "n7"}],
+  "destinos": ["n1"],
+  "hechos": [{"entidad": "tunel_4_5", "atributo": "derrumbe_reportado", "valor": true}]
+}

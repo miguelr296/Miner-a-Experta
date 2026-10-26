@@ -2,6 +2,8 @@
 
 [← Índice](../../README.md)
 
+**Modalidad actual del fork (2026-10-25, aprobada por el usuario):** desarrollo individual con ayuda del asistente, sin revisión obligatoria de un compañero. Se mantienen ramas, revisión técnica y pruebas antes de integrar. Los apartados de trabajo en pareja describen el plan grupal original; su requisito de segunda persona no bloquea este fork. Las comprobaciones técnicas no acreditan automáticamente el aprendizaje individual ni las horas del equipo.
+
 ## 4.0 Sprints y tablero
 
 El trabajo se organiza en [sprints de 2 semanas](sprints.md) y se gestiona en el [tablero Kanban](kanban.md). Regla: **1 tarjeta en curso por persona**, que coincide con "una tarea por sesión".

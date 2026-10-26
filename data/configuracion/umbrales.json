@@ -1,0 +1,7 @@
+{
+  "co_ppm": {
+    "alerta": 25,
+    "riesgo_alto": 50,
+    "peligro_inmediato": 100
+  }
+}

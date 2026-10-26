@@ -111,6 +111,11 @@ Todas las siglas y términos técnicos usados en el proyecto, explicados para qu
 | **Hecho** | Dato conocido en un momento. En el proyecto: tupla `(entidad, atributo, valor)`, p. ej. `(tunel_4_7, co_ppm, 30)`. |
 | **Hecho derivado** | Hecho que no venía de los sensores, sino que fue concluido por una regla. |
 | **Memoria de trabajo** | Conjunto de hechos conocidos en el momento actual. |
+| **Activación de una regla** | Regla junto con una entidad y los hechos concretos que satisfacen todas sus condiciones; puede dispararse si no fue ejecutada ya con esos antecedentes. |
+| **Instancia de regla** | Versión concreta de una regla conceptual para una relación o entidad. R24 se instancia por par de túneles con identificadores únicos, conservando una sola definición conceptual en el catálogo. |
+| **Relación dirigida de exposición** | Conocimiento declarado de que un foco en un túnel puede exponer otro en un sentido concreto. No se deduce del tránsito bidireccional ni demuestra ventilación física. |
+| **Escalar JSON** | Un valor simple: texto, número, booleano o `null`; no una lista ni un objeto. |
+| **Instantánea de hechos** | Datos correspondientes a una ejecución independiente; no mezcla automática de lecturas tomadas en momentos distintos. |
 | **Motor de inferencia** | Programa genérico que aplica las reglas a los hechos para obtener conclusiones. |
 | **Inferencia** | Obtener una conclusión nueva a partir de hechos y reglas. |
 | **Encadenamiento hacia adelante (forward chaining)** | Razonar desde los hechos hacia las conclusiones, disparando reglas hasta que no se pueda concluir nada nuevo. Es el que usamos. |
@@ -142,6 +147,8 @@ Todas las siglas y términos técnicos usados en el proyecto, explicados para qu
 | **Multiplicador de costo** | Factor (≥ 1) por el que una regla multiplica el costo de una arista. |
 | **Ruta** | Secuencia de aristas desde un origen hasta un destino. |
 | **Dijkstra** | Algoritmo que encuentra la ruta de menor costo en un grafo. |
+| **Cola de prioridad (`heapq`)** | Estructura que permite extraer primero el elemento de menor prioridad numérica; el planificador la usa para explorar el menor costo acumulado. |
+| **Metros ponderados por riesgo** | Unidad de costo del modelo: longitud física multiplicada por factores académicos. No equivale a tiempo ni probabilidad. |
 | **A\* (A estrella)** | Variante de Dijkstra que usa una heurística para explorar menos nodos. |
 | **Heurística** | Estimación del costo que falta para llegar al destino. |
 | **Admisible** | Heurística que nunca sobreestima el costo real. Garantiza que A\* encuentre la ruta óptima. |
@@ -156,6 +163,9 @@ Todas las siglas y términos técnicos usados en el proyecto, explicados para qu
 |---|---|
 | **Python** | Lenguaje de programación del proyecto. |
 | **JSON** | Formato de texto para datos estructurados. Ahí se describe la mina y los escenarios. |
+| **JSON Schema** | Formato para describir los campos y tipos permitidos en un documento JSON. No comprueba por sí solo recorridos ni referencias entre nodos. |
+| **Cota** | Coordenada vertical en metros respecto de una referencia. En D20, superficie en 0 y subsuelo con valores negativos. |
+| **Túnel bidireccional** | Túnel que permite recorrer sus extremos en ambos sentidos; se registra una sola vez en la mina. |
 | **Clase** | Plantilla de Python para crear objetos con datos y comportamiento (p. ej. `Nodo`, `Regla`). |
 | **Diccionario** | Estructura de Python de pares clave–valor. |
 | **Tupla** | Secuencia inmutable de Python, p. ej. `(entidad, atributo, valor)`. |
