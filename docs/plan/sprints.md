@@ -80,7 +80,7 @@ Detalle de tareas: [tablero Kanban](kanban.md#7-sprint-1--tareas).
 
 ## 5.4 Definición de terminado (DoD)
 
-Una tarea solo pasa a **Hecho** si:
+Una tarea solo pasa a **Done** si:
 
 - [ ] Está en `main` mediante un PR revisado por el otro integrante. *(Excepción: las tareas que no tocan el repositorio —solo tablero o configuración de GitHub— se cierran directamente y se anotan en la bitácora; ver D19.)*
 - [ ] Las pruebas pasan.
