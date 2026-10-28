@@ -85,7 +85,7 @@ Formato: fecha · decisión · alternativas consideradas · por qué.
 
 ## D16 — Kanban en GitHub Projects
 **Fecha:** 2026-10-17
-**Decisión:** tablero con columnas Backlog / Por hacer / En curso / En revisión / Hecho; tarjetas de 1–3 h; WIP de 1 tarea en curso por persona; 15–20 tareas por sprint; solo se detalla el sprint actual.
+**Decisión:** tablero con columnas Backlog / Por hacer / En curso / En revisión / Hecho; tarjetas de 1–3 h; WIP de 1 tarea en curso por persona; 15–20 tareas por sprint; solo se detalla el sprint actual. Los nombres de las columnas se actualizaron posteriormente (ver D20).
 **Alternativas:** Trello o tabla en Markdown.
 **Por qué:** vincula tarjetas con PR y código, es gratis y queda como evidencia en el portafolio.
 
@@ -103,4 +103,10 @@ Formato: fecha · decisión · alternativas consideradas · por qué.
 **Fecha:** 2026-10-24
 **Decisión:** las tareas que no tocan archivos del repositorio (solo el tablero o la configuración de GitHub) se cierran directamente, sin PR, y la excepción se anota en la bitácora. Las tareas con cambios en el repositorio siguen pasando por PR revisado.
 **Por qué:** la DoD exige PR para todas las tareas, pero el tablero no vive en el repositorio; pedir un PR sin cambios reales sería trámite vacío.
+
+## D20 — Columnas en inglés y una tarjeta por tarea compartida
+**Fecha:** 2026-10-25
+**Decisión:** mantener los nombres predeterminados en inglés (Backlog, Ready, In Progress, In Review y Done). Crear una tarjeta por tarea; cuando A y B son dueños compartidos, asignar a ambos a la misma tarjeta, sin duplicarla.
+**Alternativas:** traducir los nombres de las columnas y crear tarjetas separadas para cada integrante en las tareas compartidas.
+**Por qué:** conserva las opciones predeterminadas de GitHub Projects y evita duplicar el seguimiento de una misma tarea. Para Sprint 1 son 20 tareas y 20 tarjetas.
 

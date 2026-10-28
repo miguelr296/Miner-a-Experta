@@ -30,7 +30,7 @@
 - Tabla de umbrales del [catálogo de reglas](../reglas.md), con artículo o anexo de origen: O₂, CO, NO₂, CO₂, H₂S, velocidad del aire y refugios.
 - Tabla de niveles de riesgo por gas (normal / alerta / riesgo alto / peligro inmediato).
 - [Glosario](../glosario.md) con todas las siglas y términos usados hasta ahora.
-- Repositorio en GitHub y tablero del sprint 1 con 27 tarjetas (S1-03 y S1-03b).
+- Repositorio en GitHub y tablero del sprint 1 con 20 tarjetas, una por tarea; las tareas asignadas a A y B comparten una tarjeta.
 - *(pendiente: esquema JSON y mina de prueba; nivelación en Python)*
 
 ## 5. Pruebas

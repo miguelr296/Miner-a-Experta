@@ -196,15 +196,19 @@ Todas las siglas y términos técnicos usados en el proyecto, explicados para qu
 | **Daily** | Breve reporte diario de avance (en este proyecto, asíncrono). |
 | **Sync** | Sesión conjunta a mitad del sprint para integrar y revisar el tablero. |
 | **Ceremonias** | Nombre conjunto de planning, review, retro y daily. |
-| **Backlog** | Lista de trabajo pendiente aún no asignado a un sprint. |
+| **Backlog** | Historias de sprints futuros que aún no se han detallado como tareas. |
+| **Ready** | Tareas detalladas del sprint actual que todavía no se empiezan. |
+| **In Progress** | Tareas en las que alguien está trabajando ahora. |
+| **In Review** | Tareas con un PR abierto que esperan revisión. |
+| **Done** | Tareas que cumplen la definición de terminado. |
 | **Historia** | Funcionalidad del sistema, más grande que una tarea (p. ej. "Dijkstra con costos dinámicos"). |
-| **Tarea / tarjeta** | Trabajo de 1–3 h con un dueño y un criterio de aceptación. Una tarjeta en el tablero. |
+| **Tarea / tarjeta** | Trabajo de 1–3 h con criterio de aceptación; se registra en una tarjeta. Si A y B son co-dueños, ambos se asignan a la misma tarjeta. |
 | **Criterio de aceptación** | Condición verificable que indica que una tarea está terminada. |
-| **Definición de terminado (DoD)** | *Definition of Done*. Lista de condiciones que toda tarea debe cumplir para pasar a "Hecho". |
+| **Definición de terminado (DoD)** | *Definition of Done*. Lista de condiciones que toda tarea debe cumplir para pasar a **Done**. |
 | **Velocidad** | Horas (o tareas) que el equipo realmente completa por sprint. Se usa para planificar el siguiente. |
 | **Capacidad** | Horas disponibles para tareas en un sprint (≈ 18 h por persona). |
 | **Kanban** | Método de gestión visual con un tablero de columnas por estado de las tareas. |
-| **Tablero** | Panel con columnas (Backlog, Por hacer, En curso, En revisión, Hecho) donde se mueven las tarjetas. |
+| **Tablero** | Panel con columnas (Backlog, Ready, In Progress, In Review, Done) donde se mueven las tarjetas. |
 | **WIP** | *Work In Progress*. Trabajo en curso. El **límite WIP** es el máximo de tarjetas permitidas en una columna. |
 | **GitHub Projects** | Herramienta de GitHub para tableros Kanban vinculados al repositorio. |
 | **Issue** | Ficha de GitHub que describe una tarea o problema. Cada tarjeta del tablero es un Issue. |
@@ -212,8 +216,8 @@ Todas las siglas y términos técnicos usados en el proyecto, explicados para qu
 | **Iteración (Iteration)** | Tipo de campo de GitHub Projects que representa ciclos de duración fija. Cada sprint es una iteración. |
 | **Campo `Status`** | Campo de GitHub Projects cuyas opciones son las columnas del tablero. |
 | **Borrador (draft item)** | Tarjeta creada directamente en el tablero, aún no convertida en Issue. |
-| **Workflows (automatizaciones)** | Reglas de GitHub Projects que mueven tarjetas solas (p. ej. a *Hecho* al cerrar un Issue). |
-| **Assignee** | Persona asignada a un Issue; en el proyecto, el dueño de la tarea. |
+| **Workflows (automatizaciones)** | Reglas de GitHub Projects que mueven tarjetas solas (p. ej. a *Done* al cerrar un Issue). |
+| **Assignee** | Persona asignada a un Issue; una tarjeta compartida puede tener asignados a A y B. |
 | **Etiqueta (label)** | Marca de color en un Issue para clasificarlo (aprendizaje, código, pruebas, docs). |
 | **Núcleo / Si alcanza** | Prioridad de una tarea: imprescindible para el objetivo del sprint / se hace solo si sobra tiempo. |
 | **Programación en pareja** | Dos personas escriben el mismo código juntas: una escribe y la otra revisa, alternándose. |

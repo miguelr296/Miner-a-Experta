@@ -2,7 +2,7 @@
 
 ## Estado actual
 - Sprint: 1 (semanas 1–2) · Objetivo: motor mínimo + cargador JSON
-- S1-00, S1-03 y S1-03b cerradas: repositorio en GitHub y tablero con 27 tarjetas.
+- S1-00, S1-03 y S1-03b cerradas: repositorio en GitHub y tablero con 20 tarjetas.
 - Existe en src/: (nada aún)
 - Semana 1: umbrales listos; faltan esquema JSON, mina de prueba y nivelación de Python.
 - Siguiente: S1-01 (nivelación de Python) y S1-04 (rama, PR y `Closes #N`).
