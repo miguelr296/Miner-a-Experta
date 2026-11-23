@@ -157,7 +157,12 @@ Todas las siglas y términos técnicos usados en el proyecto, explicados para qu
 | **Python** | Lenguaje de programación del proyecto. |
 | **JSON** | Formato de texto para datos estructurados. Ahí se describe la mina y los escenarios. |
 | **Clase** | Plantilla de Python para crear objetos con datos y comportamiento (p. ej. `Nodo`, `Regla`). |
+| **Conjunto (`set`)** | Colección sin orden ni elementos duplicados; se escribe con `{}` si tiene elementos o `set()` si está vacío. |
 | **Diccionario** | Estructura de Python de pares clave–valor. |
+| **f-string** | Cadena con prefijo `f` que permite insertar expresiones entre llaves, por ejemplo `f"CO: {co_ppm}"`. |
+| **Indentación** | Espacios al inicio de una línea que delimitan bloques de código en Python; se recomiendan cuatro espacios. |
+| **Lista** | Secuencia ordenada y modificable de elementos, normalmente escrita entre corchetes: `[1, 2, 3]`. |
+| **REPL** | *Read-Eval-Print Loop*: entorno interactivo que lee y ejecuta una expresión y muestra su resultado. |
 | **Tupla** | Secuencia inmutable de Python, p. ej. `(entidad, atributo, valor)`. |
 | **Módulo** | Archivo `.py` con código reutilizable. |
 | **`__init__` / `self`** | Constructor de una clase en Python / referencia al propio objeto (equivale a `this` en Java/C#). |
