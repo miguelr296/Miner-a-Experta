@@ -167,6 +167,7 @@ Todas las siglas y términos técnicos usados en el proyecto, explicados para qu
 | **Módulo** | Archivo `.py` con código reutilizable. |
 | **`__init__` / `self`** | Constructor de una clase en Python / referencia al propio objeto (equivale a `this` en Java/C#). |
 | **`@dataclass`** | Decorador de Python que genera automáticamente el constructor de clases que solo guardan datos. |
+| **Método especial (dunder) / `@property`** | Método con doble guion bajo que Python llama por ti (`__len__` con `len()`, `__repr__` con `print()`); `@property` permite leer un método como si fuera un atributo, p. ej. `tunel.longitud`. |
 | **Comprensión de listas** | Forma compacta de crear listas en Python: `[x * 2 for x in numeros]`. |
 | **Tipado dinámico** | El tipo de una variable se decide al ejecutar, no se declara (a diferencia de Java/C#). |
 | **Git** | Sistema de control de versiones: guarda el historial de cambios del código. |
