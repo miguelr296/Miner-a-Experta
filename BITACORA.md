@@ -30,6 +30,11 @@ Una entrada por sesión, la más reciente arriba. Tres líneas bastan.
 
 ## Sesiones
 
+### 2026-11-23 · Nivelación de Python (S1-01) y cierre de S1-04 · 3 h
+- Hice: completamos E1–E7 con datos de la mina (variables, f-strings, listas, diccionarios, tuplas, conjuntos, funciones, control y comprensiones); agregamos cinco términos al glosario; S1-01 y S1-04 quedaron cerradas.
+- Falló / dudas: confundimos `("tunel_1_2", "cerrado", False)` con un túnel cerrado y promediamos valores de hechos en vez de costos; `False` vale 0 en Python. También usamos `max` como nombre de variable. Se corrigió filtrando por atributo y usando `costos.values()`. El `TypeError` al modificar una tupla fue intencional.
+- Siguiente paso exacto: S1-02, clases y módulos en Python.
+
 ### 2026-10-25 · Corrección de documentación del tablero
 - Hice: actualicé el plan, las decisiones, el glosario, el capítulo de la semana 1 y la bitácora: 20 tarjetas en total, columnas en inglés y una tarjeta compartida cuando el dueño es A y B.
 - Falló / dudas: las 17 tarjetas pendientes del sprint 1 están en Backlog; según el plan corresponden a Ready. No se movieron tarjetas.

@@ -40,7 +40,7 @@ Las reglas traducen sensores en costos y cierres de aristas; el planificador con
 
 ## Reglas de documentación (obligatorias)
 
-- Cada decisión de diseño va a `docs/decisiones.md` (formato `Dnn`, siguiente: D19).
+- Cada decisión de diseño va a `docs/decisiones.md` (formato `Dnn`, siguiente: D21).
 - Cada regla nueva va a `docs/reglas.md` con la plantilla (categoría, SI, ENTONCES, prioridad, fuente, tipo de fuente, justificación, prueba). Cada regla tiene al menos una prueba pytest.
 - Cada sigla o término nuevo va a `docs/glosario.md` en la misma sesión (D14).
 - Un capítulo por semana en `docs/capitulos/semana-NN.md` desde `_plantilla.md`, enlazando al tag de la semana.
