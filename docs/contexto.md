@@ -20,6 +20,8 @@
 - En Python `False` vale 0: un hecho `(tunel, cerrado, False)` significa que el túnel NO está cerrado. Filtrar por atributo antes de comparar o sumar valores.
 - No usar nombres de funciones incorporadas (`max`, `sum`, `list`, `dict`) como variables; se pierde la función.
 - Los ejercicios de nivelación se escriben en una carpeta local fuera del repositorio; `src/` se reserva para el código del proyecto.
+- Las tarjetas de aprendizaje con ejercicios (S1-01, S1-02, S1-05, S1-06) se cierran con un PR que solo toca documentación (bitácora/capítulo), porque el ejercicio vive en una carpeta local fuera del repositorio.
+- La automatización de GitHub Projects (PR con `Closes #N` → Done) aún no está probada: S1-01 y S1-04 se cerraron a mano. Validarla con el PR de S1-02 antes de dar S1-04 por cumplida.
 
 ## Pendientes que no son del sprint actual
 - (ninguno por ahora)

@@ -30,6 +30,11 @@ Una entrada por sesión, la más reciente arriba. Tres líneas bastan.
 
 ## Sesiones
 
+### 2026-11-23 · S1-02: clases y módulos (sesión 2) · 1,5 h
+- Hice: explicamos `__init__`/`self`, `@dataclass`, métodos especiales y módulos. Escribí `modelo.py` (`Nodo` con `distancia_a` en 3D vía `math.dist`; `Tunel` con `longitud`, `__len__` y `__repr__`) y `demo.py` en la carpeta local de nivelación, fuera del repositorio: `python demo.py` imprime `Tunel(tunel_ref_1_frente_4, 144.2255... m)` y `2`. Además corregimos la entrada del 2026-10-25 (los 17 en Backlog ya estaban en Ready) y registramos en `contexto.md` que las tarjetas de aprendizaje se cierran con un PR de solo documentación.
+- Falló / dudas: pegué los dos archivos en un mismo bloque y hubo que separarlos en `modelo.py` y `demo.py` para que el import funcionara. S1-04 se movió a Done a mano, así que la automatización "PR con `Closes #N` → Done" sigue sin probarse. Horas estimadas, sin medir: ~1,5 h.
+- Siguiente paso exacto: rama `<nombre>/s1-02`, PR con `Closes #3`, review del compañero, merge y comprobar que la tarjeta pasa sola a Done; luego S1-05, leer y escribir JSON en Python.
+
 ### 2026-11-23 · Nivelación de Python (S1-01) y cierre de S1-04 · 3 h
 - Hice: completamos E1–E7 con datos de la mina (variables, f-strings, listas, diccionarios, tuplas, conjuntos, funciones, control y comprensiones); agregamos cinco términos al glosario; S1-01 y S1-04 quedaron cerradas.
 - Falló / dudas: confundimos `("tunel_1_2", "cerrado", False)` con un túnel cerrado y promediamos valores de hechos en vez de costos; `False` vale 0 en Python. También usamos `max` como nombre de variable. Se corrigió filtrando por atributo y usando `costos.values()`. El `TypeError` al modificar una tupla fue intencional.
@@ -37,8 +42,8 @@ Una entrada por sesión, la más reciente arriba. Tres líneas bastan.
 
 ### 2026-10-25 · Corrección de documentación del tablero
 - Hice: actualicé el plan, las decisiones, el glosario, el capítulo de la semana 1 y la bitácora: 20 tarjetas en total, columnas en inglés y una tarjeta compartida cuando el dueño es A y B.
-- Falló / dudas: las 17 tarjetas pendientes del sprint 1 están en Backlog; según el plan corresponden a Ready. No se movieron tarjetas.
-- Siguiente paso exacto: mover las 17 tareas pendientes del sprint 1 a Ready y comenzar S1-01, nivelación de Python.
+- Falló / dudas: las 17 tarjetas pendientes del sprint 1 estaban en Backlog; según el plan corresponden a Ready. **Resuelto:** se movieron a Ready y hoy quedan 15 (S1-01 y S1-04 ya se cerraron).
+- Siguiente paso exacto: (cumplido) mover las tareas pendientes del sprint 1 a Ready y comenzar S1-01, nivelación de Python.
 
 ### 2026-10-24 · Tablero del sprint 1 · 2 h
 - Hice: cerramos S1-00, S1-03 y S1-03b; configuramos GitHub Projects (columnas, campos, etiquetas, workflows) y cargamos las 20 tarjetas del sprint 1, una por tarea, con dueño, estimación, prioridad e iteración.
