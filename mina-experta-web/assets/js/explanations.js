@@ -19,6 +19,7 @@ function explicarMinero(resultado, mineroId) {
   const pasos = [{
     tipo: 'hecho',
     titulo: 'Punto de partida',
+    nodo: m.nodo,
     detalle: `${m.nombre} se encuentra en ${m.nodoNombre}.`
   }];
 
@@ -31,6 +32,7 @@ function explicarMinero(resultado, mineroId) {
     pasos.push({
       tipo: 'regla',
       titulo: 'El camino más corto tiene un cierre',
+      tramos: m.cierresEnReferencia,
       detalle: `Por distancia, el camino más corto a superficie pasa por ${cierres.join(', ')}. El planificador excluye esos tramos cerrados.`
     });
   }
@@ -48,6 +50,9 @@ function explicarMinero(resultado, mineroId) {
       : '';
     pasos.push({
       tipo: 'ruta',
+      tramos,
+      rutaComparada: m.rutaBase,
+      ruta: m.rutaSalida,
       titulo: m.decision === 'evacuar' ? 'Por qué cambia la ruta a superficie' : 'Comparación de rutas a superficie',
       detalle: `La línea base propone ${m.rutaBase.longitud} m. Con las reglas de riesgo, su costo es ${costoBaseAjustado}. La ruta del sistema recorre ${m.rutaSalida.longitud} m con costo ${m.rutaSalida.costo}.` +
         (nombres.length ? ` La ruta del sistema evita ${nombres.join(', ')}.` : '') + desempate
@@ -59,6 +64,9 @@ function explicarMinero(resultado, mineroId) {
     pasos.push({
       tipo: 'regla',
       titulo: 'La salida cruza tramos de riesgo alto',
+      tramos,
+      rutaComparada: m.rutaSalida,
+      ruta: m.rutaRefugio,
       detalle: `La ruta a ${nombreNodo(m.rutaSalida.destino)} pasa por ${tramos.map(t => t.nombre).join(', ')}. Se compara su costo con el de llegar al refugio.`
     });
   }
@@ -66,6 +74,8 @@ function explicarMinero(resultado, mineroId) {
   pasos.push({
     tipo: 'decision',
     titulo: etiquetaDecision(m.decision),
+    ruta: m.rutaAsignada,
+    nodo: m.rutaAsignada?.destino ?? m.nodo,
     detalle: `${m.reglaDecision} · ${m.justificacion}`
   });
   return pasos;

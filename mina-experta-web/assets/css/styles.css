@@ -1266,3 +1266,61 @@ svg { display: block; }
   .panel { padding: 13px; }
   .help-steps { gap: 8px; }
 }
+
+/* ---------- Razonamiento junto al plano ---------- */
+.recorrido {
+  --recorrido-ruta: var(--accent);
+  --recorrido-comparada: var(--violet);
+  --recorrido-tramo: var(--red);
+  display: grid;
+  gap: 12px;
+}
+.recorrido > .link-btn { justify-self: start; }
+.recorrido > h3 { font-size: 16px; }
+.recorrido-pasos, .recorrido-leyenda { margin: 0; padding: 0; list-style: none; }
+.recorrido-pasos { display: grid; gap: 8px; }
+.recorrido-pasos .btn {
+  width: 100%;
+  height: auto;
+  min-height: 36px;
+  padding: 7px 10px;
+  justify-content: flex-start;
+  text-align: left;
+  white-space: normal;
+}
+.recorrido-pasos .btn[aria-current="step"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.recorrido-pasos p {
+  padding: 8px 10px 4px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text);
+}
+.recorrido-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 11px;
+}
+.recorrido-leyenda li { display: flex; align-items: center; gap: 6px; }
+.recorrido-muestra { width: 18px; border-top: 3px solid var(--recorrido-ruta); }
+.recorrido-muestra.comparada { border-color: var(--recorrido-comparada); border-top-style: dashed; }
+.recorrido-muestra.tramo { border-color: var(--recorrido-tramo); border-top-style: dotted; }
+.recorrido-linea, .recorrido-nodo {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.recorrido-linea.comparada { stroke: var(--violet); stroke-width: 4; stroke-dasharray: 8 5; }
+.recorrido-linea.tramo { stroke: var(--red); stroke-width: 7; stroke-dasharray: 1 6; }
+.recorrido-nodo { stroke-width: 3; }

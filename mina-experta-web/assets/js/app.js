@@ -13,6 +13,7 @@ const state = {
   selectedMiner: 'm1',
   selectedTunnel: null,
   tab: 'decisiones',
+  recorrido: null,
   level: 'all',
   showBaseline: false,
   ruleFilter: 'all',
@@ -92,6 +93,7 @@ function bindEvents() {
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       if (!$('#modalBackdrop').hidden) cerrarModal();
+      else if (state.recorrido) cerrarRecorrido();
       else if (state.selectedTunnel) {
         state.selectedTunnel = null;
         renderMap();
@@ -127,6 +129,7 @@ function seleccionarEscenario(id, opciones = {}) {
 
 function ejecutarYRefrescar(mostrarToast) {
   const esc = escenarioActivo();
+  state.recorrido = null;
   state.resultado = ejecutarMotor(esc);
   if (!state.selectedMiner || !state.resultado.mineros.some(m => m.id === state.selectedMiner)) {
     state.selectedMiner = state.resultado.mineros[0]?.id || null;
@@ -245,6 +248,9 @@ function renderMap() {
   const r = state.resultado;
   if (!r) return;
   const svg = $('#mineMap');
+  const enRecorrido = Boolean(state.recorrido);
+  $('#toggleBaseline').disabled = enRecorrido;
+  $$('#levelFilter button').forEach(b => { b.disabled = enRecorrido; });
   const selectedMiner = r.mineros.find(m => m.id === state.selectedMiner) || null;
 
   const t1 = TUNELES.filter(t => nivelDeTunel(t) === 1).length;
@@ -280,7 +286,7 @@ function renderMap() {
   html += '</g>';
 
   html += '<g id="routesLayer" pointer-events="none">';
-  html += dibujarRutas(selectedMiner);
+  html += state.recorrido ? dibujarPasoRecorrido() : dibujarRutas(selectedMiner);
   html += '</g>';
 
   html += '<g id="nodesLayer">';
@@ -291,7 +297,7 @@ function renderMap() {
 
   svg.innerHTML = html;
   svg.classList.remove('focus-1', 'focus-2');
-  if (state.level !== 'all') svg.classList.add(`focus-${state.level}`);
+  if (!state.recorrido && state.level !== 'all') svg.classList.add(`focus-${state.level}`);
   applyZoom();
 }
 
@@ -468,7 +474,7 @@ function onLevelFilter(e) {
   $$('#levelFilter button').forEach(b => b.classList.toggle('active', b === btn));
   const svg = $('#mineMap');
   svg.classList.remove('focus-1', 'focus-2');
-  if (state.level !== 'all') svg.classList.add(`focus-${state.level}`);
+  if (!state.recorrido && state.level !== 'all') svg.classList.add(`focus-${state.level}`);
 }
 
 function onMapMove(e) {
@@ -552,6 +558,7 @@ function onMapClick(e) {
 }
 
 function seleccionarMinero(id, desdeMapa = false) {
+  state.recorrido = null;
   state.selectedMiner = id;
   renderMap();
   renderTab();
@@ -692,7 +699,9 @@ function onInspectorClick(e) {
 function onTabClick(e) {
   const btn = e.target.closest('[data-tab]');
   if (!btn) return;
+  state.recorrido = null;
   state.tab = btn.dataset.tab;
+  renderMap();
   $$('#tabs .tab').forEach(b => b.classList.toggle('active', b === btn));
   renderTab();
 }
@@ -701,7 +710,7 @@ function renderTab() {
   $$('#tabs .tab').forEach(b => b.classList.toggle('active', b.dataset.tab === state.tab));
   const body = $('#tabBody');
   const render = {
-    decisiones: renderDecisiones,
+    decisiones: state.recorrido ? renderRecorrido : renderDecisiones,
     reglas: renderReglas,
     traza: renderTraza,
     comparativa: renderComparativa
@@ -710,6 +719,18 @@ function renderTab() {
 }
 
 function onTabBodyClick(e) {
+  const paso = e.target.closest('[data-paso-recorrido]');
+  if (paso && state.recorrido) {
+    state.recorrido.indice = Number(paso.dataset.pasoRecorrido);
+    renderMap();
+    renderTab();
+    $('#tabBody [aria-current="step"]')?.focus({ preventScroll: true });
+    return;
+  }
+  if (e.target.closest('[data-cerrar-recorrido]')) {
+    cerrarRecorrido();
+    return;
+  }
   const explainBtn = e.target.closest('[data-explain]');
   if (explainBtn) {
     abrirExplicacionMinero(explainBtn.dataset.explain);
@@ -1275,39 +1296,65 @@ function abrirExplicacionTunel(id) {
 }
 
 function abrirExplicacionMinero(id) {
-  const m = state.resultado.mineros.find(x => x.id === id);
-  if (!m) return;
   const pasos = explicarMinero(state.resultado, id);
-  const cadena = pasos.map((p, indice) => `<div class="explain-step ${p.tipo}">
-      <h4>${indice + 1}. ${escapar(p.titulo)}</h4>
-      <p>${escapar(p.detalle)}</p>
-    </div>`).join('');
-  const ruta = m.rutaAsignada
-    ? `<div class="route-steps" style="padding:0; flex-wrap:wrap; white-space:normal; gap:5px">${m.rutaAsignada.nodos.map((n, i) => `<span class="step-pill ${i === 0 ? 'start' : i === m.rutaAsignada.nodos.length - 1 ? (m.decision === 'refugiarse' ? 'refugio' : 'end') : ''}">${codigoNodo(n)}</span>`).join('<span class="step-arrow">›</span>')}</div>`
-    : '<div class="compare-note" style="margin:0">No hay ruta transitable. El minero permanece en su ubicación y solicita brigada.</div>';
-  const comparacion = m.rutaBase
-    ? `La línea base llegaría a salida en ${fmt(m.rutaBase.longitud)} m con puntaje de riesgo ${m.rutaBase.exposicion}.`
-    : 'La línea base no encuentra ruta a superficie en este escenario.';
+  if (!pasos.length) return;
+  state.selectedMiner = id;
+  state.selectedTunnel = null;
+  state.tab = 'decisiones';
+  state.recorrido = { pasos, indice: 0 };
+  state.view = { scale: 1, tx: 0, ty: 0 };
+  renderInspector();
+  renderMap();
+  renderTab();
+  $('#tabBody [aria-current="step"]')?.focus();
+}
 
-  abrirModal('Explicación ¿cómo?', m.nombre, `
-    <div class="modal-kpis">
-      <div class="modal-kpi"><span>Decisión</span><strong>${etiquetaDecision(m.decision)}</strong></div>
-      <div class="modal-kpi"><span>Recorrido</span><strong>${m.rutaAsignada ? `${fmt(m.rutaAsignada.longitud)} m` : '—'}</strong></div>
-      <div class="modal-kpi"><span>Costo</span><strong>${m.rutaAsignada ? fmt(m.rutaAsignada.costo) : '—'}</strong></div>
-      <div class="modal-kpi"><span>Regla</span><strong>${m.reglaDecision}</strong></div>
-    </div>
-    <section class="modal-section">
-      <h3>Cómo se tomó la decisión</h3>
-      <div class="explain-chain">${cadena}</div>
-    </section>
-    <section class="modal-section">
-      <h3>Ruta asignada</h3>
-      ${ruta}
-    </section>
-    <section class="modal-section">
-      <h3>Comparación con la línea base</h3>
-      <p class="modal-note">${comparacion}</p>
-    </section>`);
+function cerrarRecorrido() {
+  const id = state.selectedMiner;
+  state.recorrido = null;
+  renderMap();
+  renderTab();
+  $(`[data-explain="${id}"]`)?.focus();
+}
+
+function renderRecorrido() {
+  const { pasos, indice } = state.recorrido;
+  const m = state.resultado.mineros.find(m => m.id === state.selectedMiner);
+  const paso = pasos[indice];
+  return `<section class="recorrido" aria-label="Razonamiento de la decisión">
+    <button class="link-btn" data-cerrar-recorrido type="button">← Volver a decisiones</button>
+    <h3>${escapar(m.nombre)}</h3>
+    <p class="modal-note">Selecciona un paso para ver su efecto en el plano.</p>
+    <ol class="recorrido-pasos">
+      ${pasos.map((p, i) => `<li>
+        <button class="btn btn-ghost" type="button" data-paso-recorrido="${i}" ${i === indice ? 'aria-current="step" aria-describedby="recorrido-detalle"' : ''}>
+          <span>${i + 1}.</span> ${escapar(p.titulo)}
+        </button>
+        ${i === indice ? `<p id="recorrido-detalle">${escapar(p.detalle)}</p>` : ''}
+      </li>`).join('')}
+    </ol>
+    ${paso.ruta || paso.rutaComparada || paso.tramos?.length ? `
+      <ul class="recorrido-leyenda" aria-label="Resaltado en el plano">
+        ${paso.ruta ? `<li><span class="recorrido-muestra elegida"></span>${paso.ruta === m.rutaAsignada ? 'Ruta asignada' : 'Ruta del sistema a superficie'}</li>` : ''}
+        ${paso.rutaComparada ? `<li><span class="recorrido-muestra comparada"></span>${paso.rutaComparada === m.rutaBase ? 'Línea base' : 'Ruta evaluada a superficie'}</li>` : ''}
+        ${paso.tramos?.length ? `<li><span class="recorrido-muestra tramo"></span>${paso.tramos.every(t => t.cerrado) ? 'Tramo cerrado' : 'Tramo con riesgo'}</li>` : ''}
+      </ul>` : ''}
+  </section>`;
+}
+
+function dibujarPasoRecorrido() {
+  const paso = state.recorrido.pasos[state.recorrido.indice];
+  const lineas = [];
+  if (paso.ruta) lineas.push(`<path class="recorrido-linea elegida" d="${pathD(paso.ruta.nodos)}"/>`);
+  if (paso.rutaComparada) lineas.push(`<path class="recorrido-linea comparada" d="${pathD(paso.rutaComparada.nodos)}"/>`);
+  for (const t of paso.tramos ?? []) {
+    lineas.push(`<path class="recorrido-linea tramo" d="${pathD([t.a, t.b])}"/>`);
+  }
+  if (paso.nodo) {
+    const { x, y } = coords(paso.nodo);
+    lineas.push(`<circle class="recorrido-nodo" cx="${x}" cy="${y}" r="20"/>`);
+  }
+  return lineas.join('');
 }
 
 /* ============================================================
