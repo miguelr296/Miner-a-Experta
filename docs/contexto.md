@@ -2,10 +2,10 @@
 
 ## Estado actual
 - Sprint: 1 (semanas 1–2) · 21 nov – 5 dic 2026 · Objetivo: motor mínimo + cargador JSON
-- S1-00, S1-01, S1-02, S1-03, S1-03b, S1-04, S1-05 y S1-07 cerradas y fusionadas (8 de 20 tarjetas); quedan 12 en Ready. Nada en In Progress ni In Review; `main` sincronizada.
+- S1-00, S1-01, S1-02, S1-03, S1-03b, S1-04, S1-05, S1-07 y S1-08 cerradas y fusionadas (9 de 20 tarjetas); quedan 11 en Ready. Nada en In Progress ni In Review; `main` sincronizada.
 - Existe en src/: (nada aún)
-- Semana 1: umbrales, nivelación de Python, Git/PR, JSON y motor (teoría) listos; faltan S1-08 y S1-09.
-- Siguiente: S1-08 (esquema JSON de la mina, sesión conjunta, decisión D22); después S1-09. S1-07 dejó desbloqueada S1-12.
+- Semana 1: umbrales, nivelación de Python, Git/PR, JSON y motor (teoría) listos; falta S1-09.
+- Siguiente: S1-09 (crear `mina_prueba.json`: 6–8 nodos, 2 niveles, refugio a ≤ 500 m de cada frente, dueño A), desbloqueada por D22. S1-07 dejó desbloqueada S1-12.
 
 ## Comandos
 - (se agregan cuando existan)

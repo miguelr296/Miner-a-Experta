@@ -142,6 +142,8 @@ Todas las siglas y términos técnicos usados en el proyecto, explicados para qu
 | **Nodo** | Punto del grafo: intersección de túneles, salida, refugio o frente. |
 | **Arista** | Conexión entre dos nodos: un tramo de túnel. |
 | **Grafo no dirigido** | Grafo en el que cada arista se puede recorrer en los dos sentidos. La mina es no dirigida: cada túnel se escribe una vez en el JSON y el cargador lo agrega en ambas direcciones (D22). |
+| **Lista de adyacencia** | Estructura que guarda, para cada nodo, la lista de sus vecinos. El cargador la llena con las dos direcciones de cada arista. |
+| **Bucle (self-loop)** | Arista que sale y llega al mismo nodo (`desde == hasta`). El esquema la prohíbe porque no aporta camino. |
 | **Peso / costo** | Valor de recorrer una arista. Parte de la longitud física y las reglas lo aumentan según el riesgo. |
 | **Multiplicador de costo** | Factor (≥ 1) por el que una regla multiplica el costo de una arista. |
 | **Ruta** | Secuencia de aristas desde un origen hasta un destino. |
