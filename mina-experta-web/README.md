@@ -2,6 +2,8 @@
 
 Interfaz sencilla para visualizar las decisiones de un sistema experto de evacuación en minería subterránea. Todo el cálculo ocurre en el navegador: no hay backend ni paso de compilación.
 
+Consulta el [registro de cambios y motivos](CAMBIOS.md) para revisar esta rama.
+
 ## Cómo abrir
 
 Abre `index.html` con doble clic o arrástralo a un navegador moderno.
