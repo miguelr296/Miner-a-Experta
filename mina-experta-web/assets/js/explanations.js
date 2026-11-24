@@ -42,11 +42,15 @@ function explicarMinero(resultado, mineroId) {
       t.multiplicador > 1 && !m.rutaSalida.tuneles.some(elegido => elegido.id === t.id)
     );
     const nombres = tramos.map(t => `${t.nombre} (${etiquetaNivel(t.nivel)}, ×${t.multiplicador})`);
+    const empate = costoBaseAjustado === m.rutaSalida.costo;
+    const desempate = empate && m.rutaSalida.exposicion < m.rutaBase.exposicion
+      ? ` Con el mismo costo, el planificador prefiere el menor puntaje de riesgo (${m.rutaSalida.exposicion} frente a ${m.rutaBase.exposicion}).`
+      : '';
     pasos.push({
       tipo: 'ruta',
       titulo: m.decision === 'evacuar' ? 'Por qué cambia la ruta a superficie' : 'Comparación de rutas a superficie',
       detalle: `La línea base propone ${m.rutaBase.longitud} m. Con las reglas de riesgo, su costo es ${costoBaseAjustado}. La ruta del sistema recorre ${m.rutaSalida.longitud} m con costo ${m.rutaSalida.costo}.` +
-        (nombres.length ? ` La ruta del sistema evita ${nombres.join(', ')}.` : '')
+        (nombres.length ? ` La ruta del sistema evita ${nombres.join(', ')}.` : '') + desempate
     });
   }
 
