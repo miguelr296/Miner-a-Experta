@@ -744,7 +744,7 @@ function renderDecisiones() {
       ${pasosRuta(m)}
       <div class="miner-foot">
         <span class="reason">${escapar(m.motivo)}</span>
-        <button class="link-btn" data-explain="${m.id}" type="button">Ver detalle</button>
+        <button class="link-btn" data-explain="${m.id}" type="button">Ver razonamiento</button>
       </div>
     </article>`;
   }).join('');
@@ -1278,8 +1278,8 @@ function abrirExplicacionMinero(id) {
   const m = state.resultado.mineros.find(x => x.id === id);
   if (!m) return;
   const pasos = explicarMinero(state.resultado, id);
-  const cadena = pasos.map(p => `<div class="explain-step ${p.tipo}">
-      <h4>${escapar(p.titulo)}</h4>
+  const cadena = pasos.map((p, indice) => `<div class="explain-step ${p.tipo}">
+      <h4>${indice + 1}. ${escapar(p.titulo)}</h4>
       <p>${escapar(p.detalle)}</p>
     </div>`).join('');
   const ruta = m.rutaAsignada
@@ -1297,7 +1297,7 @@ function abrirExplicacionMinero(id) {
       <div class="modal-kpi"><span>Regla</span><strong>${m.reglaDecision}</strong></div>
     </div>
     <section class="modal-section">
-      <h3>Cadena de razonamiento</h3>
+      <h3>Cómo se tomó la decisión</h3>
       <div class="explain-chain">${cadena}</div>
     </section>
     <section class="modal-section">

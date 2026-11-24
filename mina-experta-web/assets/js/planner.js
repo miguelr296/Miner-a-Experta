@@ -98,13 +98,16 @@ function exponerRuta(tuneles) {
 }
 
 /* ---------- Decisión por minero ---------- */
-function resolverMinero(minero, grafoExperto, grafoBase) {
+function resolverMinero(minero, grafoExperto, grafoBase, grafoPorDistancia) {
   const salidas = NODOS.filter(n => n.salida).map(n => n.id);
   const refugios = NODOS.filter(n => n.tipo === 'refugio').map(n => n.id);
 
   const rutaSalida = mejorRuta(grafoExperto, minero.nodo, salidas, true);
   const rutaRefugio = mejorRuta(grafoExperto, minero.nodo, refugios, true);
   const rutaBase = mejorRuta(grafoBase, minero.nodo, salidas, false);
+  // La referencia hipotética solo explica cierres en el camino más corto.
+  const referencia = mejorRuta(grafoPorDistancia, minero.nodo, salidas);
+  const cierresEnReferencia = referencia?.tuneles.filter(t => t.cerrado) ?? [];
 
   let decision = 'evacuar';
   let reglaDecision = 'DEC-01';
@@ -124,7 +127,7 @@ function resolverMinero(minero, grafoExperto, grafoBase) {
       reglaDecision = 'DEC-03';
       rutaAsignada = null;
       justificacion = 'Sin ruta a superficie y sin refugio alcanzable. Se solicita brigada de rescate y se mantiene comunicación.';
-      motivo = 'Aislado por derrumbe';
+      motivo = 'Sin salida ni refugio alcanzable';
     }
   } else {
     const ratio = rutaRefugio ? rutaSalida.costo / Math.max(rutaRefugio.costo, 1) : Infinity;
@@ -141,7 +144,7 @@ function resolverMinero(minero, grafoExperto, grafoBase) {
       reglaDecision = 'DEC-01';
       rutaAsignada = rutaSalida;
       justificacion = `Ruta a ${nombreNodo(rutaSalida.destino)} viable: ${rutaSalida.longitud} m de recorrido, costo ajustado ${rutaSalida.costo}.`;
-      motivo = rutaSalida.tramosAlto ? 'Evacúa con protección respiratoria' : 'Ruta despejada';
+      motivo = rutaSalida.tramosAlto ? 'Ruta con tramos de riesgo alto' : 'Ruta a superficie disponible';
     }
   }
 
@@ -158,6 +161,7 @@ function resolverMinero(minero, grafoExperto, grafoBase) {
     rutaRefugio,
     rutaBase,
     rutaAsignada,
+    cierresEnReferencia,
     exposicion: rutaSalida ? rutaSalida.exposicion : null,
     exposicionBase,
     longitud: rutaSalida ? rutaSalida.longitud : null,

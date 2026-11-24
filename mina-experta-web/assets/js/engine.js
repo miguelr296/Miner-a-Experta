@@ -254,10 +254,11 @@ function ejecutarMotor(escenario) {
   const porTunel = Object.fromEntries(tuneles.map(t => [t.id, t]));
   const grafoExperto = construirGrafo(tuneles, 'experto');
   const grafoBase = construirGrafo(tuneles, 'base');
+  const grafoPorDistancia = construirGrafo(tuneles, 'distancia');
 
   const mineros = escenario.mineros.map(id => {
     const base = MINEROS_BASE.find(m => m.id === id);
-    return resolverMinero(base, grafoExperto, grafoBase);
+    return resolverMinero(base, grafoExperto, grafoBase, grafoPorDistancia);
   });
 
   mineros.forEach(m => {
