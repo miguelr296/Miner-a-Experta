@@ -42,6 +42,12 @@ En el escenario de incendio (ESC-02), selecciona la Galería Principal y abre **
 - `assets/js/engine.js` aplica las reglas por prioridad, registra la traza y entrega los túneles transitables y sus costos al planificador Dijkstra.
 - Cuando un gas alcanza el nivel simulado de peligro, su diagnóstico activa `R-RIESGO-07`. Esta regla eleva el riesgo del túnel, `R-RIESGO-01` lo cierra y `R-RUTA-01` registra el bloqueo para el planificador.
 
+## Demostración del motor
+
+En **Voladura (ESC-01)**, abre **Probar datos**, selecciona **Galería 340-N** y cambia solo el CO de 88 a 101 ppm. Aplica los datos y abre **¿Por qué? → Ver motor paso a paso** en ese túnel. Busca las activaciones `R-CO-03`, `R-RIESGO-07`, `R-RIESGO-01` y `R-RUTA-01`. Cada una muestra qué consultó el motor y qué escribió en la memoria de hechos. El selector incluye las demás reglas disparadas en el túnel.
+
+En **Decisiones → Jorge Salazar → Ver razonamiento** puedes comprobar el efecto del cierre. En el código, abre `inferirTuneles` en `assets/js/engine.js` para mostrar el bucle de reglas, y `construirGrafo` en `assets/js/planner.js` para mostrar dónde se excluye el tramo cerrado.
+
 ## Enlaces directos útiles
 
 - `index.html?esc=ESC-02`

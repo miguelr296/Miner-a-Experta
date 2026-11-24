@@ -1061,6 +1061,11 @@ function onModalInput(e) {
 }
 
 function onModalChange(e) {
+  if (e.target.id === 'pasoTrazaTunel') {
+    const reglas = explicarTunel(state.resultado, e.target.dataset.tunelTraza).reglas;
+    $('#detallePasoTraza').innerHTML = renderPasoTraza(reglas[Number(e.target.value)]);
+    return;
+  }
   if (e.target.id !== 'testTunnel') return;
   state.testTunnelId = e.target.value;
   $('#modalBody').innerHTML = formularioPrueba(escenarioActivo(), state.testTunnelId);
@@ -1240,6 +1245,27 @@ function abrirCatalogoReglas() {
   abrirModal('Base de conocimiento', 'Catálogo de reglas', html);
 }
 
+function renderPasoTraza(paso) {
+  const valor = dato => {
+    if (dato === undefined) return 'Sin registrar';
+    if (typeof dato === 'boolean') return dato ? 'Sí' : 'No';
+    return dato;
+  };
+  return `<dl class="traza-paso">
+    <div><dt>Hechos consultados</dt><dd><ul>${paso.lecturas.map(h => `
+      <li><code>${escapar(h.atributo)}</code> = ${escapar(valor(h.valor))}
+        ${h.origen ? `<small>(${escapar(h.origen)})</small>` : ''}
+      </li>`).join('')}</ul></dd></div>
+    <div><dt>Regla aplicada</dt><dd>
+      <strong>${escapar(paso.regla)} · ${escapar(paso.nombre)}</strong>
+      <p>Prioridad ${paso.prioridad} · ${escapar(paso.fuente)}</p>
+      <p>${escapar(paso.detalle)}</p>
+    </dd></div>
+    <div><dt>Hechos escritos</dt><dd><ul>${paso.escrituras.map(h => `
+      <li><code>${escapar(h.atributo)}</code> · ${escapar(valor(h.anterior))} → <strong>${escapar(valor(h.valor))}</strong></li>`).join('')}</ul></dd></div>
+  </dl>`;
+}
+
 function abrirExplicacionTunel(id) {
   const ex = explicarTunel(state.resultado, id);
   const t = ex.tunel;
@@ -1301,6 +1327,14 @@ function abrirExplicacionTunel(id) {
     </section>
     <section class="modal-section">
       <h3>2. Reglas activadas</h3>
+      ${ex.reglas.length ? `<details class="traza-interactiva">
+        <summary>Ver motor paso a paso</summary>
+        <label for="pasoTrazaTunel">Activación en este túnel</label>
+        <select class="test-select" id="pasoTrazaTunel" data-tunel-traza="${id}">
+          ${ex.reglas.map((p, i) => `<option value="${i}">${i + 1} de ${ex.reglas.length} · ${escapar(p.regla)} · ${escapar(p.nombre)}</option>`).join('')}
+        </select>
+        <div id="detallePasoTraza" aria-live="polite">${renderPasoTraza(ex.reglas[0])}</div>
+      </details>` : ''}
       <div class="explain-chain">${cadena || '<p class="modal-note">Sin reglas disparadas para este túnel.</p>'}</div>
     </section>
     ${conflictos}

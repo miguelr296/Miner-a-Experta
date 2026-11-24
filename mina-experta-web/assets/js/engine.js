@@ -179,7 +179,15 @@ function inferirTuneles(escenario) {
         if (disparadas.has(clave)) continue;
         const f = hechos.get(tunel.id);
         const mec = MECANICAS[regla.id];
-        if (!mec.cond(f)) continue;
+        const lecturasRegla = new Map();
+        const memoriaConsultada = {
+          get(atributo) {
+            const hecho = f.get(atributo);
+            lecturasRegla.set(atributo, { atributo, valor: hecho?.valor, origen: hecho?.regla });
+            return hecho;
+          }
+        };
+        if (!mec.cond(memoriaConsultada)) continue;
 
         let bloqueada = false;
         let reglaGanadora = null;
@@ -205,8 +213,10 @@ function inferirTuneles(escenario) {
           continue;
         }
 
-        Object.entries(mec.out).forEach(([attr, valor]) => {
-          f.set(attr, { valor, prioridad: regla.prioridad, regla: regla.id });
+        const escrituras = Object.entries(mec.out).map(([atributo, valor]) => {
+          const anterior = f.get(atributo)?.valor;
+          f.set(atributo, { valor, prioridad: regla.prioridad, regla: regla.id });
+          return { atributo, anterior, valor };
         });
         disparadas.add(clave);
         huboCambio = true;
@@ -221,6 +231,8 @@ function inferirTuneles(escenario) {
           entidadNombre: tunel.nombre,
           prioridad: regla.prioridad,
           fuente: regla.fuente,
+          lecturas: [...lecturasRegla.values()],
+          escrituras,
           detalle: mec.detalle(f)
         });
       }
