@@ -4,6 +4,12 @@
 
 Una entrada por sesión, la más reciente arriba. Tres líneas bastan.
 
+### 2026-11-24 · Certeza, A* y cierre de implementación
+
+- Hice: añadí certeza en la traza, A* con geometría física 3D y un informe con guion de demo. Ejecuté las 41 pruebas.
+- Falló / dudas: la topología web es esquemática. La paridad se verifica con Dijkstra y A* se comprueba en la mina con cotas físicas.
+- Siguiente paso exacto: revisar el PR de Python con Miguel y ejecutar los comandos del guion durante la exposición.
+
 ### 2026-11-24 · Paridad de decisiones en Python
 
 - Hice: implementé DEC-01, DEC-02 y DEC-03, y añadí los cinco escenarios web a la consola y a las pruebas de paridad.

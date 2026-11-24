@@ -50,6 +50,8 @@ mina-experta/
 
 ## Ejecución
 
+El [informe de Python y guion de demo](docs/motor-python.md) reúne la arquitectura, las decisiones de diseño, las pruebas y los casos que se pueden reproducir en la consola.
+
 Desde la raíz del repositorio, ejecuta la primera demostración con Python 3.10 o posterior.
 
 ```text
@@ -110,6 +112,8 @@ python -m src --caso-web ESC-03
 ```
 
 Los cinco casos coinciden en la recomendación, la regla y las rutas por minero, incluidas la secuencia de nodos, la longitud, el costo y el puntaje. La prueba también compara los túneles afectados.
+
+La certeza de cada lectura y su propagación se pueden ver con `python -m src data/escenarios/certeza_demo.json`. Para comparar Dijkstra y A* en la mina física de prueba, usa `python -m src data/escenarios/desvio_riesgo.json --comparar-algoritmos`. También puedes seleccionar A* con `--algoritmo astar`.
 
 Para ejecutar las pruebas, con pytest instalado:
 
