@@ -5,10 +5,10 @@ import json
 from pathlib import Path
 
 from .decisiones import evaluar_mineros
-from .escenarios import cargar_caso_web
+from .escenarios import cargar_caso_web, cargar_hechos
 from .mina import cargar_mina
-from .motor import Hecho, inferir
-from .reglas import estados_linea_base, preparar_hechos, reglas_del_motor
+from .motor import inferir
+from .reglas import estados_linea_base, preparar_entrada, reglas_del_motor
 
 
 DATOS = Path(__file__).resolve().parent.parent / "data"
@@ -30,18 +30,20 @@ def main() -> None:
         analizador.error("--caso-web ya incluye un escenario y su topología.")
     try:
         umbrales = json.loads((DATOS / "umbrales.json").read_text(encoding="utf-8"))
+        certezas_iniciales = {}
         if argumentos.caso_web:
             referencia = json.loads((DATOS / "referencia_web.json").read_text(encoding="utf-8"))
             mina, hechos, mineros = cargar_caso_web(referencia, argumentos.caso_web.upper())
         else:
             archivo = argumentos.escenario or DATOS / "escenarios" / "co_demo.json"
             escenario = json.loads(archivo.read_text(encoding="utf-8"))
-            hechos = tuple(Hecho(**fila) for fila in escenario["hechos"])
+            hechos, certezas_iniciales = cargar_hechos(escenario["hechos"])
             mineros = escenario.get("mineros", [])
             mina = cargar_mina(argumentos.mina or DATOS / "mina_prueba.json")
 
         reglas = reglas_del_motor(umbrales)
-        resultado = inferir(preparar_hechos(hechos, mina), reglas)
+        entrada, certezas = preparar_entrada(hechos, mina, certezas_iniciales)
+        resultado = inferir(entrada, reglas, certezas_iniciales=certezas)
         estados_base = estados_linea_base(hechos, resultado.hechos, umbrales)
         evaluaciones = evaluar_mineros(
             mina, mineros, resultado.hechos, estados_base, umbrales["decision"],
@@ -50,11 +52,14 @@ def main() -> None:
         analizador.error(f"No se pudieron cargar los datos: {error}")
 
     for indice, paso in enumerate(resultado.traza, start=1):
-        premisas = ", ".join(f"{h.atributo}={h.valor}" for h in paso.premisas)
+        premisas = ", ".join(
+            f"{h.atributo}={h.valor} ({certeza:.0%})"
+            for h, certeza in zip(paso.premisas, paso.certezas_premisas)
+        )
         entidad, atributo, valor = paso.conclusion
         print(
             f"{indice}. {paso.regla} [prioridad {paso.prioridad}, {paso.fuente}] "
-            f"{entidad}: {premisas} -> {atributo}={valor}"
+            f"{entidad}: {premisas} -> {atributo}={valor} (certeza {paso.certeza:.0%})"
         )
     if not resultado.traza:
         print("Ninguna regla se activó.")

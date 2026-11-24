@@ -8,7 +8,7 @@ import pytest
 from src.mina import cargar_mina
 from src.motor import Hecho, inferir
 from src.planificador import buscar_ruta
-from src.reglas import estados_linea_base, preparar_hechos, reglas_del_motor
+from src.reglas import estados_linea_base, preparar_entrada, reglas_del_motor
 
 
 RAIZ = Path(__file__).resolve().parents[1]
@@ -144,7 +144,8 @@ def test_cierres_fisicos_y_propagacion_a_vecinos(evento):
     mina = cargar_mina(DATOS / "mina_prueba.json")
     tramo = "t_i2_f1"
     hechos = (Hecho(tramo, evento, True),)
-    resultado = inferir(preparar_hechos(hechos, mina), reglas_del_motor(CONFIGURACION))
+    entrada, certezas = preparar_entrada(hechos, mina)
+    resultado = inferir(entrada, reglas_del_motor(CONFIGURACION), certezas_iniciales=certezas)
     assert Hecho(tramo, "transitable", False) in resultado.hechos
     alertados = {h.entidad for h in resultado.hechos if h.atributo == "propagacion"}
     assert alertados == ({"t_i3_f1", "t_i1_i2"} if evento != "inundacion" else set())
@@ -160,7 +161,8 @@ def test_corte_electrico_distingue_el_respaldo():
         Hecho("con", "corte_electrico", True), Hecho("con", "vel_m_min", 85),
         Hecho("con", "ventilacion_respaldo", True),
     )
-    resultado = inferir(preparar_hechos(hechos, None), reglas_del_motor(CONFIGURACION))
+    entrada, certezas = preparar_entrada(hechos, None)
+    resultado = inferir(entrada, reglas_del_motor(CONFIGURACION), certezas_iniciales=certezas)
     assert Hecho("sin", "nivel_ventilacion", "critica") in resultado.hechos
     assert Hecho("sin", "multiplicador", 3) in resultado.hechos
     assert Hecho("con", "nivel_ventilacion", "conforme") in resultado.hechos

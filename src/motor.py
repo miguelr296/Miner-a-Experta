@@ -1,12 +1,13 @@
 """Memoria de trabajo y encadenamiento hacia adelante por entidad."""
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from operator import ge, gt, lt
 from typing import Literal, NamedTuple
 
 
 Valor = str | bool | int | float
+ClaveHecho = tuple[str, str]
 
 
 class Hecho(NamedTuple):
@@ -40,6 +41,7 @@ class Regla:
     valor: Valor
     fuente: Literal["NORMA", "SUPUESTO"] = "SUPUESTO"
     alguna: bool = False
+    certeza: float = 1.0
 
 
 @dataclass(frozen=True)
@@ -49,6 +51,8 @@ class Activacion:
     fuente: Literal["NORMA", "SUPUESTO"]
     premisas: tuple[Hecho, ...]
     conclusion: Hecho
+    certeza: float
+    certezas_premisas: tuple[float, ...]
 
 
 @dataclass(frozen=True)
@@ -64,16 +68,30 @@ class Resultado:
     hechos: tuple[Hecho, ...]
     traza: tuple[Activacion, ...]
     conflictos: tuple[Conflicto, ...]
+    certezas: dict[ClaveHecho, float]
 
 
-def inferir(hechos: Iterable[Hecho], reglas: Iterable[Regla]) -> Resultado:
+def validar_certeza(valor: float) -> float:
+    if type(valor) not in (int, float) or not 0 <= valor <= 1:
+        raise ValueError("La certeza debe ser un número entre 0 y 1.")
+    return float(valor)
+
+
+def inferir(
+    hechos: Iterable[Hecho], reglas: Iterable[Regla],
+    *, certezas_iniciales: Mapping[ClaveHecho, float] | None = None,
+) -> Resultado:
     """Dispara cada par regla-entidad como máximo una vez por ejecución."""
     memoria: dict[str, dict[str, Valor]] = {}
+    certezas: dict[ClaveHecho, float] = {}
+    iniciales = certezas_iniciales or {}
     for entidad, atributo, valor in hechos:
         memoria.setdefault(entidad, {})[atributo] = valor
+        certezas[entidad, atributo] = validar_certeza(iniciales.get((entidad, atributo), 1.0))
 
     ordenadas = sorted(reglas, key=lambda regla: regla.prioridad, reverse=True)
-    autores: dict[tuple[str, str], Regla] = {}
+    factores = {regla.id: validar_certeza(regla.certeza) for regla in ordenadas}
+    autores: dict[ClaveHecho, Regla] = {}
     procesadas: set[tuple[str, str]] = set()
     traza = []
     conflictos = []
@@ -86,7 +104,7 @@ def inferir(hechos: Iterable[Hecho], reglas: Iterable[Regla]) -> Resultado:
                 if clave in procesadas:
                     continue
 
-                premisas = premisas_cumplidas(regla, entidad, atributos)
+                premisas = premisas_cumplidas(regla, entidad, atributos, certezas)
                 if premisas is None:
                     continue
 
@@ -102,11 +120,14 @@ def inferir(hechos: Iterable[Hecho], reglas: Iterable[Regla]) -> Resultado:
                         ))
                     continue
 
+                apoyos = tuple(certezas[h.entidad, h.atributo] for h in premisas)
+                certeza = min(apoyos, default=1.0) * factores[regla.id]
                 atributos[regla.atributo] = regla.valor
+                certezas[destino] = certeza
                 autores[destino] = regla
                 traza.append(Activacion(
                     regla.id, regla.prioridad, regla.fuente, premisas,
-                    conclusion,
+                    conclusion, certeza, apoyos,
                 ))
                 disparo = True
 
@@ -119,11 +140,12 @@ def inferir(hechos: Iterable[Hecho], reglas: Iterable[Regla]) -> Resultado:
                 ),
                 tuple(traza),
                 tuple(conflictos),
+                certezas,
             )
 
 
 def premisas_cumplidas(
-    regla: Regla, entidad: str, atributos: dict[str, Valor]
+    regla: Regla, entidad: str, atributos: dict[str, Valor], certezas: dict[ClaveHecho, float],
 ) -> tuple[Hecho, ...] | None:
     premisas = []
     for condicion in regla.condiciones:
@@ -131,9 +153,11 @@ def premisas_cumplidas(
         cumple = atributo in atributos and condicion.cumple(atributos[atributo])
         if cumple:
             hecho = Hecho(entidad, atributo, atributos[atributo])
-            if regla.alguna:
-                return (hecho,)
             premisas.append(hecho)
         elif not regla.alguna:
             return None
-    return None if regla.alguna else tuple(premisas)
+    if regla.alguna:
+        if not premisas:
+            return None
+        return (max(premisas, key=lambda h: certezas[h.entidad, h.atributo]),)
+    return tuple(premisas)

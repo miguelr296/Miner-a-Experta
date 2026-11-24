@@ -1,33 +1,46 @@
 """Catálogo de diagnóstico, riesgo y efectos sobre los tramos."""
 
+from dataclasses import replace
+
 from .mina import Mina
-from .motor import Condicion, Hecho, Regla
+from .motor import ClaveHecho, Condicion, Hecho, Regla, validar_certeza
 
 
 EVENTOS_BLOQUEANTES = {"incendio", "derrumbe", "inundacion"}
 EVENTOS_VECINOS = {"incendio", "derrumbe"}
 
 
-def preparar_hechos(iniciales: tuple[Hecho, ...], mina: Mina | None) -> tuple[Hecho, ...]:
+def preparar_entrada(
+    iniciales: tuple[Hecho, ...], mina: Mina | None,
+    certezas: dict[ClaveHecho, float] | None = None,
+) -> tuple[tuple[Hecho, ...], dict[ClaveHecho, float]]:
     """Añade el respaldo por defecto y deriva los reportes de tramos adyacentes."""
     memoria = {(h.entidad, h.atributo): h.valor for h in iniciales}
+    apoyos = {clave: validar_certeza(valor) for clave, valor in (certezas or {}).items()}
     for (entidad, atributo), valor in tuple(memoria.items()):
         if atributo == "corte_electrico" and valor is True:
             memoria.setdefault((entidad, "ventilacion_respaldo"), False)
 
     if mina is not None:
-        eventos = {
-            entidad for (entidad, atributo), valor in memoria.items()
-            if atributo in EVENTOS_VECINOS and valor is True
-        }
+        eventos: dict[str, float] = {}
+        for (entidad, atributo), valor in memoria.items():
+            if atributo in EVENTOS_VECINOS and valor is True:
+                certeza = apoyos.get((entidad, atributo), 1.0)
+                eventos[entidad] = max(eventos.get(entidad, 0), certeza)
         for nodo in mina.nodos:
             aristas = mina.vecinos(nodo)
             activas = {a.id for a in aristas if a.id in eventos}
             for arista in aristas:
-                if activas.difference((arista.id,)):
-                    memoria[arista.id, "vecino_evento"] = True
+                vecinas = activas.difference((arista.id,))
+                if vecinas:
+                    clave = (arista.id, "vecino_evento")
+                    certeza = max(eventos[id_arista] for id_arista in vecinas)
+                    apoyo_previo = apoyos.get(clave, 1.0) if memoria.get(clave) is True else 0.0
+                    memoria[clave] = True
+                    apoyos[clave] = max(apoyo_previo, certeza)
 
-    return tuple(Hecho(entidad, atributo, valor) for (entidad, atributo), valor in memoria.items())
+    hechos = tuple(Hecho(entidad, atributo, valor) for (entidad, atributo), valor in memoria.items())
+    return hechos, apoyos
 
 
 def diagnosticos_de_infraestructura(configuracion: dict) -> tuple[Regla, ...]:
@@ -92,7 +105,15 @@ def reglas_del_motor(configuracion: dict) -> tuple[Regla, ...]:
         Regla("R-RIESGO-01", 90, (Condicion("nivel_riesgo", "=", "peligro"),), "cerrado", True),
         Regla("R-RUTA-01", 95, (Condicion("cerrado", "=", True),), "transitable", False),
     ))
-    return tuple(reglas)
+    factores = configuracion.get("certeza_reglas", {})
+    desconocidas = factores.keys() - {regla.id for regla in reglas}
+    if desconocidas:
+        raise ValueError(f"Factores para reglas desconocidas: {', '.join(sorted(desconocidas))}.")
+    return tuple(
+        replace(regla, certeza=validar_certeza(factores[regla.id]))
+        if regla.id in factores else regla
+        for regla in reglas
+    )
 
 
 def estados_linea_base(

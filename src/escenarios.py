@@ -1,7 +1,7 @@
 """Adaptador de los escenarios compartidos con el prototipo web."""
 
 from .mina import Mina, mina_desde_datos
-from .motor import Hecho
+from .motor import ClaveHecho, Hecho, validar_certeza
 
 
 def cargar_caso_web(referencia: dict, identificador: str) -> tuple[Mina, tuple[Hecho, ...], list[dict]]:
@@ -21,3 +21,13 @@ def cargar_caso_web(referencia: dict, identificador: str) -> tuple[Mina, tuple[H
         for id_minero in entrada["mineros"]
     ]
     return mina, hechos, mineros
+
+
+def cargar_hechos(datos: list[dict]) -> tuple[tuple[Hecho, ...], dict[ClaveHecho, float]]:
+    hechos = []
+    certezas = {}
+    for fila in datos:
+        hecho = Hecho(fila["entidad"], fila["atributo"], fila["valor"])
+        hechos.append(hecho)
+        certezas[hecho.entidad, hecho.atributo] = validar_certeza(fila.get("certeza", 1.0))
+    return tuple(hechos), certezas

@@ -7,7 +7,7 @@ from src.decisiones import evaluar_mineros, recomendar
 from src.escenarios import cargar_caso_web
 from src.motor import inferir
 from src.planificador import Ruta
-from src.reglas import estados_linea_base, preparar_hechos, reglas_del_motor
+from src.reglas import estados_linea_base, preparar_entrada, reglas_del_motor
 
 
 DATOS = Path(__file__).resolve().parents[1] / "data"
@@ -30,7 +30,8 @@ def resumir(ruta):
 @pytest.mark.parametrize("caso", REFERENCIA["casos"])
 def test_rutas_y_decisiones_coinciden_con_web(caso):
     mina, hechos, mineros = cargar_caso_web(REFERENCIA, caso)
-    resultado = inferir(preparar_hechos(hechos, mina), reglas_del_motor(CONFIGURACION))
+    entrada, certezas = preparar_entrada(hechos, mina)
+    resultado = inferir(entrada, reglas_del_motor(CONFIGURACION), certezas_iniciales=certezas)
     linea_base = estados_linea_base(hechos, resultado.hechos, CONFIGURACION)
     evaluaciones = evaluar_mineros(
         mina, mineros, resultado.hechos, linea_base, CONFIGURACION["decision"],
