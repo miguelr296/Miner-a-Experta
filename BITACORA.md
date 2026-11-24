@@ -4,6 +4,12 @@
 
 Una entrada por sesión, la más reciente arriba. Tres líneas bastan.
 
+### 2026-11-24 · Inicio del motor Python
+
+- Hice: implementé memoria de hechos, encadenamiento, prioridad y refracción. Añadí la traza por consola para el cierre por CO y las pruebas del motor.
+- Falló / dudas: la cadena cubre el cierre por CO. Falta cargar la topología y probar los demás diagnósticos.
+- Siguiente paso exacto: definir el JSON de la mina de prueba y cargar nodos y aristas para conectar el motor con Dijkstra.
+
 ## Plantilla
 
 ```

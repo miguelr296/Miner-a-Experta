@@ -50,4 +50,31 @@ mina-experta/
 
 ## Ejecución
 
-*(se completa cuando exista el primer entregable funcional)*
+Desde la raíz del repositorio, ejecuta la primera demostración con Python 3.10 o posterior.
+
+```text
+python -m src
+```
+
+La demo carga los hechos de [co_demo.json](data/escenarios/co_demo.json) y el umbral de [umbrales.json](data/umbrales.json). Puedes pasar otro JSON con la propiedad `hechos` y el mismo formato:
+
+```text
+python -m src data/escenarios/co_demo.json
+```
+
+La traza muestra las premisas, la regla, su prioridad, la fuente y el hecho que se escribe. El motor vuelve a evaluar las reglas cuando aparece un hecho nuevo y procesa cada par regla–entidad una vez por ejecución.
+
+| Regla de la demo | Condición | Conclusión | Prioridad |
+|---|---|---|---|
+| `R-CO-03` | CO por encima del umbral simulado | Gas en peligro | 50 |
+| `R-RIESGO-07` | CO en peligro | Túnel en peligro | 79 |
+| `R-RIESGO-01` | Túnel en peligro | Túnel cerrado | 90 |
+| `R-RUTA-01` | Túnel cerrado | Tramo no transitable | 95 |
+
+La cadena reproduce el ejemplo de cierre del prototipo web. Las cuatro reglas de la demo están etiquetadas como `SUPUESTO`. El primer alcance llega hasta el hecho de transitabilidad. Quedan por implementar la carga de la topología y el cálculo de rutas.
+
+Para ejecutar las pruebas, con pytest instalado:
+
+```text
+python -m pytest tests/test_motor.py
+```

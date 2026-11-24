@@ -1,0 +1,8 @@
+{
+  "co": {
+    "unidad": "ppm",
+    "peligro": 100,
+    "fuente": "SUPUESTO",
+    "referencia": "D12, umbral simulado del prototipo web"
+  }
+}
