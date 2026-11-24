@@ -117,3 +117,91 @@ Formato: fecha · decisión · alternativas consideradas · por qué.
 **Por qué:** el escenario puede tener varios túneles y varios mineros; una regla de costo debe disparar una vez por arista. La firma es además la justificación que necesita la explicación "¿por qué?".
 **Consecuencias:** un hecho debe ser hashable (tupla o `dataclass(frozen=True)`); la refracción se consulta en el paso de reconocimiento; S1-13 y S1-14 se implementan sobre esta decisión.
 
+## D22 — Esquema JSON de la mina
+
+**Fecha:** 2026-11-24
+**Decisión:** la mina se describe en un JSON con tres bloques: `meta`, `nodos` y `aristas`. El grafo es no dirigido, la altura y la longitud de cada arista se calculan y no se guardan, y los identificadores son descriptivos pero el cargador nunca los interpreta.
+
+**Estructura:**
+
+| Bloque | Campo | Obligatorio | Significado |
+|---|---|---|---|
+| `meta` | `nombre` | sí | Nombre de la mina. |
+| `meta` | `version` | sí | Versión del esquema; permite evolucionarlo sin adivinar. |
+| `meta` | `unidad` | sí | Siempre `"m"`: evita mezclar metros con pies. |
+| `meta` | `altura_nivel_m` | sí | Separación vertical entre niveles (30 m, **SUPUESTO** del equipo). |
+| `nodos` | `id` | sí | Identificador único y legible. |
+| `nodos` | `x`, `y` | sí | Posición en metros dentro del nivel. |
+| `nodos` | `nivel` | sí | Nivel de la mina, entero ≥ 1. |
+| `nodos` | `tipo` | sí | `interseccion`, `salida`, `refugio` o `frente`. |
+| `nodos` | `nombre` | no | Texto para la salida por consola. |
+| `aristas` | `id` | sí | Identificador único y legible. |
+| `aristas` | `desde`, `hasta` | sí | Nodos que conecta. |
+| `aristas` | `labor` | no | `galeria` (por defecto), `rampa`, `chimenea` o `crucero`. |
+
+**Por qué cada pieza:**
+
+- **`nivel` es la coordenada y `z` se deduce.** `nivel` es una etiqueta (Nivel 1, Nivel 2), no una altura en metros, y para calcular distancias en 3D hace falta una altura. Se deduce con `z = -(nivel - 1) * altura_nivel_m` en vez de guardar `z` en cada nodo, porque dos datos para lo mismo terminan contradiciéndose: alguien mueve un nodo al Nivel 2 y deja el `z` viejo. Es la misma razón por la que no se guarda un campo calculado en Java/C#. Consecuencia: dos nodos en niveles distintos solo pueden unirse por una rampa o una chimenea, no por una galería.
+- **`altura_nivel_m` es un SUPUESTO del equipo.** La norma no fija la separación entre niveles de una mina concreta; 30 m es una elección razonable y debe presentarse como tal (mismo criterio que D11 y D12).
+- **La longitud se calcula, no se guarda.** `longitud(a, b) = math.dist((a.x, a.y, a.z), (b.x, b.y, b.z))`, igual que en el ejercicio de S1-02. Si se guardara, mover un nodo dejaría longitudes falsas y el planificador elegiría rutas por datos viejos. Además el modelo asume túneles rectos: la distancia recta es menor o igual que la longitud real de un túnel curvo, así que la heurística euclidiana nunca sobreestima el costo y sigue siendo admisible (D01).
+- **El grafo es no dirigido.** Un túnel se recorre en ambos sentidos. Cada arista se escribe una sola vez y el cargador la agrega a la lista de adyacencia en las dos direcciones (como un `addEdge(a, b)` que hace `adj.get(a).add(b)` y `adj.get(b).add(a)`). Guardarla dos veces duplica los datos y permite olvidar una dirección; con una sola arista, el hecho `(tunel_int_1_int_2, cerrado, True)` cierra el túnel en ambos sentidos sin casos especiales. No se agrega un campo `dirigida`: si algún día hace falta un túnel de un solo sentido, se documenta como cambio de esquema.
+- **Los identificadores son descriptivos y no se parsean.** El `id` aparece en los hechos, en la traza y en la explicación "¿por qué?", así que debe ser estable y legible: `n1`/`e1` harían ilegible la traza. Convención: nodo `<prefijo_tipo>_<n>` (`int_1`, `ref_1`, `frente_1`); arista `<labor>_<idA>_<idB>` (`tunel_int_1_int_2`, `rampa_int_1_sal_1`). El cargador **nunca** deduce el tipo leyendo el prefijo: el tipo real está en `tipo` y en `labor`. Parsear identificadores para sacar información es una trampa clásica y rompe el código en cuanto alguien renombra un nodo.
+- **`refugio` es un tipo de nodo, no un atributo.** Un refugio real es una cámara aparte al final de un tramo corto, no una intersección con etiqueta. Modelarlo como nodo propio permite que el planificador calcule una ruta hasta él, que es exactamente lo que necesita la decisión "refugiarse". Con un booleano `es_refugio` habría que buscar un nodo cercano, más código y más confusión.
+- **`labor` es opcional, con `galeria` por defecto.** Las reglas de ventilación del Nivel 2 pueden necesitar distinguir una rampa de una galería (el aire no se comporta igual), pero S1-09 no debe quedar bloqueada por un campo que todavía no se usa. Al ser opcional, la mina de prueba se escribe sin él y el cargador asume galería.
+- **La mina y el escenario son archivos distintos.** La mina es estructura estática; los mineros, sensores y eventos son el estado de una emergencia concreta. Separarlos permite reutilizar la misma mina en los tres escenarios del Nivel 1; mezclarlos obligaría a duplicar la mina tres veces.
+
+**Qué valida el cargador y qué no:**
+
+El cargador valida la **forma** del JSON, no las restricciones de seguridad del modelo:
+
+1. `nodos` y `aristas` existen y no están vacías.
+2. `id` único entre nodos y único entre aristas.
+3. Todo `desde`/`hasta` apunta a un nodo existente.
+4. Sin bucles (`desde == hasta`) ni aristas duplicadas (mismo par de nodos).
+5. `tipo` dentro de la lista cerrada; `nivel` entero ≥ 1.
+6. Al menos una `salida` y al menos un `frente`.
+
+El error debe indicar el campo culpable, por ejemplo: `arista tunel_int_1_int_9: el nodo 'int_9' no existe`.
+
+**La regla de los 500 m (D10) no la valida el cargador.** Es una restricción de seguridad, no de forma, y comprobarla exige recorrer el grafo con distancias: eso llega con el planificador, más tarde en el sprint. Se verifica a mano al crear la mina (S1-09) y con una prueba cuando exista el planificador. Ponerla en el cargador obligaría a escribir Dijkstra antes de tiempo y a mezclar dos responsabilidades.
+
+**Ejemplo mínimo:**
+
+```json
+{
+  "meta": { "nombre": "Mina de prueba", "version": 1, "unidad": "m", "altura_nivel_m": 30 },
+  "nodos": [
+    { "id": "int_1",    "x": 0,   "y": 0,  "nivel": 1, "tipo": "interseccion" },
+    { "id": "int_2",    "x": 120, "y": 0,  "nivel": 1, "tipo": "interseccion" },
+    { "id": "ref_1",    "x": 120, "y": 40, "nivel": 1, "tipo": "refugio" },
+    { "id": "frente_1", "x": 260, "y": 0,  "nivel": 1, "tipo": "frente" },
+    { "id": "sal_1",    "x": -30, "y": 0,  "nivel": 2, "tipo": "salida" }
+  ],
+  "aristas": [
+    { "id": "tunel_int_1_int_2",    "desde": "int_1", "hasta": "int_2" },
+    { "id": "tunel_int_2_ref_1",    "desde": "int_2", "hasta": "ref_1" },
+    { "id": "tunel_int_2_frente_1", "desde": "int_2", "hasta": "frente_1" },
+    { "id": "rampa_int_1_sal_1",    "desde": "int_1", "hasta": "sal_1", "labor": "rampa" }
+  ]
+}
+```
+
+Con este ejemplo, `tunel_int_1_int_2` mide 120 m, `rampa_int_1_sal_1` mide ≈ 42,4 m (30 m horizontales y 30 m de desnivel) y la arista `tunel_int_2_ref_1` es la que usa la regla de refugio.
+
+**Alternativas consideradas:**
+
+1. Guardar `z` en cada nodo en vez de deducirlo de `nivel`: descartada, crea dos fuentes de verdad que pueden contradecirse.
+2. Guardar `longitud` en cada arista: descartada, se desincroniza si alguien mueve un nodo.
+3. Escribir cada arista en los dos sentidos: descartada, duplica los datos y permite olvidar una dirección.
+4. `refugio` como atributo booleano de una intersección: descartada, el planificador necesita un nodo destino al que calcular la ruta de refugio.
+5. `id` numéricos (`n1`, `e1`): descartados, hacen ilegible la traza y la explicación.
+6. Validar los 500 m dentro del cargador: descartada, exige el planificador antes de tiempo y mezcla forma con seguridad.
+
+**Por qué:** un solo origen para cada dato evita inconsistencias; el grafo no dirigido y la longitud derivada hacen que las reglas (D01) y el planificador compartan una única noción de costo; y separar mina de escenario permite reutilizar la estructura en los tres escenarios del Nivel 1.
+
+**Consecuencias:**
+- S1-10 implementa `Nodo` (con `z` y `distancia_a`) y `Arista` (con `longitud` como propiedad calculada), sin guardar valores derivados.
+- S1-11 valida la estructura y lanza `ValueError` con el campo culpable; no valida D10.
+- S1-16 prueba una mina válida y un archivo con error (nodo inexistente o `tipo` inválido).
+- La heurística euclidiana 3D del Nivel 2 usa la misma fórmula, sin cambios de esquema.
+

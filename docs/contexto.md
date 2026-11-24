@@ -1,11 +1,11 @@
 # Contexto vivo del proyecto
 
 ## Estado actual
-- Sprint: 1 (semanas 1–2) · Objetivo: motor mínimo + cargador JSON
-- S1-00, S1-01, S1-02, S1-03, S1-03b, S1-04, S1-05 y S1-07 cerradas (8 de 20 tarjetas); quedan 12 en Ready. S1-07 tiene PR abierto esperando review y merge.
+- Sprint: 1 (semanas 1–2) · 21 nov – 5 dic 2026 · Objetivo: motor mínimo + cargador JSON
+- S1-00, S1-01, S1-02, S1-03, S1-03b, S1-04, S1-05, S1-07 y S1-08 cerradas y fusionadas (9 de 20 tarjetas); quedan 11 en Ready. Nada en In Progress ni In Review; `main` sincronizada.
 - Existe en src/: (nada aún)
-- Semana 1: umbrales, nivelación de Python, Git/PR, JSON y motor (teoría) listos; faltan S1-08 y S1-09.
-- Siguiente: S1-08 (esquema JSON de la mina, sesión conjunta, decisión D22); después S1-09. S1-07 dejó desbloqueada S1-12.
+- Semana 1: umbrales, nivelación de Python, Git/PR, JSON y motor (teoría) listos; falta S1-09.
+- Siguiente: S1-09 (crear `mina_prueba.json`: 6–8 nodos, 2 niveles, refugio a ≤ 500 m de cada frente, dueño A), desbloqueada por D22. S1-07 dejó desbloqueada S1-12.
 
 ## Comandos
 - (se agregan cuando existan)
@@ -23,7 +23,6 @@
 - Las tarjetas de aprendizaje con ejercicios (S1-01, S1-02, S1-05, S1-06) se cierran con un PR que solo toca documentación (bitácora/capítulo), porque el ejercicio vive en una carpeta local fuera del repositorio.
 - La automatización "PR con `Closes #N` → Done" funciona: S1-02 (PR #27) pasó sola a Done. S1-01 y S1-04 se habían cerrado a mano; no hace falta repetirlo.
 - Los enlaces de dependencia se crean en la tarjeta que espera ("Blocked by"). Un enlace invertido en una tarjeta de cierre (S1-18) bloquea en silencio a media columna: al revisar el tablero, comprobar que ninguna tarjeta de cierre bloquee a otras.
-- La iteración "Sprint 1" del tablero tiene fechas Oct 17–30 y ya venció: ajustarla antes de S1-18 o la retro se medirá con datos falsos.
 
 ## Pendientes que no son del sprint actual
 - (ninguno por ahora)
