@@ -56,24 +56,32 @@ Desde la raíz del repositorio, ejecuta la primera demostración con Python 3.10
 python -m src
 ```
 
-La demo carga los hechos y las ubicaciones de [co_demo.json](data/escenarios/co_demo.json), el umbral de [umbrales.json](data/umbrales.json) y la topología de [mina_prueba.json](data/mina_prueba.json). Puedes pasar otro archivo de escenario con el mismo formato y una topología compatible:
+La demo carga los hechos y las ubicaciones de [co_demo.json](data/escenarios/co_demo.json), los umbrales de [umbrales.json](data/umbrales.json) y la topología de [mina_prueba.json](data/mina_prueba.json). Puedes pasar otro archivo de escenario con el mismo formato y una topología compatible:
 
 ```text
 python -m src data/escenarios/co_demo.json --mina data/mina_prueba.json
 ```
 
-La traza muestra las premisas, la regla, su prioridad, la fuente y el hecho que se escribe. El motor vuelve a evaluar las reglas cuando aparece un hecho nuevo y procesa cada par regla–entidad una vez por ejecución.
+La traza muestra las premisas, la regla, su prioridad, la fuente y la conclusión. El motor diagnostica CO, NO₂, CO₂, H₂S y O₂, agrega el nivel más grave por túnel y aplica los multiplicadores de costo del JSON. Los umbrales de peligro y los costos son supuestos de simulación. Para O₂, esta etapa reproduce el rango por deficiencia del prototipo web.
 
-| Regla de la demo | Condición | Conclusión | Prioridad |
-|---|---|---|---|
-| `R-CO-03` | CO por encima del umbral simulado | Gas en peligro | 50 |
-| `R-RIESGO-07` | CO en peligro | Túnel en peligro | 79 |
-| `R-RIESGO-01` | Túnel en peligro | Túnel cerrado | 90 |
-| `R-RUTA-01` | Túnel cerrado | Tramo no transitable | 95 |
+| Nivel inferido | Efecto en la ruta experta |
+|---|---|
+| Normal | Conserva la longitud como costo. |
+| Alerta | Multiplica el costo por 2. |
+| Alto | Multiplica el costo por 3. |
+| Peligro | Dispara la cadena de cierre y excluye el tramo. |
 
-La cadena reproduce el ejemplo de cierre del prototipo web. Las cuatro reglas de la demo están etiquetadas como `SUPUESTO`. Dijkstra usa los hechos de cierre y transitabilidad para excluir aristas. Puede aplicar un multiplicador de costo de al menos 1 definido en la memoria. Para cada minero, la consola busca primero una salida y, si ninguna es alcanzable, un refugio. En la demo, el cierre obliga a m1 a pasar por i3 y recorrer 265 m. Con el túnel abierto, recorrería 160 m.
+Dijkstra calcula la ruta experta de menor costo ajustado, con el puntaje de riesgo como desempate. La línea base filtra las lecturas en peligro y los cierres explícitos, y usa la longitud para elegir la salida. Ambos resultados se evalúan con la misma suma de niveles por tramo. La salida por consola busca un refugio para el resultado experto si ninguna salida es alcanzable.
 
-La topología define nodos con identificador, coordenadas en metros, nivel y tipo. Cada arista bidireccional tiene identificador, nodo de origen, nodo de destino y longitud positiva. El escenario puede incluir una lista `mineros` con su `id` y `nodo`. Si se omite, la consola muestra únicamente la traza. Esta etapa cubre la cadena de CO en una mina de siete nodos. La línea base y los demás diagnósticos quedan para la siguiente iteración.
+Para ver un desvío por costo sin cierre:
+
+```text
+python -m src data/escenarios/desvio_riesgo.json
+```
+
+En ese caso, la línea base recorre 160 m con puntaje de riesgo 2. La ruta experta evita el tramo de riesgo alto, recorre 265 m y obtiene puntaje 0.
+
+La topología define nodos con identificador, coordenadas en metros, nivel y tipo. Cada arista bidireccional tiene identificador, nodo de origen, nodo de destino y longitud positiva. El escenario puede incluir una lista `mineros` con su `id` y `nodo`. Si se omite, la consola muestra únicamente la traza. Esta etapa cubre los diagnósticos de gases en una mina de siete nodos. Los eventos, la ventilación y la validación contra los cinco escenarios de referencia quedan para iteraciones posteriores.
 
 Para ejecutar las pruebas, con pytest instalado:
 

@@ -4,6 +4,12 @@
 
 Una entrada por sesión, la más reciente arriba. Tres líneas bastan.
 
+### 2026-11-24 · Gases y línea base en Python
+
+- Hice: porté los cinco gases, los multiplicadores configurables y la comparación de rutas por minero.
+- Falló / dudas: siguen pendientes los diagnósticos de ventilación y los eventos de infraestructura.
+- Siguiente paso exacto: añadir hechos y reglas de ventilación y eventos con una traza verificable contra el prototipo.
+
 ### 2026-11-24 · Topología y rutas en Python
 
 - Hice: cargué una mina de siete nodos desde JSON y conecté la traza de cierre por CO con Dijkstra. La consola muestra rutas para dos mineros.

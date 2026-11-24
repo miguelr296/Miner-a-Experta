@@ -1,21 +1,30 @@
+import json
+from pathlib import Path
+
 from src.motor import Condicion, Hecho, Regla, inferir
-from src.reglas import reglas_de_cierre_por_co
+from src.reglas import reglas_de_gases
+
+
+UMBRAL_JSON = Path(__file__).resolve().parents[1] / "data" / "umbrales.json"
+CONFIGURACION = json.loads(UMBRAL_JSON.read_text(encoding="utf-8"))
 
 
 def test_cadena_co_identifica_y_cierra_solo_el_tunel_afectado():
     resultado = inferir(
         [Hecho("afectado", "co_ppm", 101), Hecho("límite", "co_ppm", 100)],
-        reglas_de_cierre_por_co(100),
+        reglas_de_gases(CONFIGURACION),
     )
 
-    assert [paso.regla for paso in resultado.traza] == [
+    traza = [paso for paso in resultado.traza if paso.conclusion.entidad == "afectado"]
+    assert [paso.regla for paso in traza] == [
         "R-CO-03", "R-RIESGO-07", "R-RIESGO-01", "R-RUTA-01",
     ]
-    assert resultado.traza[0].premisas == (Hecho("afectado", "co_ppm", 101),)
-    assert resultado.traza[-1].premisas == (Hecho("afectado", "cerrado", True),)
-    assert all(paso.fuente == "SUPUESTO" for paso in resultado.traza)
+    assert traza[0].premisas == (Hecho("afectado", "co_ppm", 101),)
+    assert traza[-1].premisas == (Hecho("afectado", "cerrado", True),)
+    assert all(paso.fuente == "SUPUESTO" for paso in traza)
     assert Hecho("afectado", "transitable", False) in resultado.hechos
-    assert all(paso.conclusion.entidad == "afectado" for paso in resultado.traza)
+    assert Hecho("límite", "nivel_riesgo", "alto") in resultado.hechos
+    assert Hecho("límite", "cerrado", True) not in resultado.hechos
 
 
 def test_prioridad_protege_conclusion_y_refraccion_es_por_entidad():
@@ -42,3 +51,30 @@ def test_ausencia_y_booleanos_no_cumplen_condiciones_numericas():
 
     assert not resultado.traza
     assert not Condicion("evento", "=", True).cumple(1)
+
+
+def test_limites_de_los_cinco_gases_y_costos():
+    reglas = reglas_de_gases(CONFIGURACION)
+    for gas in CONFIGURACION["gases"].values():
+        delta = -0.01 if gas["operador"] == "<" else 0.01
+        for nivel, previo in (("alerta", "normal"), ("alto", "alerta"), ("peligro", "alto")):
+            limite = gas[nivel]
+            for valor, esperado in ((limite, previo), (limite + delta, nivel)):
+                resultado = inferir([Hecho("t", gas["atributo"], valor)], reglas)
+                memoria = {h.atributo: h.valor for h in resultado.hechos}
+                assert memoria.get("nivel_riesgo", "normal") == esperado
+                assert memoria.get("cerrado", False) is (esperado == "peligro")
+                if esperado in ("alerta", "alto"):
+                    assert memoria["multiplicador"] == CONFIGURACION["multiplicadores"][esperado]
+
+
+def test_agregacion_elige_el_gas_mas_severo_y_registra_su_premisa():
+    escala = reglas_de_gases(CONFIGURACION)
+    resultado = inferir(
+        [Hecho("t", "co_ppm", 30), Hecho("t", "no2_ppm", 6), Hecho("t", "o2_pct", 15)],
+        escala,
+    )
+    assert Hecho("t", "nivel_riesgo", "peligro") in resultado.hechos
+    assert Hecho("t", "transitable", False) in resultado.hechos
+    agregacion = next(p for p in resultado.traza if p.regla == "R-RIESGO-07")
+    assert agregacion.premisas == (Hecho("t", "nivel_o2", "peligro"),)

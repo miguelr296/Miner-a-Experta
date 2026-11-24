@@ -39,6 +39,7 @@ class Regla:
     atributo: str
     valor: Valor
     fuente: Literal["NORMA", "SUPUESTO"] = "SUPUESTO"
+    alguna: bool = False
 
 
 @dataclass(frozen=True)
@@ -72,10 +73,11 @@ def inferir(hechos: Iterable[Hecho], reglas: Iterable[Regla]) -> Resultado:
         for regla in ordenadas:
             for entidad, atributos in memoria.items():
                 clave = (regla.id, entidad)
-                if clave in procesadas or not all(
-                    c.atributo in atributos and c.cumple(atributos[c.atributo])
-                    for c in regla.condiciones
-                ):
+                if clave in procesadas:
+                    continue
+
+                premisas = premisas_cumplidas(regla, entidad, atributos)
+                if premisas is None:
                     continue
 
                 procesadas.add(clave)
@@ -84,10 +86,6 @@ def inferir(hechos: Iterable[Hecho], reglas: Iterable[Regla]) -> Resultado:
                 if prioridad_previa is not None and prioridad_previa > regla.prioridad:
                     continue
 
-                premisas = tuple(
-                    Hecho(entidad, c.atributo, atributos[c.atributo])
-                    for c in regla.condiciones
-                )
                 atributos[regla.atributo] = regla.valor
                 prioridades[destino] = regla.prioridad
                 traza.append(Activacion(
@@ -105,3 +103,20 @@ def inferir(hechos: Iterable[Hecho], reglas: Iterable[Regla]) -> Resultado:
                 ),
                 tuple(traza),
             )
+
+
+def premisas_cumplidas(
+    regla: Regla, entidad: str, atributos: dict[str, Valor]
+) -> tuple[Hecho, ...] | None:
+    premisas = []
+    for condicion in regla.condiciones:
+        atributo = condicion.atributo
+        cumple = atributo in atributos and condicion.cumple(atributos[atributo])
+        if cumple:
+            hecho = Hecho(entidad, atributo, atributos[atributo])
+            if regla.alguna:
+                return (hecho,)
+            premisas.append(hecho)
+        elif not regla.alguna:
+            return None
+    return None if regla.alguna else tuple(premisas)
