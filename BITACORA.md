@@ -4,6 +4,12 @@
 
 Una entrada por sesión, la más reciente arriba. Tres líneas bastan.
 
+### 2026-11-24 · Paridad de decisiones en Python
+
+- Hice: implementé DEC-01, DEC-02 y DEC-03, y añadí los cinco escenarios web a la consola y a las pruebas de paridad.
+- Falló / dudas: los 25 resultados por minero y los túneles afectados coinciden con la referencia web. Los factores de certeza y A* siguen pendientes.
+- Siguiente paso exacto: revisar las tareas del alcance que faltan y fijar qué parte corresponde al próximo incremento de Python.
+
 ### 2026-11-24 · Ventilación e infraestructura en Python
 
 - Hice: añadí diagnósticos de ventilación, ANFO, respaldo, incendio, derrumbe e inundación, además de la propagación según la topología.

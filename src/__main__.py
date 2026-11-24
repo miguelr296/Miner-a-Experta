@@ -4,9 +4,10 @@ from argparse import ArgumentParser
 import json
 from pathlib import Path
 
+from .decisiones import evaluar_mineros
+from .escenarios import cargar_caso_web
 from .mina import cargar_mina
 from .motor import Hecho, inferir
-from .planificador import buscar_ruta
 from .reglas import estados_linea_base, preparar_hechos, reglas_del_motor
 
 
@@ -16,36 +17,35 @@ DATOS = Path(__file__).resolve().parent.parent / "data"
 def main() -> None:
     analizador = ArgumentParser(description="Compara rutas con los diagnósticos, eventos y la línea base.")
     analizador.add_argument(
-        "escenario", type=Path, nargs="?", default=DATOS / "escenarios" / "co_demo.json",
+        "escenario", type=Path, nargs="?",
         help="archivo JSON con hechos iniciales",
     )
     analizador.add_argument(
-        "--mina", type=Path, default=DATOS / "mina_prueba.json",
+        "--mina", type=Path,
         help="archivo JSON con la topología",
     )
+    analizador.add_argument("--caso-web", help="escenario de referencia ESC-01 a ESC-05")
     argumentos = analizador.parse_args()
+    if argumentos.caso_web and (argumentos.escenario or argumentos.mina):
+        analizador.error("--caso-web ya incluye un escenario y su topología.")
     try:
         umbrales = json.loads((DATOS / "umbrales.json").read_text(encoding="utf-8"))
-        escenario = json.loads(argumentos.escenario.read_text(encoding="utf-8"))
-        hechos = tuple(Hecho(**fila) for fila in escenario["hechos"])
+        if argumentos.caso_web:
+            referencia = json.loads((DATOS / "referencia_web.json").read_text(encoding="utf-8"))
+            mina, hechos, mineros = cargar_caso_web(referencia, argumentos.caso_web.upper())
+        else:
+            archivo = argumentos.escenario or DATOS / "escenarios" / "co_demo.json"
+            escenario = json.loads(archivo.read_text(encoding="utf-8"))
+            hechos = tuple(Hecho(**fila) for fila in escenario["hechos"])
+            mineros = escenario.get("mineros", [])
+            mina = cargar_mina(argumentos.mina or DATOS / "mina_prueba.json")
+
         reglas = reglas_del_motor(umbrales)
-        mineros = escenario.get("mineros", [])
-        mina = cargar_mina(argumentos.mina)
         resultado = inferir(preparar_hechos(hechos, mina), reglas)
-        rutas = []
-        if mineros:
-            salidas = [n.id for n in mina.nodos.values() if n.tipo == "salida"]
-            refugios = [n.id for n in mina.nodos.values() if n.tipo == "refugio"]
-            estados_base = estados_linea_base(hechos, resultado.hechos, umbrales)
-            for minero in mineros:
-                id_minero, nodo = minero["id"], minero["nodo"]
-                experta = buscar_ruta(mina, nodo, salidas, resultado.hechos)
-                destino = "Salida"
-                if experta is None:
-                    experta = buscar_ruta(mina, nodo, refugios, resultado.hechos)
-                    destino = "Refugio"
-                base = buscar_ruta(mina, nodo, salidas, estados_base, ponderar_riesgo=False)
-                rutas.append((id_minero, destino, experta, base))
+        estados_base = estados_linea_base(hechos, resultado.hechos, umbrales)
+        evaluaciones = evaluar_mineros(
+            mina, mineros, resultado.hechos, estados_base, umbrales["decision"],
+        )
     except (OSError, ValueError, KeyError, TypeError) as error:
         analizador.error(f"No se pudieron cargar los datos: {error}")
 
@@ -66,15 +66,20 @@ def main() -> None:
         print("Conflictos de ventilación:")
         for conflicto in conflictos_ventilacion:
             print(f"{conflicto.propuesta.entidad}: {conflicto.regla} descartada; prevalece {conflicto.prevalece}.")
-    if rutas:
+    if evaluaciones:
         print()
         print("Rutas de los mineros:")
-    for id_minero, destino, ruta, base in rutas:
+    for evaluacion in evaluaciones:
+        decision = evaluacion.decision
+        ruta = decision.ruta
+        base = evaluacion.linea_base
         if ruta is None:
-            print(f"{id_minero}: sin ruta a una salida o refugio.")
+            print(f"{evaluacion.id}: sin ruta a una salida o refugio.")
         else:
+            destino = "Salida" if decision.accion == "evacuar" else "Refugio"
             camino = " -> ".join(ruta.nodos)
-            print(f"{id_minero}: {destino} | {camino} | {ruta.longitud:g} m | costo {ruta.costo:g} | riesgo {ruta.puntaje_riesgo}")
+            print(f"{evaluacion.id}: {destino} | {camino} | {ruta.longitud:g} m | costo {ruta.costo:g} | riesgo {ruta.puntaje_riesgo}")
+        print(f"  {decision.regla} ({decision.accion}): {decision.motivo}")
         if base is None:
             print("  Línea base: sin ruta a una salida.")
         else:

@@ -19,6 +19,7 @@ class Ruta:
     longitud: float
     costo: float
     puntaje_riesgo: int
+    tramos_altos: int = 0
 
 
 def buscar_ruta(
@@ -83,4 +84,5 @@ def reconstruir(
         sum(arista.longitud for arista in aristas),
         costo,
         sum(riesgos.get(arista.id, 0) for arista in aristas),
+        sum(riesgos.get(arista.id, 0) == PUNTAJES_RIESGO["alto"] for arista in aristas),
     )

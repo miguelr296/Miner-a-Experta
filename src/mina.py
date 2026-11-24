@@ -36,7 +36,10 @@ class Mina:
 
 
 def cargar_mina(ruta: Path) -> Mina:
-    datos = json.loads(ruta.read_text(encoding="utf-8"))
+    return mina_desde_datos(json.loads(ruta.read_text(encoding="utf-8")))
+
+
+def mina_desde_datos(datos: object) -> Mina:
     if not isinstance(datos, dict):
         raise ValueError("La mina debe ser un objeto JSON.")
     filas_nodos = datos.get("nodos")

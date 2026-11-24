@@ -1,0 +1,1407 @@
+{
+  "version": 1,
+  "mina": {
+    "nodos": [
+      {
+        "id": "s1",
+        "x": 92,
+        "y": 225,
+        "nivel": 1,
+        "tipo": "salida"
+      },
+      {
+        "id": "i1",
+        "x": 252,
+        "y": 225,
+        "nivel": 1,
+        "tipo": "interseccion"
+      },
+      {
+        "id": "i2",
+        "x": 420,
+        "y": 140,
+        "nivel": 1,
+        "tipo": "interseccion"
+      },
+      {
+        "id": "i3",
+        "x": 420,
+        "y": 320,
+        "nivel": 1,
+        "tipo": "interseccion"
+      },
+      {
+        "id": "i6",
+        "x": 420,
+        "y": 230,
+        "nivel": 1,
+        "tipo": "interseccion"
+      },
+      {
+        "id": "r1",
+        "x": 592,
+        "y": 225,
+        "nivel": 1,
+        "tipo": "refugio"
+      },
+      {
+        "id": "f1",
+        "x": 592,
+        "y": 92,
+        "nivel": 1,
+        "tipo": "frente"
+      },
+      {
+        "id": "f2",
+        "x": 592,
+        "y": 352,
+        "nivel": 1,
+        "tipo": "frente"
+      },
+      {
+        "id": "r2",
+        "x": 760,
+        "y": 225,
+        "nivel": 1,
+        "tipo": "refugio"
+      },
+      {
+        "id": "i4",
+        "x": 225,
+        "y": 570,
+        "nivel": 2,
+        "tipo": "interseccion"
+      },
+      {
+        "id": "r3",
+        "x": 392,
+        "y": 570,
+        "nivel": 2,
+        "tipo": "refugio"
+      },
+      {
+        "id": "f3",
+        "x": 558,
+        "y": 482,
+        "nivel": 2,
+        "tipo": "frente"
+      },
+      {
+        "id": "i5",
+        "x": 558,
+        "y": 668,
+        "nivel": 2,
+        "tipo": "interseccion"
+      },
+      {
+        "id": "f4",
+        "x": 742,
+        "y": 722,
+        "nivel": 2,
+        "tipo": "frente"
+      },
+      {
+        "id": "r4",
+        "x": 750,
+        "y": 570,
+        "nivel": 2,
+        "tipo": "refugio"
+      },
+      {
+        "id": "s2",
+        "x": 900,
+        "y": 570,
+        "nivel": 2,
+        "tipo": "salida"
+      }
+    ],
+    "aristas": [
+      {
+        "id": "t_s1_i1",
+        "origen": "s1",
+        "destino": "i1",
+        "longitud": 150
+      },
+      {
+        "id": "t_i1_i2",
+        "origen": "i1",
+        "destino": "i2",
+        "longitud": 175
+      },
+      {
+        "id": "t_i1_i3",
+        "origen": "i1",
+        "destino": "i3",
+        "longitud": 180
+      },
+      {
+        "id": "t_i1_i6",
+        "origen": "i1",
+        "destino": "i6",
+        "longitud": 95
+      },
+      {
+        "id": "t_i2_i6",
+        "origen": "i2",
+        "destino": "i6",
+        "longitud": 90
+      },
+      {
+        "id": "t_i3_i6",
+        "origen": "i3",
+        "destino": "i6",
+        "longitud": 90
+      },
+      {
+        "id": "t_i2_f1",
+        "origen": "i2",
+        "destino": "f1",
+        "longitud": 145
+      },
+      {
+        "id": "t_i3_f2",
+        "origen": "i3",
+        "destino": "f2",
+        "longitud": 155
+      },
+      {
+        "id": "t_i2_r1",
+        "origen": "i2",
+        "destino": "r1",
+        "longitud": 185
+      },
+      {
+        "id": "t_i3_r1",
+        "origen": "i3",
+        "destino": "r1",
+        "longitud": 190
+      },
+      {
+        "id": "t_r1_r2",
+        "origen": "r1",
+        "destino": "r2",
+        "longitud": 175
+      },
+      {
+        "id": "t_r2_r4",
+        "origen": "r2",
+        "destino": "r4",
+        "longitud": 60
+      },
+      {
+        "id": "t_i1_i4",
+        "origen": "i1",
+        "destino": "i4",
+        "longitud": 220
+      },
+      {
+        "id": "t_i4_r3",
+        "origen": "i4",
+        "destino": "r3",
+        "longitud": 175
+      },
+      {
+        "id": "t_r3_f3",
+        "origen": "r3",
+        "destino": "f3",
+        "longitud": 175
+      },
+      {
+        "id": "t_f3_i5",
+        "origen": "f3",
+        "destino": "i5",
+        "longitud": 190
+      },
+      {
+        "id": "t_r3_i5",
+        "origen": "r3",
+        "destino": "i5",
+        "longitud": 175
+      },
+      {
+        "id": "t_i5_f4",
+        "origen": "i5",
+        "destino": "f4",
+        "longitud": 195
+      },
+      {
+        "id": "t_i5_r4",
+        "origen": "i5",
+        "destino": "r4",
+        "longitud": 195
+      },
+      {
+        "id": "t_r4_f4",
+        "origen": "r4",
+        "destino": "f4",
+        "longitud": 155
+      },
+      {
+        "id": "t_r4_s2",
+        "origen": "r4",
+        "destino": "s2",
+        "longitud": 155
+      }
+    ]
+  },
+  "lecturas_base": {
+    "co_ppm": 4,
+    "no2_ppm": 0.4,
+    "co2_ppm": 420,
+    "h2s_ppm": 0.1,
+    "o2_pct": 20.9,
+    "vel_m_min": 85,
+    "anfo": false,
+    "incendio": false,
+    "derrumbe": false,
+    "inundacion": false,
+    "corte_electrico": false,
+    "ventilacion_respaldo": false
+  },
+  "mineros": {
+    "m1": "f1",
+    "m2": "f2",
+    "m3": "f3",
+    "m4": "f4",
+    "m5": "i1"
+  },
+  "casos": {
+    "ESC-01": {
+      "entrada": {
+        "mineros": [
+          "m1",
+          "m2",
+          "m3",
+          "m4",
+          "m5"
+        ],
+        "sensores": {
+          "t_i2_f1": {
+            "co_ppm": 88,
+            "no2_ppm": 8.4,
+            "o2_pct": 19.2,
+            "vel_m_min": 18,
+            "anfo": true
+          },
+          "t_i3_f2": {
+            "co_ppm": 54,
+            "no2_ppm": 6.1,
+            "o2_pct": 19.4,
+            "vel_m_min": 23,
+            "anfo": true
+          },
+          "t_i2_r1": {
+            "co_ppm": 65,
+            "no2_ppm": 3.6,
+            "o2_pct": 20.1,
+            "vel_m_min": 40
+          },
+          "t_i3_r1": {
+            "co_ppm": 29,
+            "no2_ppm": 2.1,
+            "o2_pct": 20.2,
+            "vel_m_min": 45
+          },
+          "t_i1_i2": {
+            "co_ppm": 20,
+            "o2_pct": 20.5,
+            "vel_m_min": 62
+          },
+          "t_i1_i3": {
+            "co_ppm": 18,
+            "o2_pct": 20.6,
+            "vel_m_min": 64
+          },
+          "t_i1_i6": {
+            "co_ppm": 14,
+            "o2_pct": 20.7,
+            "vel_m_min": 70
+          },
+          "t_r1_r2": {
+            "co_ppm": 12,
+            "o2_pct": 20.6,
+            "vel_m_min": 60
+          }
+        }
+      },
+      "esperado": {
+        "tunelesAfectados": [
+          [
+            "t_i2_f1",
+            "alto",
+            false,
+            435
+          ],
+          [
+            "t_i3_f2",
+            "alto",
+            false,
+            465
+          ],
+          [
+            "t_i2_r1",
+            "alto",
+            false,
+            555
+          ],
+          [
+            "t_i3_r1",
+            "alerta",
+            false,
+            380
+          ]
+        ],
+        "mineros": [
+          {
+            "id": "m1",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s1",
+              "nodos": [
+                "f1",
+                "i2",
+                "i1",
+                "s1"
+              ],
+              "longitud": 470,
+              "costo": 760,
+              "puntajeRiesgo": 2
+            },
+            "lineaBase": {
+              "destino": "s1",
+              "nodos": [
+                "f1",
+                "i2",
+                "i1",
+                "s1"
+              ],
+              "longitud": 470,
+              "costo": 470,
+              "puntajeRiesgo": 2
+            }
+          },
+          {
+            "id": "m2",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s1",
+              "nodos": [
+                "f2",
+                "i3",
+                "i1",
+                "s1"
+              ],
+              "longitud": 485,
+              "costo": 795,
+              "puntajeRiesgo": 2
+            },
+            "lineaBase": {
+              "destino": "s1",
+              "nodos": [
+                "f2",
+                "i3",
+                "i1",
+                "s1"
+              ],
+              "longitud": 485,
+              "costo": 485,
+              "puntajeRiesgo": 2
+            }
+          },
+          {
+            "id": "m3",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s2",
+              "nodos": [
+                "f3",
+                "i5",
+                "r4",
+                "s2"
+              ],
+              "longitud": 540,
+              "costo": 540,
+              "puntajeRiesgo": 0
+            },
+            "lineaBase": {
+              "destino": "s2",
+              "nodos": [
+                "f3",
+                "i5",
+                "r4",
+                "s2"
+              ],
+              "longitud": 540,
+              "costo": 540,
+              "puntajeRiesgo": 0
+            }
+          },
+          {
+            "id": "m4",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s2",
+              "nodos": [
+                "f4",
+                "r4",
+                "s2"
+              ],
+              "longitud": 310,
+              "costo": 310,
+              "puntajeRiesgo": 0
+            },
+            "lineaBase": {
+              "destino": "s2",
+              "nodos": [
+                "f4",
+                "r4",
+                "s2"
+              ],
+              "longitud": 310,
+              "costo": 310,
+              "puntajeRiesgo": 0
+            }
+          },
+          {
+            "id": "m5",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s1",
+              "nodos": [
+                "i1",
+                "s1"
+              ],
+              "longitud": 150,
+              "costo": 150,
+              "puntajeRiesgo": 0
+            },
+            "lineaBase": {
+              "destino": "s1",
+              "nodos": [
+                "i1",
+                "s1"
+              ],
+              "longitud": 150,
+              "costo": 150,
+              "puntajeRiesgo": 0
+            }
+          }
+        ]
+      }
+    },
+    "ESC-02": {
+      "entrada": {
+        "mineros": [
+          "m1",
+          "m2",
+          "m3",
+          "m4",
+          "m5"
+        ],
+        "sensores": {
+          "t_s1_i1": {
+            "co_ppm": 210,
+            "no2_ppm": 7.2,
+            "o2_pct": 17.4,
+            "vel_m_min": 34,
+            "incendio": true
+          },
+          "t_i1_i2": {
+            "co_ppm": 72,
+            "no2_ppm": 4.8,
+            "o2_pct": 18.9,
+            "vel_m_min": 38
+          },
+          "t_i1_i3": {
+            "co_ppm": 58,
+            "no2_ppm": 4.1,
+            "o2_pct": 19.1,
+            "vel_m_min": 40
+          },
+          "t_i1_i6": {
+            "co_ppm": 44,
+            "no2_ppm": 3.2,
+            "o2_pct": 19.3,
+            "vel_m_min": 36
+          },
+          "t_i2_r1": {
+            "co_ppm": 22,
+            "o2_pct": 20.3,
+            "vel_m_min": 16
+          },
+          "t_i2_i6": {
+            "co_ppm": 25,
+            "o2_pct": 20.1,
+            "vel_m_min": 28
+          },
+          "t_i3_i6": {
+            "co_ppm": 24,
+            "o2_pct": 20.2,
+            "vel_m_min": 30
+          },
+          "t_i2_f1": {
+            "co_ppm": 18,
+            "o2_pct": 20.6,
+            "vel_m_min": 55
+          },
+          "t_i3_f2": {
+            "co_ppm": 16,
+            "o2_pct": 20.7,
+            "vel_m_min": 58
+          },
+          "t_i3_r1": {
+            "co_ppm": 21,
+            "o2_pct": 20.5,
+            "vel_m_min": 62
+          },
+          "t_r1_r2": {
+            "co_ppm": 8,
+            "o2_pct": 20.8,
+            "vel_m_min": 100
+          },
+          "t_r2_r4": {
+            "co_ppm": 5,
+            "o2_pct": 20.9,
+            "vel_m_min": 80
+          },
+          "t_r4_s2": {
+            "co_ppm": 6,
+            "o2_pct": 20.9,
+            "vel_m_min": 95
+          }
+        }
+      },
+      "esperado": {
+        "tunelesAfectados": [
+          [
+            "t_s1_i1",
+            "peligro",
+            true,
+            null
+          ],
+          [
+            "t_i1_i2",
+            "alto",
+            false,
+            525
+          ],
+          [
+            "t_i1_i3",
+            "alto",
+            false,
+            540
+          ],
+          [
+            "t_i1_i6",
+            "alerta",
+            false,
+            190
+          ],
+          [
+            "t_i2_r1",
+            "alerta",
+            false,
+            370
+          ],
+          [
+            "t_i1_i4",
+            "alerta",
+            false,
+            440
+          ]
+        ],
+        "mineros": [
+          {
+            "id": "m1",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s2",
+              "nodos": [
+                "f1",
+                "i2",
+                "i6",
+                "i3",
+                "r1",
+                "r2",
+                "r4",
+                "s2"
+              ],
+              "longitud": 905,
+              "costo": 905,
+              "puntajeRiesgo": 0
+            },
+            "lineaBase": {
+              "destino": "s2",
+              "nodos": [
+                "f1",
+                "i2",
+                "r1",
+                "r2",
+                "r4",
+                "s2"
+              ],
+              "longitud": 720,
+              "costo": 720,
+              "puntajeRiesgo": 1
+            }
+          },
+          {
+            "id": "m2",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s2",
+              "nodos": [
+                "f2",
+                "i3",
+                "r1",
+                "r2",
+                "r4",
+                "s2"
+              ],
+              "longitud": 735,
+              "costo": 735,
+              "puntajeRiesgo": 0
+            },
+            "lineaBase": {
+              "destino": "s2",
+              "nodos": [
+                "f2",
+                "i3",
+                "r1",
+                "r2",
+                "r4",
+                "s2"
+              ],
+              "longitud": 735,
+              "costo": 735,
+              "puntajeRiesgo": 0
+            }
+          },
+          {
+            "id": "m3",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s2",
+              "nodos": [
+                "f3",
+                "i5",
+                "r4",
+                "s2"
+              ],
+              "longitud": 540,
+              "costo": 540,
+              "puntajeRiesgo": 0
+            },
+            "lineaBase": {
+              "destino": "s2",
+              "nodos": [
+                "f3",
+                "i5",
+                "r4",
+                "s2"
+              ],
+              "longitud": 540,
+              "costo": 540,
+              "puntajeRiesgo": 0
+            }
+          },
+          {
+            "id": "m4",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s2",
+              "nodos": [
+                "f4",
+                "r4",
+                "s2"
+              ],
+              "longitud": 310,
+              "costo": 310,
+              "puntajeRiesgo": 0
+            },
+            "lineaBase": {
+              "destino": "s2",
+              "nodos": [
+                "f4",
+                "r4",
+                "s2"
+              ],
+              "longitud": 310,
+              "costo": 310,
+              "puntajeRiesgo": 0
+            }
+          },
+          {
+            "id": "m5",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s2",
+              "nodos": [
+                "i1",
+                "i6",
+                "i3",
+                "r1",
+                "r2",
+                "r4",
+                "s2"
+              ],
+              "longitud": 765,
+              "costo": 860,
+              "puntajeRiesgo": 1
+            },
+            "lineaBase": {
+              "destino": "s2",
+              "nodos": [
+                "i1",
+                "i2",
+                "r1",
+                "r2",
+                "r4",
+                "s2"
+              ],
+              "longitud": 750,
+              "costo": 750,
+              "puntajeRiesgo": 3
+            }
+          }
+        ]
+      }
+    },
+    "ESC-03": {
+      "entrada": {
+        "mineros": [
+          "m1",
+          "m2",
+          "m3",
+          "m4",
+          "m5"
+        ],
+        "sensores": {
+          "t_i2_f1": {
+            "co_ppm": 8,
+            "o2_pct": 20.7,
+            "vel_m_min": 20,
+            "derrumbe": true
+          },
+          "t_r4_s2": {
+            "co_ppm": 6,
+            "o2_pct": 20.8,
+            "vel_m_min": 18,
+            "derrumbe": true
+          },
+          "t_i4_r3": {
+            "o2_pct": 17.6,
+            "co2_ppm": 14000,
+            "vel_m_min": 8
+          },
+          "t_r3_i5": {
+            "o2_pct": 18.1,
+            "co2_ppm": 10000,
+            "vel_m_min": 10
+          },
+          "t_i5_r4": {
+            "o2_pct": 18.8,
+            "co2_ppm": 7000,
+            "vel_m_min": 12
+          },
+          "t_i5_f4": {
+            "o2_pct": 18.4,
+            "co2_ppm": 8500,
+            "vel_m_min": 11
+          },
+          "t_r3_f3": {
+            "o2_pct": 19,
+            "co2_ppm": 6000,
+            "vel_m_min": 14
+          },
+          "t_r4_f4": {
+            "o2_pct": 18.9,
+            "co2_ppm": 6500,
+            "vel_m_min": 13
+          },
+          "t_f3_i5": {
+            "o2_pct": 18.6,
+            "co2_ppm": 7200,
+            "vel_m_min": 10
+          },
+          "t_r2_r4": {
+            "o2_pct": 19.4,
+            "vel_m_min": 24
+          },
+          "t_i1_i4": {
+            "o2_pct": 20.1,
+            "vel_m_min": 35
+          }
+        }
+      },
+      "esperado": {
+        "tunelesAfectados": [
+          [
+            "t_i1_i2",
+            "alerta",
+            false,
+            350
+          ],
+          [
+            "t_i2_i6",
+            "alerta",
+            false,
+            180
+          ],
+          [
+            "t_i2_f1",
+            "normal",
+            true,
+            null
+          ],
+          [
+            "t_i2_r1",
+            "alerta",
+            false,
+            370
+          ],
+          [
+            "t_r2_r4",
+            "alerta",
+            false,
+            120
+          ],
+          [
+            "t_i4_r3",
+            "alto",
+            false,
+            525
+          ],
+          [
+            "t_r3_f3",
+            "alerta",
+            false,
+            350
+          ],
+          [
+            "t_f3_i5",
+            "alerta",
+            false,
+            380
+          ],
+          [
+            "t_r3_i5",
+            "alerta",
+            false,
+            350
+          ],
+          [
+            "t_i5_f4",
+            "alerta",
+            false,
+            390
+          ],
+          [
+            "t_i5_r4",
+            "alerta",
+            false,
+            390
+          ],
+          [
+            "t_r4_f4",
+            "alerta",
+            false,
+            310
+          ],
+          [
+            "t_r4_s2",
+            "alerta",
+            true,
+            null
+          ]
+        ],
+        "mineros": [
+          {
+            "id": "m1",
+            "decision": "esperar",
+            "regla": "DEC-03",
+            "asignada": null,
+            "lineaBase": null
+          },
+          {
+            "id": "m2",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s1",
+              "nodos": [
+                "f2",
+                "i3",
+                "i1",
+                "s1"
+              ],
+              "longitud": 485,
+              "costo": 485,
+              "puntajeRiesgo": 0
+            },
+            "lineaBase": {
+              "destino": "s1",
+              "nodos": [
+                "f2",
+                "i3",
+                "i1",
+                "s1"
+              ],
+              "longitud": 485,
+              "costo": 485,
+              "puntajeRiesgo": 0
+            }
+          },
+          {
+            "id": "m3",
+            "decision": "refugiarse",
+            "regla": "DEC-02",
+            "asignada": {
+              "destino": "r3",
+              "nodos": [
+                "f3",
+                "r3"
+              ],
+              "longitud": 175,
+              "costo": 350,
+              "puntajeRiesgo": 1
+            },
+            "lineaBase": {
+              "destino": "s1",
+              "nodos": [
+                "f3",
+                "r3",
+                "i4",
+                "i1",
+                "s1"
+              ],
+              "longitud": 720,
+              "costo": 720,
+              "puntajeRiesgo": 3
+            }
+          },
+          {
+            "id": "m4",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s1",
+              "nodos": [
+                "f4",
+                "r4",
+                "r2",
+                "r1",
+                "i3",
+                "i1",
+                "s1"
+              ],
+              "longitud": 910,
+              "costo": 1125,
+              "puntajeRiesgo": 2
+            },
+            "lineaBase": {
+              "destino": "s1",
+              "nodos": [
+                "f4",
+                "r4",
+                "r2",
+                "r1",
+                "i2",
+                "i1",
+                "s1"
+              ],
+              "longitud": 900,
+              "costo": 900,
+              "puntajeRiesgo": 4
+            }
+          },
+          {
+            "id": "m5",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s1",
+              "nodos": [
+                "i1",
+                "s1"
+              ],
+              "longitud": 150,
+              "costo": 150,
+              "puntajeRiesgo": 0
+            },
+            "lineaBase": {
+              "destino": "s1",
+              "nodos": [
+                "i1",
+                "s1"
+              ],
+              "longitud": 150,
+              "costo": 150,
+              "puntajeRiesgo": 0
+            }
+          }
+        ]
+      }
+    },
+    "ESC-04": {
+      "entrada": {
+        "mineros": [
+          "m1",
+          "m2",
+          "m3",
+          "m4",
+          "m5"
+        ],
+        "sensores": {
+          "t_r4_s2": {
+            "inundacion": true
+          }
+        }
+      },
+      "esperado": {
+        "tunelesAfectados": [
+          [
+            "t_r4_s2",
+            "peligro",
+            true,
+            null
+          ]
+        ],
+        "mineros": [
+          {
+            "id": "m1",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s1",
+              "nodos": [
+                "f1",
+                "i2",
+                "i1",
+                "s1"
+              ],
+              "longitud": 470,
+              "costo": 470,
+              "puntajeRiesgo": 0
+            },
+            "lineaBase": {
+              "destino": "s1",
+              "nodos": [
+                "f1",
+                "i2",
+                "i1",
+                "s1"
+              ],
+              "longitud": 470,
+              "costo": 470,
+              "puntajeRiesgo": 0
+            }
+          },
+          {
+            "id": "m2",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s1",
+              "nodos": [
+                "f2",
+                "i3",
+                "i1",
+                "s1"
+              ],
+              "longitud": 485,
+              "costo": 485,
+              "puntajeRiesgo": 0
+            },
+            "lineaBase": {
+              "destino": "s1",
+              "nodos": [
+                "f2",
+                "i3",
+                "i1",
+                "s1"
+              ],
+              "longitud": 485,
+              "costo": 485,
+              "puntajeRiesgo": 0
+            }
+          },
+          {
+            "id": "m3",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s1",
+              "nodos": [
+                "f3",
+                "r3",
+                "i4",
+                "i1",
+                "s1"
+              ],
+              "longitud": 720,
+              "costo": 720,
+              "puntajeRiesgo": 0
+            },
+            "lineaBase": {
+              "destino": "s1",
+              "nodos": [
+                "f3",
+                "r3",
+                "i4",
+                "i1",
+                "s1"
+              ],
+              "longitud": 720,
+              "costo": 720,
+              "puntajeRiesgo": 0
+            }
+          },
+          {
+            "id": "m4",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s1",
+              "nodos": [
+                "f4",
+                "r4",
+                "r2",
+                "r1",
+                "i2",
+                "i1",
+                "s1"
+              ],
+              "longitud": 900,
+              "costo": 900,
+              "puntajeRiesgo": 0
+            },
+            "lineaBase": {
+              "destino": "s1",
+              "nodos": [
+                "f4",
+                "r4",
+                "r2",
+                "r1",
+                "i2",
+                "i1",
+                "s1"
+              ],
+              "longitud": 900,
+              "costo": 900,
+              "puntajeRiesgo": 0
+            }
+          },
+          {
+            "id": "m5",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s1",
+              "nodos": [
+                "i1",
+                "s1"
+              ],
+              "longitud": 150,
+              "costo": 150,
+              "puntajeRiesgo": 0
+            },
+            "lineaBase": {
+              "destino": "s1",
+              "nodos": [
+                "i1",
+                "s1"
+              ],
+              "longitud": 150,
+              "costo": 150,
+              "puntajeRiesgo": 0
+            }
+          }
+        ]
+      }
+    },
+    "ESC-05": {
+      "entrada": {
+        "mineros": [
+          "m1",
+          "m2",
+          "m3",
+          "m4",
+          "m5"
+        ],
+        "sensores": {
+          "t_i1_i2": {
+            "corte_electrico": true,
+            "ventilacion_respaldo": false
+          },
+          "t_i3_i6": {
+            "corte_electrico": true,
+            "ventilacion_respaldo": true
+          }
+        }
+      },
+      "esperado": {
+        "tunelesAfectados": [
+          [
+            "t_i1_i2",
+            "alto",
+            false,
+            525
+          ]
+        ],
+        "mineros": [
+          {
+            "id": "m1",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s1",
+              "nodos": [
+                "f1",
+                "i2",
+                "i6",
+                "i1",
+                "s1"
+              ],
+              "longitud": 480,
+              "costo": 480,
+              "puntajeRiesgo": 0
+            },
+            "lineaBase": {
+              "destino": "s1",
+              "nodos": [
+                "f1",
+                "i2",
+                "i1",
+                "s1"
+              ],
+              "longitud": 470,
+              "costo": 470,
+              "puntajeRiesgo": 2
+            }
+          },
+          {
+            "id": "m2",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s1",
+              "nodos": [
+                "f2",
+                "i3",
+                "i1",
+                "s1"
+              ],
+              "longitud": 485,
+              "costo": 485,
+              "puntajeRiesgo": 0
+            },
+            "lineaBase": {
+              "destino": "s1",
+              "nodos": [
+                "f2",
+                "i3",
+                "i1",
+                "s1"
+              ],
+              "longitud": 485,
+              "costo": 485,
+              "puntajeRiesgo": 0
+            }
+          },
+          {
+            "id": "m3",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s2",
+              "nodos": [
+                "f3",
+                "i5",
+                "r4",
+                "s2"
+              ],
+              "longitud": 540,
+              "costo": 540,
+              "puntajeRiesgo": 0
+            },
+            "lineaBase": {
+              "destino": "s2",
+              "nodos": [
+                "f3",
+                "i5",
+                "r4",
+                "s2"
+              ],
+              "longitud": 540,
+              "costo": 540,
+              "puntajeRiesgo": 0
+            }
+          },
+          {
+            "id": "m4",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s2",
+              "nodos": [
+                "f4",
+                "r4",
+                "s2"
+              ],
+              "longitud": 310,
+              "costo": 310,
+              "puntajeRiesgo": 0
+            },
+            "lineaBase": {
+              "destino": "s2",
+              "nodos": [
+                "f4",
+                "r4",
+                "s2"
+              ],
+              "longitud": 310,
+              "costo": 310,
+              "puntajeRiesgo": 0
+            }
+          },
+          {
+            "id": "m5",
+            "decision": "evacuar",
+            "regla": "DEC-01",
+            "asignada": {
+              "destino": "s1",
+              "nodos": [
+                "i1",
+                "s1"
+              ],
+              "longitud": 150,
+              "costo": 150,
+              "puntajeRiesgo": 0
+            },
+            "lineaBase": {
+              "destino": "s1",
+              "nodos": [
+                "i1",
+                "s1"
+              ],
+              "longitud": 150,
+              "costo": 150,
+              "puntajeRiesgo": 0
+            }
+          }
+        ]
+      }
+    }
+  }
+}

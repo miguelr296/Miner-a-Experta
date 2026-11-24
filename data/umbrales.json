@@ -7,5 +7,6 @@
     "o2":  { "atributo": "o2_pct",  "operador": "<", "alerta": 19.5, "alto": 18,    "peligro": 16,    "fuente_alto": "SUPUESTO" }
   },
   "ventilacion": { "minimo": 20, "minimo_anfo": 25 },
-  "multiplicadores": { "alerta": 2, "alto": 3 }
+  "multiplicadores": { "alerta": 2, "alto": 3 },
+  "decision": { "distancia_refugio_maxima": 400, "relacion_costo_minima": 2.5 }
 }

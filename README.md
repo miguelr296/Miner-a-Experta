@@ -71,7 +71,7 @@ La traza muestra las premisas, la regla, su prioridad, la fuente y la conclusió
 | Alto | Multiplica el costo por 3. |
 | Peligro | Dispara la cadena de cierre y excluye el tramo. |
 
-Dijkstra calcula la ruta experta de menor costo ajustado, con el puntaje de riesgo como desempate. La línea base filtra las lecturas en peligro, los eventos de cierre físico y los cierres explícitos, y usa la longitud para elegir la salida. Ambos resultados se evalúan con la misma suma de niveles por tramo. La salida por consola busca un refugio para el resultado experto si ninguna salida es alcanzable.
+Dijkstra calcula la ruta experta de menor costo ajustado, con el puntaje de riesgo como desempate. La línea base filtra las lecturas en peligro, los eventos de cierre físico y los cierres explícitos, y usa la longitud para elegir la salida. Ambos resultados se evalúan con la misma suma de niveles por tramo. La consola muestra la recomendación experta, su regla, el motivo y la ruta de línea base.
 
 Para ver un desvío por costo sin cierre:
 
@@ -95,7 +95,21 @@ python -m src data/escenarios/infraestructura_demo.json
 | `R-FUE-01`, `R-DER-01` y `R-INU-01` | Los reportes de incendio, derrumbe e inundación cierran el tramo mediante la cadena de reglas correspondiente. |
 | `R-RIESGO-04` | Los tramos que comparten un nodo con un incendio o derrumbe pueden quedar en alerta. |
 
-Probamos las inferencias de los cinco casos del prototipo web con su topología. Coincidieron los estados, la ventilación, los costos y los bloqueos de línea base en los 105 pares de escenario y túnel. En el incendio, Python conserva el origen de mayor prioridad cuando otra regla propone la misma conclusión. Queda pendiente reproducir en Python las decisiones por minero y las rutas completas de los cinco casos.
+Probamos las inferencias de los cinco casos del prototipo web con su topología. Coincidieron los estados, la ventilación, los costos y los bloqueos de línea base en los 105 pares de escenario y túnel. En el incendio, Python conserva el origen de mayor prioridad cuando otra regla propone la misma conclusión. La comparación de rutas y decisiones usa [referencia_web.json](data/referencia_web.json), derivada del commit web `46114fb`. El archivo incluye la topología esquemática, las longitudes de aristas, las lecturas iniciales y los resultados de referencia. Dijkstra usa las longitudes declaradas.
+
+| Regla | Recomendación simulada |
+|---|---|
+| `DEC-01` | Evacuar si hay una salida viable y no se cumple el criterio de refugio por riesgo. |
+| `DEC-02` | Refugiarse cuando hay refugio alcanzable y falta una salida. También se aplica si la salida cruza riesgo alto, el refugio está a hasta 400 m y el costo de la salida supera 2,5 veces el costo del refugio. |
+| `DEC-03` | Esperar a la brigada cuando no hay salida ni refugio alcanzable. |
+
+Los criterios de distancia y costo son supuestos del prototipo configurados en [umbrales.json](data/umbrales.json). Para ver los tres resultados en un solo escenario, ejecuta:
+
+```text
+python -m src --caso-web ESC-03
+```
+
+Los cinco casos coinciden en la recomendación, la regla y las rutas por minero, incluidas la secuencia de nodos, la longitud, el costo y el puntaje. La prueba también compara los túneles afectados.
 
 Para ejecutar las pruebas, con pytest instalado:
 
