@@ -719,6 +719,10 @@ function renderTab() {
 }
 
 function onTabBodyClick(e) {
+  if (state.recorrido && e.target.closest('[data-vista-detallada]')) {
+    abrirExplicacionMinero(state.selectedMiner);
+    return;
+  }
   const paso = e.target.closest('[data-paso-recorrido]');
   if (paso && state.recorrido) {
     state.recorrido.indice = Number(paso.dataset.pasoRecorrido);
@@ -932,9 +936,14 @@ function abrirModal(eyebrow, titulo, html) {
 }
 
 function cerrarModal() {
+  const minero = $('#modalBody [data-abrir-recorrido]')?.dataset.abrirRecorrido;
   $('#modalBackdrop').hidden = true;
   $('#modalBody').innerHTML = '';
   document.body.style.overflow = '';
+  if (minero) {
+    const origen = state.recorrido ? '[data-vista-detallada]' : `[data-explain="${minero}"]`;
+    $(origen)?.focus();
+  }
 }
 
 /* ============================================================
@@ -1058,6 +1067,12 @@ function onModalChange(e) {
 }
 
 function onModalBodyClick(e) {
+  const recorrido = e.target.closest('[data-abrir-recorrido]');
+  if (recorrido) {
+    cerrarModal();
+    abrirRecorridoMinero(recorrido.dataset.abrirRecorrido);
+    return;
+  }
   const preset = e.target.closest('[data-test-preset]');
   if (preset) {
     aplicarPresetPrueba(preset.dataset.testPreset);
@@ -1296,6 +1311,50 @@ function abrirExplicacionTunel(id) {
 }
 
 function abrirExplicacionMinero(id) {
+  const m = state.resultado.mineros.find(x => x.id === id);
+  if (!m) return;
+  const pasos = explicarMinero(state.resultado, id);
+  const cadena = pasos.map((p, indice) => `<div class="explain-step ${p.tipo}">
+      <h4>${indice + 1}. ${escapar(p.titulo)}</h4>
+      <p>${escapar(p.detalle)}</p>
+    </div>`).join('');
+  const ruta = m.rutaAsignada
+    ? `<div class="route-steps" style="padding:0; flex-wrap:wrap; white-space:normal; gap:5px">${m.rutaAsignada.nodos.map((n, i) => `<span class="step-pill ${i === 0 ? 'start' : i === m.rutaAsignada.nodos.length - 1 ? (m.decision === 'refugiarse' ? 'refugio' : 'end') : ''}">${codigoNodo(n)}</span>`).join('<span class="step-arrow">›</span>')}</div>`
+    : '<div class="compare-note" style="margin:0">No hay ruta transitable. El minero permanece en su ubicación y solicita brigada.</div>';
+  const comparacion = m.rutaBase
+    ? `La línea base llegaría a salida en ${fmt(m.rutaBase.longitud)} m con puntaje de riesgo ${m.rutaBase.exposicion}.`
+    : 'La línea base no encuentra ruta a superficie en este escenario.';
+
+  abrirModal('Vista detallada', m.nombre, `
+    <div class="razonamiento-vistas">
+      <button class="btn btn-primary" type="button" data-abrir-recorrido="${m.id}">Ver secuencia interactiva en el plano</button>
+    </div>
+    <div class="modal-kpis">
+      <div class="modal-kpi"><span>Decisión</span><strong>${etiquetaDecision(m.decision)}</strong></div>
+      <div class="modal-kpi"><span>Recorrido</span><strong>${m.rutaAsignada ? `${fmt(m.rutaAsignada.longitud)} m` : '—'}</strong></div>
+      <div class="modal-kpi"><span>Costo</span><strong>${m.rutaAsignada ? fmt(m.rutaAsignada.costo) : '—'}</strong></div>
+      <div class="modal-kpi"><span>Regla</span><strong>${m.reglaDecision}</strong></div>
+    </div>
+    <section class="modal-section">
+      <h3>Cómo se tomó la decisión</h3>
+      <div class="explain-chain">${cadena}</div>
+    </section>
+    <section class="modal-section">
+      <h3>Ruta asignada</h3>
+      ${ruta}
+    </section>
+    <section class="modal-section">
+      <h3>Comparación con la línea base</h3>
+      <p class="modal-note">${comparacion}</p>
+    </section>`);
+  $('[data-abrir-recorrido]')?.focus();
+}
+
+function abrirRecorridoMinero(id) {
+  if (state.recorrido && state.selectedMiner === id) {
+    $('#tabBody [aria-current="step"]')?.focus();
+    return;
+  }
   const pasos = explicarMinero(state.resultado, id);
   if (!pasos.length) return;
   state.selectedMiner = id;
@@ -1322,7 +1381,10 @@ function renderRecorrido() {
   const m = state.resultado.mineros.find(m => m.id === state.selectedMiner);
   const paso = pasos[indice];
   return `<section class="recorrido" aria-label="Razonamiento de la decisión">
-    <button class="link-btn" data-cerrar-recorrido type="button">← Volver a decisiones</button>
+    <div class="razonamiento-vistas">
+      <button class="link-btn" data-cerrar-recorrido type="button">← Volver a decisiones</button>
+      <button class="btn btn-ghost small" data-vista-detallada type="button">Vista detallada</button>
+    </div>
     <h3>${escapar(m.nombre)}</h3>
     <p class="modal-note">Selecciona un paso para ver su efecto en el plano.</p>
     <ol class="recorrido-pasos">

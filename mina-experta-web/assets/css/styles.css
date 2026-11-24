@@ -1324,3 +1324,11 @@ svg { display: block; }
 .recorrido-linea.comparada { stroke: var(--violet); stroke-width: 4; stroke-dasharray: 8 5; }
 .recorrido-linea.tramo { stroke: var(--red); stroke-width: 7; stroke-dasharray: 1 6; }
 .recorrido-nodo { stroke-width: 3; }
+
+.razonamiento-vistas {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+.modal-body > .razonamiento-vistas { margin-bottom: 12px; }

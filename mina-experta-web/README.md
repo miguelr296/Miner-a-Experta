@@ -34,7 +34,7 @@ El botón **Modo oscuro** alterna entre los dos temas. Al abrir la aplicación p
 
 ## Cómo seguir el razonamiento
 
-En **Decisiones → Ver razonamiento**, selecciona un paso para ubicar al minero, señalar un cierre o comparar las rutas sobre el plano. La leyenda del paso identifica los trazos visibles. Usa **Volver a decisiones** o **Esc** para cerrar la secuencia.
+En **Decisiones → Ver razonamiento**, la vista detallada muestra la regla, el recorrido, el costo y la comparación con la línea base. Pulsa **Ver secuencia interactiva en el plano** para resaltar los pasos de la decisión. Desde el panel del plano puedes volver a la **Vista detallada** y retomar el paso seleccionado.
 
 En el escenario de incendio (ESC-02), selecciona la Galería Principal y abre **¿Por qué?**. Lee el evento simulado, las reglas de la traza y el resultado sobre el túnel. Luego abre la decisión de un minero para ver la ruta elegida después del cierre.
 
