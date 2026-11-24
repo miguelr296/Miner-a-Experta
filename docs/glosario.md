@@ -156,6 +156,9 @@ Todas las siglas y términos técnicos usados en el proyecto, explicados para qu
 |---|---|
 | **Python** | Lenguaje de programación del proyecto. |
 | **JSON** | Formato de texto para datos estructurados. Ahí se describe la mina y los escenarios. |
+| **Codificación (`encoding`)** | Cómo se traducen los caracteres a bytes al leer o escribir un archivo. Usamos `utf-8` explícito; el valor por defecto de Windows (cp1252) corrompe "ñ" y "→". |
+| **`json.load` / `json.dump`** | Funciones del módulo `json` que leen y escriben un archivo. `json.loads`/`json.dumps` hacen lo mismo sobre texto. |
+| **`JSONDecodeError`** | Error que lanza `json` con un archivo mal formado; informa `lineno`, `colno` y `msg`. |
 | **Clase** | Plantilla de Python para crear objetos con datos y comportamiento (p. ej. `Nodo`, `Regla`). |
 | **Conjunto (`set`)** | Colección sin orden ni elementos duplicados; se escribe con `{}` si tiene elementos o `set()` si está vacío. |
 | **Diccionario** | Estructura de Python de pares clave–valor. |

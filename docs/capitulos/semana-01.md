@@ -18,6 +18,7 @@
 - **Python para quien viene de Java/C#:** la indentación delimita los bloques, el tipo se decide al ejecutar (tipado dinámico) y las colecciones básicas son listas, diccionarios, tuplas y conjuntos.
 - **Funciones y comprensiones:** `def`/`return` para encapsular lógica; las comprensiones crean listas, diccionarios y conjuntos a partir de un iterable con una condición.
 - **PR vinculado a una tarjeta:** una rama, un commit, un push y un PR revisado por el compañero; `Closes #N` cierra la tarjeta al fusionar.
+- **JSON en Python:** `json.load`/`json.dump` operan sobre archivos y `json.loads`/`json.dumps` sobre texto; el objeto JSON se convierte en `dict`/`list` sin clase intermedia, a diferencia de Gson o `System.Text.Json`.
 
 ## 3. Decisiones tomadas y por qué
 
@@ -36,7 +37,9 @@
 - Repositorio en GitHub y tablero del sprint 1 con 20 tarjetas, una por tarea; las tareas asignadas a A y B comparten una tarjeta.
 - Nivelación de Python con E1–E7: variables, f-strings, listas, diccionarios, tuplas, conjuntos, funciones, control y comprensiones.
 - Práctica de Git y GitHub: rama, commit, push y PR revisado (S1-04).
-- *(pendiente: esquema JSON y mina de prueba)*
+- Nivelación de clases y módulos (S1-02): `modelo.py` con `Nodo` (`distancia_a` en 3D con `math.dist`) y `Tunel` (`longitud`, `__len__`, `__repr__`), importado desde `demo.py`.
+- Nivelación de JSON (S1-05): `leer_json.py` y `escribir_json.py`, con manejo de `JSONDecodeError` (línea y columna) y escritura con `indent=2` y `ensure_ascii=False` sin perder los nodos.
+- *(pendiente: esquema JSON de la mina y mina de prueba, S1-08 y S1-09)*
 
 ## 5. Pruebas
 
@@ -48,12 +51,14 @@ Sin pruebas automáticas todavía: los ejercicios se verificaron ejecutándolos 
 - En Python `False` vale 0: confundimos el hecho `(tunel_1_2, cerrado, False)` con un túnel cerrado. Se corrigió filtrando por atributo antes de comparar.
 - Promediamos los valores de los hechos (ppm y booleanos) en vez de los costos. Se corrigió usando `costos.values()`.
 - Usamos `max` como nombre de variable y ocultamos la función incorporada; se renombró a `max_co`.
+- `escribir_json.py` sobrescribió `mina_demo.json` y perdió los nodos; se corrigió leyendo antes de escribir.
 
 ## 7. Lecciones aprendidas
 
 - En Python conviene filtrar por atributo antes de comparar o sumar valores de un hecho; un booleano también es un entero (`False` = 0).
 - Para armar mensajes, las f-strings son más claras que concatenar con `+` y `str()`.
-- Las tareas de aprendizaje no requieren PR; las que cambian el repositorio sí.
+- Las tareas de aprendizaje se practican fuera del repositorio y se cierran con un PR de solo documentación (bitácora/capítulo).
+- Abrir un archivo en modo `"w"` lo vacía de inmediato: si hay que conservar el contenido, se lee primero.
 
 ## 8. Siguiente semana
 

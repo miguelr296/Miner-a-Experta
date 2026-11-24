@@ -30,6 +30,11 @@ Una entrada por sesión, la más reciente arriba. Tres líneas bastan.
 
 ## Sesiones
 
+### 2026-11-23 · S1-05: leer y escribir JSON en Python (sesión 3) · 1 h
+- Hice: comparamos el módulo `json` con Gson/`System.Text.Json` y escribimos `leer_json.py` (carga el archivo, cuenta nodos y maneja `JSONDecodeError` con línea y columna) y `escribir_json.py` (lee, agrega `meta` y guarda con `indent=2` y `ensure_ascii=False`), en la carpeta local de nivelación fuera del repositorio. En documentación: `contexto.md` al día con el cierre de S1-02 y la automatización de PR validada con #27; corregimos el capítulo de la semana 1, que decía que las tarjetas de aprendizaje no requieren PR.
+- Falló / dudas: `escribir_json.py` sobrescribía `mina_demo.json` y borraba los nodos; se corrigió leyendo antes de escribir. En `leer_json.py` las impresiones quedaban fuera del `try`, así que con un JSON inválido se usaba `datos` sin definir; se movieron a un `else`. Falta ejecutar la prueba con un JSON roto (quitar una coma): el manejo de `JSONDecodeError` está escrito, pero no verificado.
+- Siguiente paso exacto: commit `docs: cerrar S1-05, JSON en Python`, push, PR con `Closes #7`, review del compañero y merge; luego S1-07 (forward chaining y refracción), que desbloquea S1-12.
+
 ### 2026-11-23 · S1-02: clases y módulos (sesión 2) · 1,5 h
 - Hice: explicamos `__init__`/`self`, `@dataclass`, métodos especiales y módulos. Escribí `modelo.py` (`Nodo` con `distancia_a` en 3D vía `math.dist`; `Tunel` con `longitud`, `__len__` y `__repr__`) y `demo.py` en la carpeta local de nivelación, fuera del repositorio: `python demo.py` imprime `Tunel(tunel_ref_1_frente_4, 144.2255... m)` y `2`. Además corregimos la entrada del 2026-10-25 (los 17 en Backlog ya estaban en Ready) y registramos en `contexto.md` que las tarjetas de aprendizaje se cierran con un PR de solo documentación.
 - Falló / dudas: pegué los dos archivos en un mismo bloque y hubo que separarlos en `modelo.py` y `demo.py` para que el import funcionara. S1-04 se movió a Done a mano, así que la automatización "PR con `Closes #N` → Done" sigue sin probarse. Horas estimadas, sin medir: ~1,5 h.

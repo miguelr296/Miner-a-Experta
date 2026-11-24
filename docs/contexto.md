@@ -2,10 +2,10 @@
 
 ## Estado actual
 - Sprint: 1 (semanas 1–2) · Objetivo: motor mínimo + cargador JSON
-- S1-00, S1-01, S1-03, S1-03b y S1-04 cerradas (5 de 20 tarjetas; repositorio y tablero listos); quedan 15 en Ready.
+- S1-00, S1-01, S1-02, S1-03, S1-03b, S1-04 y S1-05 cerradas (7 de 20 tarjetas); quedan 13 en Ready.
 - Existe en src/: (nada aún)
-- Semana 1: umbrales, nivelación de Python y Git/PR listos; faltan S1-02, S1-05, S1-07, S1-08 y S1-09.
-- Siguiente: S1-02 (clases y módulos), que desbloquea S1-05, S1-06 y S1-10.
+- Semana 1: umbrales, nivelación de Python, Git/PR y JSON listos; faltan S1-07, S1-08 y S1-09.
+- Siguiente: S1-07 (forward chaining y refracción), que desbloquea S1-12.
 
 ## Comandos
 - (se agregan cuando existan)
@@ -21,7 +21,7 @@
 - No usar nombres de funciones incorporadas (`max`, `sum`, `list`, `dict`) como variables; se pierde la función.
 - Los ejercicios de nivelación se escriben en una carpeta local fuera del repositorio; `src/` se reserva para el código del proyecto.
 - Las tarjetas de aprendizaje con ejercicios (S1-01, S1-02, S1-05, S1-06) se cierran con un PR que solo toca documentación (bitácora/capítulo), porque el ejercicio vive en una carpeta local fuera del repositorio.
-- La automatización de GitHub Projects (PR con `Closes #N` → Done) aún no está probada: S1-01 y S1-04 se cerraron a mano. Validarla con el PR de S1-02 antes de dar S1-04 por cumplida.
+- La automatización "PR con `Closes #N` → Done" funciona: S1-02 (PR #27) pasó sola a Done. S1-01 y S1-04 se habían cerrado a mano; no hace falta repetirlo.
 
 ## Pendientes que no son del sprint actual
 - (ninguno por ahora)
