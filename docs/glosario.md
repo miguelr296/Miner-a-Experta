@@ -25,6 +25,7 @@ Todas las siglas y términos técnicos usados en el proyecto, explicados para qu
 | **Chimenea** | Excavación vertical o muy inclinada que comunica dos niveles, construida de abajo hacia arriba. |
 | **Pique** | Excavación vertical, normalmente desde superficie, con ascensor (jaula) para personal y mineral. |
 | **Nivel** | Conjunto de galerías a una misma profundidad. En el modelo, la coordenada `nivel` de cada nodo. |
+| **Altura de nivel** | Separación vertical entre dos niveles consecutivos, en metros. En el modelo es `altura_nivel_m` (30 m, supuesto del equipo) y de ella se deduce la altura `z` de cada nodo (D22). |
 | **Veta** | Cuerpo de mineral en forma de capa o franja dentro de la roca. |
 | **Voladura / disparo** | Detonación de explosivos para romper la roca. Genera gases tóxicos (CO, NO₂). |
 | **ANFO** | *Ammonium Nitrate – Fuel Oil*. Explosivo hecho de nitrato de amonio y petróleo; muy usado en minería. |
@@ -140,6 +141,7 @@ Todas las siglas y términos técnicos usados en el proyecto, explicados para qu
 | **Grafo** | Estructura de nodos conectados por aristas. Representa la mina. |
 | **Nodo** | Punto del grafo: intersección de túneles, salida, refugio o frente. |
 | **Arista** | Conexión entre dos nodos: un tramo de túnel. |
+| **Grafo no dirigido** | Grafo en el que cada arista se puede recorrer en los dos sentidos. La mina es no dirigida: cada túnel se escribe una vez en el JSON y el cargador lo agrega en ambas direcciones (D22). |
 | **Peso / costo** | Valor de recorrer una arista. Parte de la longitud física y las reglas lo aumentan según el riesgo. |
 | **Multiplicador de costo** | Factor (≥ 1) por el que una regla multiplica el costo de una arista. |
 | **Ruta** | Secuencia de aristas desde un origen hasta un destino. |
@@ -158,6 +160,8 @@ Todas las siglas y términos técnicos usados en el proyecto, explicados para qu
 |---|---|
 | **Python** | Lenguaje de programación del proyecto. |
 | **JSON** | Formato de texto para datos estructurados. Ahí se describe la mina y los escenarios. |
+| **Esquema (JSON)** | Descripción de qué campos lleva un archivo JSON, de qué tipo son y cuáles son obligatorios. El de la mina está en D22 y el cargador lo verifica. |
+| **Valor derivado** | Dato que no se guarda porque se calcula a partir de otros (la altura `z` de un nodo, la longitud de una arista). Se guarda un solo origen para que no se contradigan (D22). |
 | **Codificación (`encoding`)** | Cómo se traducen los caracteres a bytes al leer o escribir un archivo. Usamos `utf-8` explícito; el valor por defecto de Windows (cp1252) corrompe "ñ" y "→". |
 | **`json.load` / `json.dump`** | Funciones del módulo `json` que leen y escriben un archivo. `json.loads`/`json.dumps` hacen lo mismo sobre texto. |
 | **`JSONDecodeError`** | Error que lanza `json` con un archivo mal formado; informa `lineno`, `colno` y `msg`. |
