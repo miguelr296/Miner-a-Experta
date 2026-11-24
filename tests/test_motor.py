@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from src.motor import Condicion, Hecho, Regla, inferir
-from src.reglas import reglas_de_gases
+from src.reglas import reglas_del_motor
 
 
 UMBRAL_JSON = Path(__file__).resolve().parents[1] / "data" / "umbrales.json"
@@ -12,7 +12,7 @@ CONFIGURACION = json.loads(UMBRAL_JSON.read_text(encoding="utf-8"))
 def test_cadena_co_identifica_y_cierra_solo_el_tunel_afectado():
     resultado = inferir(
         [Hecho("afectado", "co_ppm", 101), Hecho("límite", "co_ppm", 100)],
-        reglas_de_gases(CONFIGURACION),
+        reglas_del_motor(CONFIGURACION),
     )
 
     traza = [paso for paso in resultado.traza if paso.conclusion.entidad == "afectado"]
@@ -54,7 +54,7 @@ def test_ausencia_y_booleanos_no_cumplen_condiciones_numericas():
 
 
 def test_limites_de_los_cinco_gases_y_costos():
-    reglas = reglas_de_gases(CONFIGURACION)
+    reglas = reglas_del_motor(CONFIGURACION)
     for gas in CONFIGURACION["gases"].values():
         delta = -0.01 if gas["operador"] == "<" else 0.01
         for nivel, previo in (("alerta", "normal"), ("alto", "alerta"), ("peligro", "alto")):
@@ -69,7 +69,7 @@ def test_limites_de_los_cinco_gases_y_costos():
 
 
 def test_agregacion_elige_el_gas_mas_severo_y_registra_su_premisa():
-    escala = reglas_de_gases(CONFIGURACION)
+    escala = reglas_del_motor(CONFIGURACION)
     resultado = inferir(
         [Hecho("t", "co_ppm", 30), Hecho("t", "no2_ppm", 6), Hecho("t", "o2_pct", 15)],
         escala,

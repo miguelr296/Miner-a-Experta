@@ -8,7 +8,7 @@ import pytest
 from src.mina import cargar_mina
 from src.motor import Hecho, inferir
 from src.planificador import buscar_ruta
-from src.reglas import estados_linea_base, reglas_de_gases
+from src.reglas import estados_linea_base, preparar_hechos, reglas_del_motor
 
 
 RAIZ = Path(__file__).resolve().parents[1]
@@ -48,7 +48,7 @@ def test_inferencia_cierra_el_atajo_y_dijkstra_usa_el_desvio():
     normal = buscar_ruta(mina, "f1", ["s1"], [])
     assert normal.nodos == ("f1", "i2", "i1", "s1")
     assert normal.longitud == 160
-    resultado = inferir([Hecho("t_i2_f1", "co_ppm", 101)], reglas_de_gases(CONFIGURACION))
+    resultado = inferir([Hecho("t_i2_f1", "co_ppm", 101)], reglas_del_motor(CONFIGURACION))
 
     desvio = buscar_ruta(mina, "f1", ["s1"], resultado.hechos)
     assert desvio.nodos == ("f1", "i3", "i1", "s1")
@@ -81,7 +81,7 @@ def test_consola_muestra_inferencia_y_rutas():
 
 def test_linea_base_filtra_peligro_pero_ignora_multiplicadores():
     mina = cargar_mina(DATOS / "mina_prueba.json")
-    reglas = reglas_de_gases(CONFIGURACION)
+    reglas = reglas_del_motor(CONFIGURACION)
     hechos = (Hecho("t_i1_i2", "co_ppm", 55),)
     resultado = inferir(hechos, reglas)
     experta = buscar_ruta(mina, "f1", ["s1"], resultado.hechos)
@@ -117,3 +117,63 @@ def test_consola_compara_desvio_y_linea_base():
     assert "R-RIESGO-05" in resultado.stdout
     assert "265 m | costo 265 | riesgo 0" in resultado.stdout
     assert "Línea base: f1 -> i2 -> i1 -> s1 | 160 m | riesgo 2" in resultado.stdout
+
+
+@pytest.mark.parametrize(
+    ("velocidad", "anfo", "esperado", "regla"),
+    [
+        (19, False, "insuficiente", "R-VEN-01"),
+        (20, False, "conforme", "R-VEN-03"),
+        (23, True, "critica", "R-VEN-02"),
+        (25, True, "conforme", "R-VEN-03"),
+    ],
+)
+def test_ventilacion_con_y_sin_anfo(velocidad, anfo, esperado, regla):
+    hechos = (Hecho("t", "vel_m_min", velocidad), Hecho("t", "anfo", anfo))
+    resultado = inferir(hechos, reglas_del_motor(CONFIGURACION))
+    assert Hecho("t", "nivel_ventilacion", esperado) in resultado.hechos
+    assert [p.regla for p in resultado.traza if p.conclusion.atributo == "nivel_ventilacion"] == [regla]
+    if esperado == "critica":
+        conflicto = next(c for c in resultado.conflictos if c.regla == "R-VEN-03")
+        assert conflicto.prevalece == "R-VEN-02"
+        assert conflicto.conservado == Hecho("t", "nivel_ventilacion", "critica")
+
+
+@pytest.mark.parametrize("evento", ["incendio", "derrumbe", "inundacion"])
+def test_cierres_fisicos_y_propagacion_a_vecinos(evento):
+    mina = cargar_mina(DATOS / "mina_prueba.json")
+    tramo = "t_i2_f1"
+    hechos = (Hecho(tramo, evento, True),)
+    resultado = inferir(preparar_hechos(hechos, mina), reglas_del_motor(CONFIGURACION))
+    assert Hecho(tramo, "transitable", False) in resultado.hechos
+    alertados = {h.entidad for h in resultado.hechos if h.atributo == "propagacion"}
+    assert alertados == ({"t_i3_f1", "t_i1_i2"} if evento != "inundacion" else set())
+    base = estados_linea_base(hechos, resultado.hechos, CONFIGURACION)
+    assert Hecho(tramo, "cerrado", True) in base
+    ruta = buscar_ruta(mina, "f1", ["s1"], base, ponderar_riesgo=False)
+    assert tramo not in ruta.aristas
+
+
+def test_corte_electrico_distingue_el_respaldo():
+    hechos = (
+        Hecho("sin", "corte_electrico", True), Hecho("sin", "vel_m_min", 85),
+        Hecho("con", "corte_electrico", True), Hecho("con", "vel_m_min", 85),
+        Hecho("con", "ventilacion_respaldo", True),
+    )
+    resultado = inferir(preparar_hechos(hechos, None), reglas_del_motor(CONFIGURACION))
+    assert Hecho("sin", "nivel_ventilacion", "critica") in resultado.hechos
+    assert Hecho("sin", "multiplicador", 3) in resultado.hechos
+    assert Hecho("con", "nivel_ventilacion", "conforme") in resultado.hechos
+    assert Hecho("con", "multiplicador", 3) not in resultado.hechos
+    conflictos = [(c.regla, c.prevalece) for c in resultado.conflictos]
+    assert ("R-VEN-03", "R-VEN-04") in conflictos
+
+
+def test_el_incendio_conserva_el_origen_del_peligro_que_confirma_el_gas():
+    hechos = (Hecho("t", "incendio", True), Hecho("t", "co_ppm", 101))
+    resultado = inferir(hechos, reglas_del_motor(CONFIGURACION))
+    reglas_de_riesgo = [
+        paso.regla for paso in resultado.traza if paso.conclusion.atributo == "nivel_riesgo"
+    ]
+    assert reglas_de_riesgo == ["R-FUE-01"]
+    assert Hecho("t", "transitable", False) in resultado.hechos

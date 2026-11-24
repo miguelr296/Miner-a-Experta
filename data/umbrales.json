@@ -6,5 +6,6 @@
     "h2s": { "atributo": "h2s_ppm", "operador": ">", "alerta": 10,   "alto": 15,    "peligro": 30,    "fuente_alto": "NORMA" },
     "o2":  { "atributo": "o2_pct",  "operador": "<", "alerta": 19.5, "alto": 18,    "peligro": 16,    "fuente_alto": "SUPUESTO" }
   },
+  "ventilacion": { "minimo": 20, "minimo_anfo": 25 },
   "multiplicadores": { "alerta": 2, "alto": 3 }
 }

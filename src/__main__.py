@@ -7,14 +7,14 @@ from pathlib import Path
 from .mina import cargar_mina
 from .motor import Hecho, inferir
 from .planificador import buscar_ruta
-from .reglas import estados_linea_base, reglas_de_gases
+from .reglas import estados_linea_base, preparar_hechos, reglas_del_motor
 
 
 DATOS = Path(__file__).resolve().parent.parent / "data"
 
 
 def main() -> None:
-    analizador = ArgumentParser(description="Compara rutas expertas y de línea base con diagnósticos de gases.")
+    analizador = ArgumentParser(description="Compara rutas con los diagnósticos, eventos y la línea base.")
     analizador.add_argument(
         "escenario", type=Path, nargs="?", default=DATOS / "escenarios" / "co_demo.json",
         help="archivo JSON con hechos iniciales",
@@ -28,12 +28,12 @@ def main() -> None:
         umbrales = json.loads((DATOS / "umbrales.json").read_text(encoding="utf-8"))
         escenario = json.loads(argumentos.escenario.read_text(encoding="utf-8"))
         hechos = tuple(Hecho(**fila) for fila in escenario["hechos"])
-        reglas = reglas_de_gases(umbrales)
-        resultado = inferir(hechos, reglas)
+        reglas = reglas_del_motor(umbrales)
         mineros = escenario.get("mineros", [])
+        mina = cargar_mina(argumentos.mina)
+        resultado = inferir(preparar_hechos(hechos, mina), reglas)
         rutas = []
         if mineros:
-            mina = cargar_mina(argumentos.mina)
             salidas = [n.id for n in mina.nodos.values() if n.tipo == "salida"]
             refugios = [n.id for n in mina.nodos.values() if n.tipo == "refugio"]
             estados_base = estados_linea_base(hechos, resultado.hechos, umbrales)
@@ -58,6 +58,14 @@ def main() -> None:
         )
     if not resultado.traza:
         print("Ninguna regla se activó.")
+    conflictos_ventilacion = [
+        c for c in resultado.conflictos if c.propuesta.atributo == "nivel_ventilacion"
+    ]
+    if conflictos_ventilacion:
+        print()
+        print("Conflictos de ventilación:")
+        for conflicto in conflictos_ventilacion:
+            print(f"{conflicto.propuesta.entidad}: {conflicto.regla} descartada; prevalece {conflicto.prevalece}.")
     if rutas:
         print()
         print("Rutas de los mineros:")

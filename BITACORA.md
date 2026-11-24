@@ -4,6 +4,12 @@
 
 Una entrada por sesión, la más reciente arriba. Tres líneas bastan.
 
+### 2026-11-24 · Ventilación e infraestructura en Python
+
+- Hice: añadí diagnósticos de ventilación, ANFO, respaldo, incendio, derrumbe e inundación, además de la propagación según la topología.
+- Falló / dudas: los 105 estados comparados coinciden con la web. Una regla redundante del caso de incendio se omite en la traza Python para conservar el origen de mayor prioridad.
+- Siguiente paso exacto: portar la política de decisiones y comprobar rutas y recomendaciones completas contra los cinco casos web.
+
 ### 2026-11-24 · Gases y línea base en Python
 
 - Hice: porté los cinco gases, los multiplicadores configurables y la comparación de rutas por minero.

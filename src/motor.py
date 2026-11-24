@@ -2,7 +2,7 @@
 
 from collections.abc import Iterable
 from dataclasses import dataclass
-from operator import gt, lt
+from operator import ge, gt, lt
 from typing import Literal, NamedTuple
 
 
@@ -18,7 +18,7 @@ class Hecho(NamedTuple):
 @dataclass(frozen=True)
 class Condicion:
     atributo: str
-    operador: Literal["=", ">", "<"]
+    operador: Literal["=", ">", "<", ">="]
     valor: Valor
 
     def cumple(self, valor: Valor) -> bool:
@@ -28,7 +28,7 @@ class Condicion:
             return valor == self.valor
         if type(valor) not in (int, float) or type(self.valor) not in (int, float):
             return False
-        return {">": gt, "<": lt}[self.operador](valor, self.valor)
+        return {">": gt, "<": lt, ">=": ge}[self.operador](valor, self.valor)
 
 
 @dataclass(frozen=True)
@@ -52,9 +52,18 @@ class Activacion:
 
 
 @dataclass(frozen=True)
+class Conflicto:
+    regla: str
+    prevalece: str
+    propuesta: Hecho
+    conservado: Hecho
+
+
+@dataclass(frozen=True)
 class Resultado:
     hechos: tuple[Hecho, ...]
     traza: tuple[Activacion, ...]
+    conflictos: tuple[Conflicto, ...]
 
 
 def inferir(hechos: Iterable[Hecho], reglas: Iterable[Regla]) -> Resultado:
@@ -64,9 +73,10 @@ def inferir(hechos: Iterable[Hecho], reglas: Iterable[Regla]) -> Resultado:
         memoria.setdefault(entidad, {})[atributo] = valor
 
     ordenadas = sorted(reglas, key=lambda regla: regla.prioridad, reverse=True)
-    prioridades: dict[tuple[str, str], int] = {}
+    autores: dict[tuple[str, str], Regla] = {}
     procesadas: set[tuple[str, str]] = set()
     traza = []
+    conflictos = []
 
     while True:
         disparo = False
@@ -82,15 +92,21 @@ def inferir(hechos: Iterable[Hecho], reglas: Iterable[Regla]) -> Resultado:
 
                 procesadas.add(clave)
                 destino = (entidad, regla.atributo)
-                prioridad_previa = prioridades.get(destino)
-                if prioridad_previa is not None and prioridad_previa > regla.prioridad:
+                anterior = autores.get(destino)
+                conclusion = Hecho(entidad, regla.atributo, regla.valor)
+                if anterior is not None and anterior.prioridad > regla.prioridad:
+                    if not Condicion(regla.atributo, "=", regla.valor).cumple(anterior.valor):
+                        conflictos.append(Conflicto(
+                            regla.id, anterior.id, conclusion,
+                            Hecho(entidad, regla.atributo, anterior.valor),
+                        ))
                     continue
 
                 atributos[regla.atributo] = regla.valor
-                prioridades[destino] = regla.prioridad
+                autores[destino] = regla
                 traza.append(Activacion(
                     regla.id, regla.prioridad, regla.fuente, premisas,
-                    Hecho(entidad, regla.atributo, regla.valor),
+                    conclusion,
                 ))
                 disparo = True
 
@@ -102,6 +118,7 @@ def inferir(hechos: Iterable[Hecho], reglas: Iterable[Regla]) -> Resultado:
                     for atributo, valor in atributos.items()
                 ),
                 tuple(traza),
+                tuple(conflictos),
             )
 
 

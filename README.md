@@ -71,7 +71,7 @@ La traza muestra las premisas, la regla, su prioridad, la fuente y la conclusió
 | Alto | Multiplica el costo por 3. |
 | Peligro | Dispara la cadena de cierre y excluye el tramo. |
 
-Dijkstra calcula la ruta experta de menor costo ajustado, con el puntaje de riesgo como desempate. La línea base filtra las lecturas en peligro y los cierres explícitos, y usa la longitud para elegir la salida. Ambos resultados se evalúan con la misma suma de niveles por tramo. La salida por consola busca un refugio para el resultado experto si ninguna salida es alcanzable.
+Dijkstra calcula la ruta experta de menor costo ajustado, con el puntaje de riesgo como desempate. La línea base filtra las lecturas en peligro, los eventos de cierre físico y los cierres explícitos, y usa la longitud para elegir la salida. Ambos resultados se evalúan con la misma suma de niveles por tramo. La salida por consola busca un refugio para el resultado experto si ninguna salida es alcanzable.
 
 Para ver un desvío por costo sin cierre:
 
@@ -81,7 +81,21 @@ python -m src data/escenarios/desvio_riesgo.json
 
 En ese caso, la línea base recorre 160 m con puntaje de riesgo 2. La ruta experta evita el tramo de riesgo alto, recorre 265 m y obtiene puntaje 0.
 
-La topología define nodos con identificador, coordenadas en metros, nivel y tipo. Cada arista bidireccional tiene identificador, nodo de origen, nodo de destino y longitud positiva. El escenario puede incluir una lista `mineros` con su `id` y `nodo`. Si se omite, la consola muestra únicamente la traza. Esta etapa cubre los diagnósticos de gases en una mina de siete nodos. Los eventos, la ventilación y la validación contra los cinco escenarios de referencia quedan para iteraciones posteriores.
+La topología define nodos con identificador, coordenadas en metros, nivel y tipo. Cada arista bidireccional tiene identificador, nodo de origen, nodo de destino y longitud positiva. El escenario puede incluir una lista `mineros` con su `id` y `nodo`. Si se omite, la consola muestra únicamente la traza. La demo usa una mina de siete nodos. Para ver la interacción entre inundación, corte eléctrico y respaldo de ventilación, ejecuta:
+
+```text
+python -m src data/escenarios/infraestructura_demo.json
+```
+
+| Reglas | Comportamiento del modelo |
+|---|---|
+| `R-VEN-01` y `R-VEN-03` | Clasifican la ventilación según la velocidad del aire y el mínimo configurado. |
+| `R-VEN-02` | Con ANFO activo, usa el umbral específico y prevalece sobre la regla general. |
+| `R-VEN-04` | Un corte sin respaldo operativo marca ventilación crítica y, mediante las reglas de riesgo, eleva el costo. |
+| `R-FUE-01`, `R-DER-01` y `R-INU-01` | Los reportes de incendio, derrumbe e inundación cierran el tramo mediante la cadena de reglas correspondiente. |
+| `R-RIESGO-04` | Los tramos que comparten un nodo con un incendio o derrumbe pueden quedar en alerta. |
+
+Probamos las inferencias de los cinco casos del prototipo web con su topología. Coincidieron los estados, la ventilación, los costos y los bloqueos de línea base en los 105 pares de escenario y túnel. En el incendio, Python conserva el origen de mayor prioridad cuando otra regla propone la misma conclusión. Queda pendiente reproducir en Python las decisiones por minero y las rutas completas de los cinco casos.
 
 Para ejecutar las pruebas, con pytest instalado:
 
