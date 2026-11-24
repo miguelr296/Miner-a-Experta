@@ -16,6 +16,7 @@ class Nodo:
     y: float
     nivel: int
     tipo: str
+    z: float | None = None
 
 
 @dataclass(frozen=True)
@@ -58,7 +59,10 @@ def mina_desde_datos(datos: object) -> Mina:
         if not (es_numero_finito(x) and es_numero_finito(y) and type(nivel) is int
                 and isinstance(tipo, str) and tipo in TIPOS_NODO):
             raise ValueError(f"Coordenadas, nivel o tipo inválidos en {id_nodo}.")
-        nodos[id_nodo] = Nodo(id_nodo, x, y, nivel, tipo)
+        z = fila.get("z")
+        if z is not None and not es_numero_finito(z):
+            raise ValueError(f"Cota inválida en {id_nodo}.")
+        nodos[id_nodo] = Nodo(id_nodo, x, y, nivel, tipo, z)
 
     vecinos: dict[str, list[Arista]] = {id_nodo: [] for id_nodo in nodos}
     ids = set()

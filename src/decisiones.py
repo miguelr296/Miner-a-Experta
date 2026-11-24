@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from .mina import Mina
 from .motor import Hecho
-from .planificador import Ruta, buscar_ruta
+from .planificador import Algoritmo, Ruta, buscar_ruta
 
 
 @dataclass(frozen=True)
@@ -48,15 +48,15 @@ def recomendar(salida: Ruta | None, refugio: Ruta | None, politica: dict) -> Dec
 
 def evaluar_mineros(
     mina: Mina, mineros: list[dict], hechos: tuple[Hecho, ...],
-    linea_base: tuple[Hecho, ...], politica: dict,
+    linea_base: tuple[Hecho, ...], politica: dict, *, algoritmo: Algoritmo = "dijkstra",
 ) -> list[EvaluacionMinero]:
     salidas = [n.id for n in mina.nodos.values() if n.tipo == "salida"]
     refugios = [n.id for n in mina.nodos.values() if n.tipo == "refugio"]
     evaluaciones = []
     for minero in mineros:
         origen = minero["nodo"]
-        salida = buscar_ruta(mina, origen, salidas, hechos)
-        refugio = buscar_ruta(mina, origen, refugios, hechos)
+        salida = buscar_ruta(mina, origen, salidas, hechos, algoritmo=algoritmo)
+        refugio = buscar_ruta(mina, origen, refugios, hechos, algoritmo=algoritmo)
         base = buscar_ruta(mina, origen, salidas, linea_base, ponderar_riesgo=False)
         evaluaciones.append(EvaluacionMinero(
             minero["id"], recomendar(salida, refugio, politica), base,

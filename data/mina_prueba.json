@@ -1,12 +1,12 @@
 {
   "nodos": [
-    { "id": "f1", "x": 0, "y": 0, "nivel": 1, "tipo": "frente" },
-    { "id": "f2", "x": 0, "y": 80, "nivel": 2, "tipo": "frente" },
-    { "id": "i2", "x": 40, "y": 0, "nivel": 1, "tipo": "interseccion" },
-    { "id": "i3", "x": 40, "y": 80, "nivel": 2, "tipo": "interseccion" },
-    { "id": "i1", "x": 100, "y": 0, "nivel": 1, "tipo": "interseccion" },
-    { "id": "r1", "x": 85, "y": 75, "nivel": 2, "tipo": "refugio" },
-    { "id": "s1", "x": 160, "y": 0, "nivel": 1, "tipo": "salida" }
+    { "id": "f1", "x": 0, "y": 0, "z": 0, "nivel": 1, "tipo": "frente" },
+    { "id": "f2", "x": 0, "y": 80, "z": -20, "nivel": 2, "tipo": "frente" },
+    { "id": "i2", "x": 40, "y": 0, "z": 0, "nivel": 1, "tipo": "interseccion" },
+    { "id": "i3", "x": 40, "y": 80, "z": -20, "nivel": 2, "tipo": "interseccion" },
+    { "id": "i1", "x": 100, "y": 0, "z": 0, "nivel": 1, "tipo": "interseccion" },
+    { "id": "r1", "x": 85, "y": 75, "z": -20, "nivel": 2, "tipo": "refugio" },
+    { "id": "s1", "x": 160, "y": 0, "z": 0, "nivel": 1, "tipo": "salida" }
   ],
   "aristas": [
     { "id": "t_i2_f1", "origen": "i2", "destino": "f1", "longitud": 40 },
