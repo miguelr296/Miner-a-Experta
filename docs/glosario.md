@@ -121,6 +121,8 @@ Todas las siglas y términos técnicos usados en el proyecto, explicados para qu
 | **Prioridad** | Número asignado a cada regla; a mayor prioridad, se dispara antes. |
 | **Especificidad** | Criterio de resolución: gana la regla con más condiciones, porque describe un caso más concreto. |
 | **Refracción** | Evitar que una regla se dispare dos veces con los mismos hechos (evita bucles infinitos). |
+| **Firma de activación** | Par `(regla, hechos que la activaron)` que se guarda para aplicar la refracción; permite que la misma regla vuelva a disparar si la activan otros hechos. |
+| **Punto fijo** | Estado en el que ninguna regla es aplicable y el motor termina. No significa que el problema esté resuelto, solo que no quedan reglas que aplicar. |
 | **Traza** | Registro de qué reglas se dispararon, en qué orden y con qué hechos. Base de la explicación. |
 | **Explicación "¿por qué?"** | El sistema justifica una conclusión mostrando la regla y los hechos que la produjeron. |
 | **Explicación "¿cómo?"** | El sistema muestra la cadena completa de reglas que llevó a una conclusión. |

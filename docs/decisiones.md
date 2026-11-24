@@ -110,3 +110,10 @@ Formato: fecha · decisión · alternativas consideradas · por qué.
 **Alternativas:** traducir los nombres de las columnas y crear tarjetas separadas para cada integrante en las tareas compartidas.
 **Por qué:** conserva las opciones predeterminadas de GitHub Projects y evita duplicar el seguimiento de una misma tarea. Para Sprint 1 son 20 tareas y 20 tarjetas.
 
+## D21 — Refracción por firma de activación
+**Fecha:** 2026-11-24
+**Decisión:** la refracción se implementa guardando la firma `(regla_id, frozenset(hechos que la activaron))`. Una regla no se dispara dos veces con los mismos hechos, pero sí puede volver a dispararse si la activan hechos distintos. No se usa un indicador `disparada = True` por regla.
+**Alternativas:** marcar la regla como disparada para siempre (simple, pero la deja muerta el resto de la ejecución y rompe escenarios con varios mineros o varios túneles).
+**Por qué:** el escenario puede tener varios túneles y varios mineros; una regla de costo debe disparar una vez por arista. La firma es además la justificación que necesita la explicación "¿por qué?".
+**Consecuencias:** un hecho debe ser hashable (tupla o `dataclass(frozen=True)`); la refracción se consulta en el paso de reconocimiento; S1-13 y S1-14 se implementan sobre esta decisión.
+
