@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Prototipo de interfaz del sistema experto para emergencias y evacuación en minería subterránea." />
+  <title>Mina Experta · Sistema experto de evacuación</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="assets/js/theme.js"></script>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="stylesheet" href="assets/css/theme.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- ================= TOPBAR ================= -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 48 48" fill="none">
+            <path d="M24 3 42 13.5v21L24 45 6 34.5v-21L24 3Z" stroke="currentColor" stroke-width="1.4" opacity=".55"/>
+            <path d="M24 9 36 16v16l-12 7-12-7V16L24 9Z" fill="url(#brandGrad)" opacity=".14"/>
+            <path d="M15 32c1-7 5-11 9-12M33 32c-1-7-5-11-9-12M12 26h24" stroke="#93c5fd" stroke-width="2.2" stroke-linecap="round"/>
+            <circle cx="24" cy="22" r="3" fill="#2563eb"/>
+            <defs>
+              <linearGradient id="brandGrad" x1="12" y1="9" x2="36" y2="39">
+                <stop stop-color="#60a5fa"/><stop offset="1" stop-color="#2563eb"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="brand-copy">
+          <h1>MINA<span>EXPERTA</span></h1>
+          <p>Sistema experto de evacuación · Minería subterránea</p>
+        </div>
+      </div>
+
+      <div class="topbar-center">
+        <span class="top-meta" id="topScenario">ESC-01 · Voladura en Frente 340</span>
+        <span class="clock" id="topClock">06:42</span>
+      </div>
+
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" id="btnTheme" type="button" aria-pressed="false">Modo oscuro</button>
+        <button class="btn btn-ghost" id="btnTest" type="button">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 6h13M3.5 14h13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="7.5" cy="6" r="2.2" fill="var(--panel)" stroke="currentColor" stroke-width="1.5"/><circle cx="12.5" cy="14" r="2.2" fill="var(--panel)" stroke="currentColor" stroke-width="1.5"/></svg>
+          Probar datos
+        </button>
+        <button class="btn btn-ghost" id="btnRules" type="button">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 3.5h9.5A2.5 2.5 0 0 1 16 6v10.5H6a2 2 0 0 1-2-2v-11Z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 7h6M6.5 10h6M6.5 13h3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Catálogo de reglas
+        </button>
+        <button class="btn btn-primary" id="btnRun" type="button">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5v3M10 14.5v3M2.5 10h3M14.5 10h3M4.7 4.7l2.1 2.1M13.2 13.2l2.1 2.1M15.3 4.7l-2.1 2.1M6.8 13.2l-2.1 2.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="10" cy="10" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          Ejecutar inferencia
+        </button>
+      </div>
+    </header>
+
+    <!-- ================= WORKSPACE ================= -->
+    <main class="workspace">
+      <!-- ---------- SIDEBAR IZQUIERDA ---------- -->
+      <aside class="sidebar sidebar-left">
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Escenarios</h2>
+            <span class="panel-tag">03</span>
+          </div>
+          <div class="scenario-list" id="scenarioList"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Cómo usar</h2>
+          </div>
+          <ol class="help-steps">
+            <li><span>1</span><p>Elige un escenario de emergencia.</p></li>
+            <li><span>2</span><p>Revisa el plano y las rutas de evacuación.</p></li>
+            <li><span>3</span><p>Consulta las decisiones o prueba tus propios datos.</p></li>
+          </ol>
+        </section>
+      </aside>
+
+      <!-- ---------- MAPA ---------- -->
+      <section class="map-panel">
+        <div class="map-head">
+          <div class="map-title">
+            <span class="eyebrow">Unidad Minera San Rafael · Plano esquemático</span>
+            <h2 id="scenarioTitle">Voladura en Frente 340</h2>
+            <p id="scenarioDesc">Cargando escenario…</p>
+          </div>
+          <div class="kpis" id="kpis"></div>
+        </div>
+
+        <div class="custom-banner" id="customBanner" hidden>
+          <span id="customBannerText"></span>
+          <button class="link-btn" id="btnResetCustom" type="button">Volver al escenario original</button>
+        </div>
+
+        <div class="map-toolbar">
+          <div class="segmented" id="levelFilter" role="group" aria-label="Filtrar por nivel">
+            <button class="active" data-level="all" type="button">Todo el plano</button>
+            <button data-level="1" type="button">Nivel 1</button>
+            <button data-level="2" type="button">Nivel 2</button>
+          </div>
+          <div class="map-tools">
+            <label class="switch-control" title="Superponer la ruta de la línea base">
+              <input type="checkbox" id="toggleBaseline" />
+              <span class="switch-track"><span></span></span>
+              <span class="switch-label">Línea base</span>
+            </label>
+            <div class="zoom-controls">
+              <button id="zoomOut" type="button" aria-label="Alejar">−</button>
+              <button id="zoomReset" type="button" aria-label="Restablecer zoom">⌂</button>
+              <button id="zoomIn" type="button" aria-label="Acercar">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="map-canvas" id="mapCanvas">
+          <svg id="mineMap" viewBox="0 0 980 810" role="img" aria-label="Plano de la mina con riesgos y rutas de evacuación"></svg>
+          <div class="map-hint">Clic en un túnel para ver el detalle</div>
+          <div class="map-legend">
+            <span><i class="dot salida"></i>Salida</span>
+            <span><i class="dot refugio"></i>Refugio</span>
+            <span><i class="line route"></i>Ruta</span>
+            <span><i class="swatch alerta"></i>Alerta</span>
+            <span><i class="swatch alto"></i>Alto</span>
+            <span><i class="swatch peligro"></i>Cerrado</span>
+          </div>
+          <div class="tooltip" id="tooltip" role="status"></div>
+          <div class="map-toast" id="toast" role="status"></div>
+          <div class="inspector" id="inspector" hidden></div>
+        </div>
+      </section>
+
+      <!-- ---------- CONSOLA DERECHA ---------- -->
+      <aside class="sidebar sidebar-right">
+        <div class="console-head">
+          <div>
+            <h2>Decisiones y explicación</h2>
+            <p id="consoleSub">Qué debe hacer cada persona y por qué</p>
+          </div>
+          <span class="console-badge" id="consoleBadge">—</span>
+        </div>
+        <div class="tabs" id="tabs" role="tablist">
+          <button class="tab active" data-tab="decisiones" type="button">Decisiones<span id="tabCountDec">0</span></button>
+          <button class="tab" data-tab="reglas" type="button">Reglas<span id="tabCountRules">0</span></button>
+          <button class="tab" data-tab="traza" type="button">Registro<span id="tabCountTrace">0</span></button>
+          <button class="tab" data-tab="comparativa" type="button">Comparar</button>
+        </div>
+        <div class="tab-body" id="tabBody"></div>
+      </aside>
+    </main>
+
+    <!-- ================= STATUS BAR ================= -->
+    <footer class="statusbar">
+      <span class="status-item"><i class="mini-dot ok"></i> Prototipo académico · cálculo en el navegador</span>
+      <span class="status-spacer"></span>
+      <span class="status-item mono" id="inferenceStats">—</span>
+    </footer>
+  </div>
+
+  <!-- ================= MODAL ================= -->
+  <div class="modal-backdrop" id="modalBackdrop" hidden>
+    <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head">
+        <div>
+          <span class="eyebrow" id="modalEyebrow">Sistema experto</span>
+          <h2 id="modalTitle">Detalle</h2>
+        </div>
+        <button class="icon-btn" id="modalClose" type="button" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/engine.js"></script>
+  <script src="assets/js/planner.js"></script>
+  <script src="assets/js/explanations.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

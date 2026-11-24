@@ -4,6 +4,24 @@
 
 Una entrada por sesión, la más reciente arriba. Tres líneas bastan.
 
+## 2026-11-24 · Prototipo web
+
+- Hice: incorporé el ZIP de la presentación a la rama local y conecté el diagnóstico de peligro por gases con el cierre del túnel.
+- Falló: el diagnóstico de gas en peligro podía coexistir con un túnel transitable.
+- Siguiente paso: presentar en el plano la secuencia de lectura, reglas activadas y efecto sobre la ruta del minero.
+
+## 2026-11-24 · Demo interactiva
+
+- Hice: separé la inferencia, las rutas y las explicaciones. Integré el formulario de simulación y el selector de tema.
+- Falló: el ZIP nuevo no permitía editar H₂S ni superar el umbral de CO₂ desde el formulario. Amplié los controles.
+- Siguiente paso: ensayar la presentación con un cambio de lectura y seguir su efecto desde la traza hasta la ruta.
+
+## 2026-11-24 · Razonamiento en el plano
+
+- Hice: vinculé los pasos de cada minero con su ubicación, los tramos relevantes y las rutas comparadas.
+- Falló / dudas: queda pendiente revisar la legibilidad del resaltado en el proyector.
+- Siguiente paso: ensayar el caso de Jorge en el incendio y revisar cuánto espacio necesita el plano.
+
 ## Plantilla
 
 ```
