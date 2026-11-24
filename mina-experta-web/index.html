@@ -8,7 +8,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="assets/js/theme.js"></script>
   <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="stylesheet" href="assets/css/theme.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -40,6 +42,11 @@
       </div>
 
       <div class="topbar-actions">
+        <button class="btn btn-ghost" id="btnTheme" type="button" aria-pressed="false">Modo oscuro</button>
+        <button class="btn btn-ghost" id="btnTest" type="button">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 6h13M3.5 14h13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="7.5" cy="6" r="2.2" fill="var(--panel)" stroke="currentColor" stroke-width="1.5"/><circle cx="12.5" cy="14" r="2.2" fill="var(--panel)" stroke="currentColor" stroke-width="1.5"/></svg>
+          Probar datos
+        </button>
         <button class="btn btn-ghost" id="btnRules" type="button">
           <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 3.5h9.5A2.5 2.5 0 0 1 16 6v10.5H6a2 2 0 0 1-2-2v-11Z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 7h6M6.5 10h6M6.5 13h3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           Catálogo de reglas
@@ -70,7 +77,7 @@
           <ol class="help-steps">
             <li><span>1</span><p>Elige un escenario de emergencia.</p></li>
             <li><span>2</span><p>Revisa el plano y las rutas de evacuación.</p></li>
-            <li><span>3</span><p>Consulta la decisión de cada persona.</p></li>
+            <li><span>3</span><p>Consulta las decisiones o prueba tus propios datos.</p></li>
           </ol>
         </section>
       </aside>
@@ -84,6 +91,11 @@
             <p id="scenarioDesc">Cargando escenario…</p>
           </div>
           <div class="kpis" id="kpis"></div>
+        </div>
+
+        <div class="custom-banner" id="customBanner" hidden>
+          <span id="customBannerText"></span>
+          <button class="link-btn" id="btnResetCustom" type="button">Volver al escenario original</button>
         </div>
 
         <div class="map-toolbar">
@@ -166,6 +178,8 @@
 
   <script src="assets/js/data.js"></script>
   <script src="assets/js/engine.js"></script>
+  <script src="assets/js/planner.js"></script>
+  <script src="assets/js/explanations.js"></script>
   <script src="assets/js/app.js"></script>
 </body>
 </html>

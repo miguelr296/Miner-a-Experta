@@ -7,6 +7,8 @@ const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
 
 const state = {
   escenarioId: 'ESC-01',
+  escenarioSimulado: null,
+  testTunnelId: null,
   resultado: null,
   selectedMiner: 'm1',
   selectedTunnel: null,
@@ -51,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
   seleccionarEscenario(inicial, { silencioso: true });
   const ver = params.get('ver');
   if (ver === 'catalogo') setTimeout(abrirCatalogoReglas, 120);
+  else if (ver === 'datos') setTimeout(abrirPanelDatos, 120);
   else if (ver && ver.startsWith('tunel:')) setTimeout(() => abrirExplicacionTunel(ver.slice(6)), 120);
   else if (ver && ver.startsWith('minero:')) setTimeout(() => abrirExplicacionMinero(ver.slice(7)), 120);
 });
@@ -58,6 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
 function bindEvents() {
   $('#btnRun').addEventListener('click', () => ejecutarYRefrescar(true));
   $('#btnRules').addEventListener('click', abrirCatalogoReglas);
+  $('#btnTest').addEventListener('click', abrirPanelDatos);
+  $('#btnResetCustom').addEventListener('click', restablecerEscenarioOriginal);
   $('#levelFilter').addEventListener('click', onLevelFilter);
   $('#toggleBaseline').addEventListener('change', e => {
     state.showBaseline = e.target.checked;
@@ -83,6 +88,9 @@ function bindEvents() {
   map.addEventListener('click', onMapClick);
 
   $('#inspector').addEventListener('click', onInspectorClick);
+  $('#modalBody').addEventListener('input', onModalInput);
+  $('#modalBody').addEventListener('change', onModalChange);
+  $('#modalBody').addEventListener('click', onModalBodyClick);
   $('#modalClose').addEventListener('click', cerrarModal);
   $('#modalBackdrop').addEventListener('click', e => {
     if (e.target.id === 'modalBackdrop') cerrarModal();
@@ -106,8 +114,15 @@ function escenarioActual() {
   return ESCENARIOS.find(e => e.id === state.escenarioId) || ESCENARIOS[0];
 }
 
+function escenarioActivo() {
+  return state.escenarioSimulado || escenarioActual();
+}
+
 function seleccionarEscenario(id, opciones = {}) {
   state.escenarioId = id;
+  state.escenarioSimulado = null;
+  state.testTunnelId = null;
+  state.selectedMiner = null;
   state.selectedTunnel = null;
   state.showBaseline = false;
   $('#toggleBaseline').checked = false;
@@ -117,9 +132,11 @@ function seleccionarEscenario(id, opciones = {}) {
 }
 
 function ejecutarYRefrescar(mostrarToast) {
-  const esc = escenarioActual();
+  const esc = escenarioActivo();
   state.resultado = ejecutarMotor(esc);
-  state.selectedMiner = state.resultado.mineros[0]?.id || null;
+  if (!state.selectedMiner || !state.resultado.mineros.some(m => m.id === state.selectedMiner)) {
+    state.selectedMiner = state.resultado.mineros[0]?.id || null;
+  }
   renderScenarioList();
   renderHeader();
   renderKpis();
@@ -129,7 +146,7 @@ function ejecutarYRefrescar(mostrarToast) {
   renderTab();
   updateConsole();
   if (mostrarToast) {
-    showToast(`Inferencia ${esc.id} completada · ${state.resultado.resumen.reglas} reglas en ${state.resultado.resumen.duracion} ms`);
+    showToast(`Inferencia ${state.escenarioId} completada · ${state.resultado.resumen.reglas} reglas en ${state.resultado.resumen.duracion} ms`);
   }
 }
 
@@ -159,12 +176,21 @@ function onScenarioClick(e) {
    CABECERA / KPIs
    ============================================================ */
 function renderHeader() {
-  const esc = escenarioActual();
-  $('#topScenario').textContent = `${esc.id} · ${esc.nombre}`;
-  $('#topClock').textContent = esc.hora;
-  $('#scenarioTitle').textContent = esc.nombre;
+  const esc = escenarioActivo();
+  const base = escenarioActual();
+  $('#topScenario').textContent = `${base.id} · ${base.nombre}`;
+  $('#topClock').textContent = base.hora;
+  $('#scenarioTitle').textContent = base.nombre;
   $('#scenarioDesc').textContent = esc.descripcion;
-  document.title = `${esc.id} · Mina Experta`;
+  document.title = `${base.id} · Mina Experta`;
+
+  const banner = $('#customBanner');
+  if (banner) {
+    banner.hidden = !esc.simulado;
+    if (esc.simulado) {
+      $('#customBannerText').innerHTML = `<strong>Datos personalizados</strong> en ${escapar(esc.simuladoTunelNombre)} · el resto de la mina mantiene el escenario original`;
+    }
+  }
 }
 
 function renderKpis() {
@@ -210,7 +236,7 @@ function renderMiniMetrics() {
 
 function updateConsole() {
   const r = state.resultado;
-  $('#consoleBadge').textContent = `${r.mineros.length} personas`;
+  $('#consoleBadge').textContent = r.escenario?.simulado ? 'Prueba personalizada' : `${r.mineros.length} personas`;
   $('#consoleSub').textContent = `${r.resumen.evacuando} evacúan · ${r.resumen.refugiados} se refugian · ${r.resumen.esperando} esperan`;
   $('#tabCountDec').textContent = r.mineros.length;
   $('#tabCountRules').textContent = r.resumen.reglasUnicas;
@@ -378,7 +404,7 @@ function dibujarNodo(n, r) {
     shape = `<polygon class="node-shape" points="0,-10.5 10.5,0 0,10.5 -10.5,0" fill="#fffbeb" stroke="${config.color}" stroke-width="2.2"/>
       <circle r="2.8" fill="#d97706"/>`;
   } else {
-    shape = `<circle class="node-shape" r="7" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+    shape = `<circle class="node-shape" r="7" fill="var(--panel)" stroke="#94a3b8" stroke-width="2"/>
       <circle r="2" fill="#64748b"/>`;
   }
   const labelY = n.y + (n.tipo === 'interseccion' ? 21 : 26);
@@ -817,19 +843,19 @@ function renderTraza() {
 /* ---------- Comparativa ---------- */
 function renderComparativa() {
   const r = state.resultado;
-  const conSalida = r.mineros.filter(m => m.rutaSalida);
+  const conSalida = r.mineros.filter(m => m.rutaSalida && m.rutaBase);
   const expSistema = sum(conSalida.map(m => m.rutaSalida.exposicion));
-  const expBase = sum(conSalida.map(m => m.rutaBase ? m.rutaBase.exposicion : 0));
+  const expBase = sum(conSalida.map(m => m.rutaBase.exposicion));
   const lenSistema = sum(conSalida.map(m => m.rutaSalida.longitud));
-  const lenBase = sum(conSalida.map(m => m.rutaBase ? m.rutaBase.longitud : 0));
+  const lenBase = sum(conSalida.map(m => m.rutaBase.longitud));
   const diferencia = expBase - expSistema;
 
   const filas = r.mineros.map(m => {
     const sistema = m.rutaSalida
-      ? `${fmt(m.rutaSalida.longitud)} m · exp ${m.rutaSalida.exposicion}`
+      ? `${fmt(m.rutaSalida.longitud)} m · riesgo ${m.rutaSalida.exposicion}`
       : 'Sin ruta';
     const base = m.rutaBase
-      ? `${fmt(m.rutaBase.longitud)} m · exp ${m.rutaBase.exposicion}`
+      ? `${fmt(m.rutaBase.longitud)} m · riesgo ${m.rutaBase.exposicion}`
       : 'Sin ruta';
     let dif = '—';
     let clase = 'info';
@@ -854,26 +880,26 @@ function renderComparativa() {
 
   return `<div class="compare-hero">
       <div class="compare-card system">
-        <span>Exposición · sistema experto</span>
+        <span>Puntaje de riesgo · sistema experto</span>
         <strong>${expSistema}</strong>
         <small>${fmt(lenSistema)} m de recorrido evaluado</small>
       </div>
       <div class="compare-card">
-        <span>Exposición · línea base</span>
+        <span>Puntaje de riesgo · línea base</span>
         <strong>${expBase}</strong>
         <small>${fmt(lenBase)} m de recorrido evaluado</small>
       </div>
     </div>
-    <div class="compare-note">La línea base es un <strong>Dijkstra con filtro por umbral crítico</strong> (D06): ignora los multiplicadores de riesgo y la propagación. La exposición suma el nivel de cada tramo (normal 0 · alerta 1 · alto 2).</div>
+    <div class="compare-note">La línea base usa solo la longitud de los túneles y bloquea los tramos críticos: no considera los multiplicadores de riesgo ni la propagación. El puntaje suma el nivel simulado de cada tramo (normal 0 · alerta 1 · alto 2). Los totales comparan solo mineros con ruta a superficie en ambos métodos.</div>
     <table class="compare-table">
       <thead><tr><th>Minero</th><th>Sistema</th><th>Base</th><th>Δ</th></tr></thead>
       <tbody>${filas}</tbody>
     </table>
-    <div class="compare-foot">${diferencia > 0
-      ? `El sistema reduce el índice de exposición en <strong>${diferencia} punto(s)</strong> respecto de la línea base${diferencia >= 2 ? ', evitando tramos que el filtro binario no detecta.' : '.'}`
+    <div class="compare-foot">${conSalida.length === 0 ? 'No hay pares de rutas a superficie para comparar.' : diferencia > 0
+      ? `El sistema reduce el puntaje de riesgo en <strong>${diferencia} punto(s)</strong> respecto de la línea base${diferencia >= 2 ? ', evitando tramos que el filtro binario no detecta.' : '.'}`
       : diferencia === 0
-        ? 'Ambas estrategias coinciden en exposición para este escenario; el sistema además explica y cuantifica el riesgo de cada tramo.'
-        : 'La línea base obtiene menor exposición en este caso porque su filtro bloquea más túneles; el sistema prioriza rutas viables con costo ajustado.'
+        ? 'Ambas estrategias coinciden en puntaje de riesgo para este escenario; el sistema además explica y cuantifica el riesgo de cada tramo.'
+        : 'La línea base obtiene un puntaje menor en este caso porque su filtro bloquea más túneles; el sistema prioriza rutas viables con costo ajustado.'
     }</div>`;
 }
 
@@ -896,6 +922,255 @@ function cerrarModal() {
   document.body.style.overflow = '';
 }
 
+/* ============================================================
+   PRUEBA DE DATOS
+   ============================================================ */
+const CAMPOS_PRUEBA = [
+  { key: 'co', label: 'CO', unidad: 'ppm', min: 0, max: 250, step: 1, dec: 0 },
+  { key: 'no2', label: 'NO₂', unidad: 'ppm', min: 0, max: 15, step: 0.1, dec: 1 },
+  { key: 'co2', label: 'CO₂', unidad: 'ppm', min: 0, max: 80000, step: 10, dec: 0 },
+  { key: 'h2s', label: 'H₂S', unidad: 'ppm', min: 0, max: 50, step: 0.1, dec: 1 },
+  { key: 'o2', label: 'O₂', unidad: '%', min: 14, max: 22, step: 0.1, dec: 1 },
+  { key: 'vel', label: 'Velocidad del aire', unidad: 'm/min', min: 0, max: 120, step: 1, dec: 0, ayuda: 'Mínimo 20 · Con ANFO 25' }
+];
+
+function ayudaCampoPrueba(campo) {
+  const umbral = UMBRALES[campo.key];
+  if (!umbral) return campo.ayuda;
+  const operador = umbral.tipo === 'min' ? '&lt;' : '&gt;';
+  return [
+    ['Alerta', umbral.alerta],
+    ['Alto', umbral.alto],
+    ['Peligro', umbral.peligro]
+  ].map(([nivel, valor]) => `${nivel} ${operador} ${fmt(valor, campo.dec)}`).join(' · ');
+}
+
+const PRESETS_PRUEBA = {
+  gas: { co: 120, no2: 12, co2: 8000, h2s: 0.1, o2: 18.5, vel: 15, incendio: false, derrumbe: false, anfo: false },
+  oxigeno: { co: 10, no2: 1, co2: 2000, h2s: 0.1, o2: 15.5, vel: 20, incendio: false, derrumbe: false, anfo: false },
+  normal: { co: 5, no2: 0.5, co2: 420, h2s: 0.1, o2: 20.9, vel: 70, incendio: false, derrumbe: false, anfo: false }
+};
+
+function abrirPanelDatos() {
+  const esc = escenarioActivo();
+  const tunelId = state.selectedTunnel || state.testTunnelId || primerTunelDePrueba(esc);
+  state.testTunnelId = tunelId;
+  abrirModal('Prueba del sistema', 'Probar datos', formularioPrueba(esc, tunelId));
+}
+
+function primerTunelDePrueba(esc) {
+  const resultado = state.resultado;
+  const minero = resultado?.mineros.find(m => m.id === state.selectedMiner) || resultado?.mineros[0];
+  const abiertos = (resultado?.tuneles || []).filter(t => !t.cerrado);
+  const porId = id => abiertos.find(t => t.id === id);
+  const ruta = (minero?.rutaAsignada?.tuneles || []).map(t => porId(t.id)).filter(Boolean);
+
+  const ordenarRiesgo = lista => lista
+    .filter(t => t.nivel !== 'normal')
+    .sort((a, b) => (NIVEL_VALOR[b.nivel] || 0) - (NIVEL_VALOR[a.nivel] || 0));
+
+  const rutaRiesgo = ordenarRiesgo(ruta);
+  if (rutaRiesgo.length) return rutaRiesgo[0].id;
+  if (ruta.length) return ruta[0].id;
+
+  const abiertosRiesgo = ordenarRiesgo(abiertos);
+  if (abiertosRiesgo.length) return abiertosRiesgo[0].id;
+  if (abiertos.length) return abiertos[0].id;
+  return Object.keys(esc.sensores || {})[0] || TUNELES[0].id;
+}
+
+function lecturasParaPrueba(esc, tunelId) {
+  const delResultado = state.resultado?.porTunel?.[tunelId]?.lecturas;
+  return delResultado || { ...SENSORES_BASE, ...(esc.sensores[tunelId] || {}) };
+}
+
+function formularioPrueba(esc, tunelId, lecturasOverride) {
+  const tunel = TUNELES.find(t => t.id === tunelId) || TUNELES[0];
+  const l = lecturasOverride || lecturasParaPrueba(esc, tunel.id);
+  const opciones = TUNELES.map(t => `<option value="${t.id}" ${t.id === tunel.id ? 'selected' : ''}>${escapar(t.nombre)} · ${t.longitud} m</option>`).join('');
+  const campos = CAMPOS_PRUEBA.map(c => {
+    const valor = Number(l[c.key]);
+    return `<div class="test-field">
+      <div class="test-field-head">
+        <label for="test-${c.key}">${c.label}</label>
+        <output id="test-out-${c.key}">${fmt(valor, c.dec)} ${c.unidad}</output>
+      </div>
+      <input type="range" id="test-${c.key}" data-sensor="${c.key}" data-dec="${c.dec}" data-unit="${c.unidad}" min="${c.min}" max="${c.max}" step="${c.step}" value="${valor}">
+      <div class="test-scale">${ayudaCampoPrueba(c)}</div>
+    </div>`;
+  }).join('');
+  const eventos = [
+    ['incendio', 'Incendio'],
+    ['derrumbe', 'Derrumbe'],
+    ['anfo', 'ANFO activo']
+  ].map(([key, label]) => `<label class="test-toggle"><input type="checkbox" id="test-${key}" data-event="${key}" ${l[key] ? 'checked' : ''}><span>${label}</span></label>`).join('');
+
+  return `<p class="modal-note">Ajusta las lecturas de un túnel y observa cómo cambian el riesgo, las rutas y las decisiones.</p>
+    <div class="test-row">
+      <label for="testTunnel">Túnel a probar</label>
+      <select id="testTunnel" class="test-select">${opciones}</select>
+    </div>
+    <div class="test-presets">
+      <span>Ejemplos rápidos:</span>
+      <button class="chip" data-test-preset="gas" type="button">Gas crítico</button>
+      <button class="chip" data-test-preset="oxigeno" type="button">Falta de O₂</button>
+      <button class="chip" data-test-preset="normal" type="button">Sin riesgo</button>
+    </div>
+    <div class="test-grid">${campos}</div>
+    <div class="test-events">
+      <span class="test-label">Eventos reportados</span>
+      ${eventos}
+    </div>
+    <div class="test-actions">
+      <button class="btn btn-ghost" data-test-reset type="button">Valores originales</button>
+      <button class="btn btn-primary" data-test-apply type="button">Aplicar y recalcular</button>
+    </div>
+    <p class="test-note">La prueba no modifica los escenarios guardados. Puedes volver al escenario original desde el aviso del plano.</p>`;
+}
+
+function onModalInput(e) {
+  const input = e.target.closest('[data-sensor]');
+  if (!input) return;
+  const campo = CAMPOS_PRUEBA.find(c => c.key === input.dataset.sensor);
+  const salida = $(`#test-out-${campo.key}`);
+  if (salida) salida.textContent = `${fmt(Number(input.value), campo.dec)} ${campo.unidad}`;
+}
+
+function onModalChange(e) {
+  if (e.target.id !== 'testTunnel') return;
+  state.testTunnelId = e.target.value;
+  $('#modalBody').innerHTML = formularioPrueba(escenarioActivo(), state.testTunnelId);
+}
+
+function onModalBodyClick(e) {
+  const preset = e.target.closest('[data-test-preset]');
+  if (preset) {
+    aplicarPresetPrueba(preset.dataset.testPreset);
+    return;
+  }
+  if (e.target.closest('[data-test-apply]')) {
+    aplicarDatosPrueba();
+    return;
+  }
+  if (e.target.closest('[data-test-reset]')) {
+    restablecerValoresPrueba();
+  }
+}
+
+function aplicarPresetPrueba(nombre) {
+  const preset = PRESETS_PRUEBA[nombre];
+  if (!preset) return;
+  CAMPOS_PRUEBA.forEach(c => {
+    const input = $(`#test-${c.key}`);
+    if (input) input.value = preset[c.key];
+    const salida = $(`#test-out-${c.key}`);
+    if (salida) salida.textContent = `${fmt(preset[c.key], c.dec)} ${c.unidad}`;
+  });
+  ['incendio', 'derrumbe', 'anfo'].forEach(key => {
+    const el = $(`#test-${key}`);
+    if (el) el.checked = Boolean(preset[key]);
+  });
+}
+
+function leerFormularioPrueba() {
+  const lecturas = {};
+  CAMPOS_PRUEBA.forEach(c => {
+    const el = $(`#test-${c.key}`);
+    lecturas[c.key] = el ? Number(el.value) : SENSORES_BASE[c.key];
+  });
+  ['incendio', 'derrumbe', 'anfo'].forEach(key => {
+    const el = $(`#test-${key}`);
+    lecturas[key] = el ? el.checked : false;
+  });
+  return lecturas;
+}
+
+function aplicarDatosPrueba() {
+  const base = escenarioActual();
+  const tunel = TUNELES.find(t => t.id === state.testTunnelId) || TUNELES[0];
+  const lecturas = leerFormularioPrueba();
+  const original = { ...SENSORES_BASE, ...(base.sensores[tunel.id] || {}) };
+  const sinCambios = Object.keys(lecturas).every(k => Number(lecturas[k]) === Number(original[k]));
+  const anterior = state.resultado;
+
+  if (sinCambios) {
+    state.escenarioSimulado = null;
+    ejecutarYRefrescar(false);
+    cerrarModal();
+    showToast(anterior?.escenario?.simulado ? 'Datos originales · se restableció el escenario' : 'Datos originales · el escenario no cambia');
+    return;
+  }
+
+  const sensores = {
+    ...base.sensores,
+    [tunel.id]: { ...(base.sensores[tunel.id] || {}), ...lecturas }
+  };
+  const simulado = {
+    ...base,
+    id: `${base.id}-PRUEBA`,
+    simulado: true,
+    simuladoTunelId: tunel.id,
+    simuladoTunelNombre: tunel.nombre,
+    descripcion: `Prueba con datos propios en ${tunel.nombre}. El resto de la mina conserva el escenario ${base.nombre}.`,
+    sensores
+  };
+  state.escenarioSimulado = simulado;
+  ejecutarYRefrescar(false);
+  cerrarModal();
+  showToast(resumenCambiosPrueba(anterior, state.resultado));
+}
+
+function resumenCambiosPrueba(antes, despues) {
+  const partes = [];
+  const tunelId = despues.escenario?.simuladoTunelId;
+  const tunel = tunelId ? despues.tuneles.find(t => t.id === tunelId) : null;
+  const previo = tunelId ? antes?.tuneles.find(t => t.id === tunelId) : null;
+
+  if (tunel && previo) {
+    const estadoAntes = previo.cerrado ? 'cerrado' : nivelTexto(previo.nivel);
+    const estadoAhora = tunel.cerrado ? 'cerrado' : nivelTexto(tunel.nivel);
+    if (estadoAntes !== estadoAhora) {
+      partes.push(`${tunel.nombre}: ${estadoAntes} → ${estadoAhora}`);
+    }
+  }
+
+  const cambios = [];
+  despues.mineros.forEach(m => {
+    const anterior = antes?.mineros.find(x => x.id === m.id);
+    if (anterior && anterior.decision !== m.decision) {
+      cambios.push(`${m.nombre.split(' ')[0]}: ${etiquetaDecision(anterior.decision)} → ${etiquetaDecision(m.decision)}`);
+    }
+  });
+
+  if (cambios.length) {
+    partes.push(`${cambios.length} ${cambios.length === 1 ? 'decisión' : 'decisiones'}: ${cambios.slice(0, 2).join(' · ')}${cambios.length > 2 ? ` +${cambios.length - 2}` : ''}`);
+  } else {
+    const rutas = despues.mineros.filter(m => {
+      const anterior = antes?.mineros.find(x => x.id === m.id);
+      return anterior && (m.rutaAsignada?.nodos.join() || '') !== (anterior.rutaAsignada?.nodos.join() || '');
+    }).length;
+    partes.push(rutas ? `${rutas} ${rutas === 1 ? 'ruta recalculada' : 'rutas recalculadas'}` : 'sin cambios en las rutas');
+  }
+
+  return `Datos aplicados · ${partes.join(' · ')}`;
+}
+
+function restablecerValoresPrueba() {
+  const base = escenarioActual();
+  const tunelId = state.testTunnelId;
+  const lecturas = { ...SENSORES_BASE, ...(base.sensores[tunelId] || {}) };
+  $('#modalBody').innerHTML = formularioPrueba(base, tunelId, lecturas);
+}
+
+function restablecerEscenarioOriginal() {
+  if (!state.escenarioSimulado) return;
+  state.escenarioSimulado = null;
+  state.testTunnelId = null;
+  state.selectedMiner = null;
+  ejecutarYRefrescar(false);
+  showToast('Escenario original restablecido');
+}
+
 function abrirCatalogoReglas() {
   const r = state.resultado;
   const grupos = ['DIAG', 'RIESGO', 'RUTA', 'DEC'];
@@ -905,7 +1180,7 @@ function abrirCatalogoReglas() {
       <div class="modal-kpi"><span>Supuesto</span><strong>${REGLAS.filter(x => x.fuente === 'SUPUESTO').length}</strong></div>
       <div class="modal-kpi"><span>Disparadas</span><strong>${r ? r.resumen.reglasUnicas : 0}</strong></div>
     </div>
-    <p class="modal-note" style="margin-bottom:14px">Base de conocimiento separada del motor (D03, D13). Cada regla declara si su umbral proviene de la norma o es un supuesto del equipo (D11). La prioridad resuelve conflictos; la refracción evita disparos repetidos.</p>
+    <p class="modal-note" style="margin-bottom:14px">Cada regla indica si su umbral proviene de una norma de seguridad o es un criterio propio del sistema. La prioridad resuelve conflictos y la refracción evita que una regla se dispare dos veces con el mismo hecho.</p>
     ${grupos.map(cat => {
       const regs = REGLAS.filter(x => x.categoria === cat);
       return `<section class="modal-section">
@@ -922,8 +1197,6 @@ function abrirCatalogoReglas() {
               <div>
                 <h4>${escapar(reg.nombre)}</h4>
                 <div class="logic"><b>SI</b> ${escapar(reg.si)} <b>→ ENTONCES</b> ${escapar(reg.entonces)}</div>
-                <p>${escapar(reg.detalle)}</p>
-                <div class="cita">${escapar(reg.cita)}</div>
               </div>
               <div class="rc-right">
                 <span class="rule-prio">P${reg.prioridad}</span>
@@ -959,17 +1232,27 @@ function abrirExplicacionTunel(id) {
       <td><span class="lvl ${l.vel < UMBRAL_VIENTO.minimo ? 'alerta' : 'normal'}">${l.vel < UMBRAL_VIENTO.minimo ? 'Alerta' : 'Normal'}</span></td>
     </tr>`;
   const cadena = ex.reglas.map(reg => `<div class="explain-step regla">
-      <h4><span class="rule-tag">${reg.regla}</span>${escapar(reg.nombre)}</h4>
-      <p>${escapar(reg.detalle)} <span style="color:#9ca3af">· prioridad ${reg.prioridad} · ${reg.fuente}</span></p>
+      <h4><span class="rule-tag">Paso ${reg.paso} · ${reg.regla}</span>${escapar(reg.nombre)}</h4>
+      <p>${escapar(reg.detalle)} <span style="color:var(--muted)">· prioridad ${reg.prioridad} · ${reg.fuente}</span></p>
     </div>`).join('');
   const conflictos = ex.conflictos.length
     ? `<section class="modal-section"><h3>Conflictos resueltos</h3>${ex.conflictos.map(c => `<div class="trace-conflict">${escapar(c.detalle)}</div>`).join('')}</section>`
     : '';
   const conclusion = t.cerrado
-    ? `El túnel queda <strong style="color:#dc2626">cerrado</strong>. El planificador lo excluye del grafo y recalcula todas las rutas.`
+    ? `El túnel queda <strong style="color:var(--red)">cerrado</strong>. El planificador lo excluye del grafo y recalcula todas las rutas.`
     : t.nivel === 'normal'
       ? 'El túnel no tiene afectación: conserva su longitud como costo base.'
       : `El túnel sigue <strong>transitable</strong> con un costo de <strong>${fmt(t.costo)}</strong> (${t.longitud} m × ${t.multiplicador}).`;
+
+  const eventos = [
+    l.incendio ? 'Incendio reportado' : '',
+    l.derrumbe ? 'Derrumbe reportado' : '',
+    l.anfo ? 'ANFO activo' : ''
+  ].filter(Boolean);
+  const rutas = ex.minerosEnRuta.map(m => escapar(m.nombre)).join(', ');
+  const efecto = rutas
+    ? `El túnel forma parte de las rutas asignadas a ${rutas}.`
+    : 'Las rutas asignadas en este escenario no pasan por este túnel.';
 
   abrirModal('Explicación ¿por qué?', t.nombre, `
     <div class="modal-kpis">
@@ -979,20 +1262,21 @@ function abrirExplicacionTunel(id) {
       <div class="modal-kpi"><span>Reglas</span><strong>${ex.reglas.length}</strong></div>
     </div>
     <section class="modal-section">
-      <h3>Lecturas de sensores</h3>
+      <h3>1. Lecturas y eventos</h3>
+      ${eventos.length ? `<p class="modal-note">${eventos.join(' · ')}</p>` : ''}
       <table class="sensor-table">
-        <thead><tr><th>Indicador</th><th>Lectura</th><th>Umbral TWA</th><th>Nivel</th></tr></thead>
+        <thead><tr><th>Indicador</th><th>Lectura</th><th>Umbral de referencia</th><th>Nivel</th></tr></thead>
         <tbody>${filasGas}${ventilacion}</tbody>
       </table>
     </section>
     <section class="modal-section">
-      <h3>Cadena de inferencia</h3>
+      <h3>2. Reglas activadas</h3>
       <div class="explain-chain">${cadena || '<p class="modal-note">Sin reglas disparadas para este túnel.</p>'}</div>
     </section>
     ${conflictos}
     <section class="modal-section">
-      <h3>Conclusión</h3>
-      <p class="modal-note">${conclusion}</p>
+      <h3>3. Efecto en la ruta</h3>
+      <p class="modal-note">${conclusion} ${efecto}</p>
     </section>`);
 }
 
@@ -1008,7 +1292,7 @@ function abrirExplicacionMinero(id) {
     ? `<div class="route-steps" style="padding:0; flex-wrap:wrap; white-space:normal; gap:5px">${m.rutaAsignada.nodos.map((n, i) => `<span class="step-pill ${i === 0 ? 'start' : i === m.rutaAsignada.nodos.length - 1 ? (m.decision === 'refugiarse' ? 'refugio' : 'end') : ''}">${codigoNodo(n)}</span>`).join('<span class="step-arrow">›</span>')}</div>`
     : '<div class="compare-note" style="margin:0">No hay ruta transitable. El minero permanece en su ubicación y solicita brigada.</div>';
   const comparacion = m.rutaBase
-    ? `La línea base llegaría a salida en ${fmt(m.rutaBase.longitud)} m con exposición ${m.rutaBase.exposicion}.`
+    ? `La línea base llegaría a salida en ${fmt(m.rutaBase.longitud)} m con puntaje de riesgo ${m.rutaBase.exposicion}.`
     : 'La línea base no encuentra ruta a superficie en este escenario.';
 
   abrirModal('Explicación ¿cómo?', m.nombre, `

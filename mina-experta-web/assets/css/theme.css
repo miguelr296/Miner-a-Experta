@@ -1,0 +1,55 @@
+:root[data-tema="oscuro"] {
+  color-scheme: dark;
+  --bg: #0f1724;
+  --panel: #162132;
+  --panel-2: #1c293c;
+  --line: #32435a;
+  --line-2: #526782;
+  --text: #edf3fa;
+  --muted: #bbc8d9;
+  --faint: #98aac2;
+  --accent: #8bb8ff;
+  --accent-soft: #21385b;
+  --green: #86efac;
+  --green-soft: #163a2c;
+  --amber: #fcd785;
+  --amber-soft: #40321b;
+  --red: #fca5a5;
+  --red-soft: #48262c;
+  --blue: #8bb8ff;
+  --violet: #c4b5fd;
+}
+
+[data-tema="oscuro"] :is(.scenario-card:hover, .zoom-controls, .test-select, .risk-badge.normal, .sensor-table .lvl.normal) {
+  background: var(--panel-2);
+}
+
+[data-tema="oscuro"] :is(.risk-badge.alerta, .risk-badge.alto, .sensor-table .lvl.alerta, .sensor-table .lvl.alto, .cat-pill.RIESGO) {
+  color: var(--amber);
+  background: var(--amber-soft);
+}
+
+[data-tema="oscuro"] :is(.cat-pill.DIAG, .cat-pill.RUTA) {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-color: var(--line-2);
+}
+
+[data-tema="oscuro"] .btn-primary {
+  color: #101a2a;
+}
+
+[data-tema="oscuro"] .level-band { fill: var(--panel); stroke: var(--line); }
+[data-tema="oscuro"] .level-band.n2 { fill: var(--panel-2); }
+[data-tema="oscuro"] :is(.route-glow, .route-glow.refugio, .route-glow.espera) { stroke: var(--bg); }
+[data-tema="oscuro"] .route-node-ring { fill: var(--panel); }
+[data-tema="oscuro"] :is(.compare-table td, .sensor-table td) { border-color: var(--line); }
+[data-tema="oscuro"] .map-canvas {
+  background-color: var(--bg);
+  background-image: radial-gradient(var(--line) 1px, transparent 1px);
+}
+
+[data-tema="oscuro"] :is(.modal, .tooltip, .map-toast),
+[data-tema="oscuro"] .explain-step::before {
+  background: var(--panel);
+}

@@ -26,6 +26,12 @@ Luego visita `http://localhost:8000`.
 - **Consultar la base de reglas:** botón *Catálogo de reglas* en la barra superior.
 - **Cambiar de pestaña:** Decisiones, Reglas, Registro y Comparar.
 
+## Probar datos y cambiar el tema
+
+Selecciona un túnel en **Probar datos**, modifica lecturas o eventos y pulsa **Aplicar y recalcular**. El aviso del plano permite volver al escenario original. El formulario incluye los cinco gases del motor y permite ensayar valores por encima de los umbrales de peligro del modelo.
+
+El botón **Modo oscuro** alterna entre los dos temas. Al abrir la aplicación por primera vez se usa la preferencia del sistema. Si el navegador permite el almacenamiento local, se recuerda el tema elegido.
+
 ## Cómo seguir el razonamiento
 
 En el escenario de incendio (ESC-02), selecciona la Galería Principal y abre **¿Por qué?**. Lee el evento simulado, las reglas de la traza y el resultado sobre el túnel. Luego abre la decisión de un minero para ver la ruta elegida después del cierre.
@@ -49,7 +55,11 @@ index.html
 assets/
   css/styles.css
   js/data.js      # escenarios, mina, mineros y reglas
-  js/engine.js    # inferencia, costos y Dijkstra
+  js/engine.js        # memoria de hechos e inferencia
+  js/planner.js       # Dijkstra y decisiones por minero
+  js/explanations.js  # explicaciones a partir de la traza
+  js/theme.js         # preferencia de tema
+  css/theme.css       # paleta oscura
   js/app.js       # dibujo del plano e interacción
 ```
 
