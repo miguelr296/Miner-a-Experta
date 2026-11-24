@@ -4,6 +4,12 @@
 
 Una entrada por sesión, la más reciente arriba. Tres líneas bastan.
 
+### 2026-11-24 · Topología y rutas en Python
+
+- Hice: cargué una mina de siete nodos desde JSON y conecté la traza de cierre por CO con Dijkstra. La consola muestra rutas para dos mineros.
+- Falló / dudas: falta portar los demás diagnósticos y la línea base de comparación.
+- Siguiente paso exacto: incorporar la clasificación de gases y sus multiplicadores, luego contrastar el planificador con la línea base.
+
 ### 2026-11-24 · Inicio del motor Python
 
 - Hice: implementé memoria de hechos, encadenamiento, prioridad y refracción. Añadí la traza por consola para el cierre por CO y las pruebas del motor.

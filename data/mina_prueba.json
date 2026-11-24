@@ -1,0 +1,20 @@
+{
+  "nodos": [
+    { "id": "f1", "x": 0, "y": 0, "nivel": 1, "tipo": "frente" },
+    { "id": "f2", "x": 0, "y": 80, "nivel": 2, "tipo": "frente" },
+    { "id": "i2", "x": 40, "y": 0, "nivel": 1, "tipo": "interseccion" },
+    { "id": "i3", "x": 40, "y": 80, "nivel": 2, "tipo": "interseccion" },
+    { "id": "i1", "x": 100, "y": 0, "nivel": 1, "tipo": "interseccion" },
+    { "id": "r1", "x": 85, "y": 75, "nivel": 2, "tipo": "refugio" },
+    { "id": "s1", "x": 160, "y": 0, "nivel": 1, "tipo": "salida" }
+  ],
+  "aristas": [
+    { "id": "t_i2_f1", "origen": "i2", "destino": "f1", "longitud": 40 },
+    { "id": "t_i3_f2", "origen": "i3", "destino": "f2", "longitud": 40 },
+    { "id": "t_i3_f1", "origen": "i3", "destino": "f1", "longitud": 100 },
+    { "id": "t_i1_i2", "origen": "i1", "destino": "i2", "longitud": 60 },
+    { "id": "t_i1_i3", "origen": "i1", "destino": "i3", "longitud": 105 },
+    { "id": "t_i3_r1", "origen": "i3", "destino": "r1", "longitud": 50 },
+    { "id": "t_s1_i1", "origen": "s1", "destino": "i1", "longitud": 60 }
+  ]
+}

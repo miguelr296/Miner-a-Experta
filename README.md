@@ -56,10 +56,10 @@ Desde la raíz del repositorio, ejecuta la primera demostración con Python 3.10
 python -m src
 ```
 
-La demo carga los hechos de [co_demo.json](data/escenarios/co_demo.json) y el umbral de [umbrales.json](data/umbrales.json). Puedes pasar otro JSON con la propiedad `hechos` y el mismo formato:
+La demo carga los hechos y las ubicaciones de [co_demo.json](data/escenarios/co_demo.json), el umbral de [umbrales.json](data/umbrales.json) y la topología de [mina_prueba.json](data/mina_prueba.json). Puedes pasar otro archivo de escenario con el mismo formato y una topología compatible:
 
 ```text
-python -m src data/escenarios/co_demo.json
+python -m src data/escenarios/co_demo.json --mina data/mina_prueba.json
 ```
 
 La traza muestra las premisas, la regla, su prioridad, la fuente y el hecho que se escribe. El motor vuelve a evaluar las reglas cuando aparece un hecho nuevo y procesa cada par regla–entidad una vez por ejecución.
@@ -71,10 +71,12 @@ La traza muestra las premisas, la regla, su prioridad, la fuente y el hecho que 
 | `R-RIESGO-01` | Túnel en peligro | Túnel cerrado | 90 |
 | `R-RUTA-01` | Túnel cerrado | Tramo no transitable | 95 |
 
-La cadena reproduce el ejemplo de cierre del prototipo web. Las cuatro reglas de la demo están etiquetadas como `SUPUESTO`. El primer alcance llega hasta el hecho de transitabilidad. Quedan por implementar la carga de la topología y el cálculo de rutas.
+La cadena reproduce el ejemplo de cierre del prototipo web. Las cuatro reglas de la demo están etiquetadas como `SUPUESTO`. Dijkstra usa los hechos de cierre y transitabilidad para excluir aristas. Puede aplicar un multiplicador de costo de al menos 1 definido en la memoria. Para cada minero, la consola busca primero una salida y, si ninguna es alcanzable, un refugio. En la demo, el cierre obliga a m1 a pasar por i3 y recorrer 265 m. Con el túnel abierto, recorrería 160 m.
+
+La topología define nodos con identificador, coordenadas en metros, nivel y tipo. Cada arista bidireccional tiene identificador, nodo de origen, nodo de destino y longitud positiva. El escenario puede incluir una lista `mineros` con su `id` y `nodo`. Si se omite, la consola muestra únicamente la traza. Esta etapa cubre la cadena de CO en una mina de siete nodos. La línea base y los demás diagnósticos quedan para la siguiente iteración.
 
 Para ejecutar las pruebas, con pytest instalado:
 
 ```text
-python -m pytest tests/test_motor.py
+python -m pytest
 ```
