@@ -75,6 +75,18 @@ MECANICAS['R-DER-01'] = {
   detalle: () => 'Derrumbe reportado → túnel cerrado'
 };
 
+MECANICAS['R-INU-01'] = {
+  cond: f => valorHecho(f, 'inundacion') === true,
+  out: { nivel_riesgo: 'peligro' },
+  detalle: () => 'Inundación reportada → nivel de riesgo = peligro'
+};
+
+MECANICAS['R-VEN-04'] = {
+  cond: f => valorHecho(f, 'corteElectrico') === true && valorHecho(f, 'ventilacionRespaldo') === false,
+  out: { nivel_ventilacion: 'critica' },
+  detalle: () => 'Corte eléctrico sin ventilación de respaldo → ventilación crítica'
+};
+
 const NIVELES_GAS_ATTR = ORDEN_GASES.map(g => `nivel_${g}`);
 
 MECANICAS['R-RIESGO-07'] = {
@@ -139,14 +151,43 @@ function resumenNiveles(f, nivelesBuscados) {
 }
 
 /* ---------- Motor forward chaining ---------- */
-function inferirTuneles(escenario) {
+const SENSORES_REGLA = { ...UMBRALES, vel: { nombre: 'Velocidad del aire', unidad: 'm/min' } };
+const EFECTOS_REGLA = {
+  alerta: { nombre: 'Alerta', prioridad: 56 },
+  alto: { nombre: 'Riesgo alto', prioridad: 76 },
+  peligro: { nombre: 'Peligro inmediato', prioridad: 81 }
+};
+
+function crearReglaSimulada(id, sensor, operador, umbral, nivel) {
+  if (!Object.hasOwn(SENSORES_REGLA, sensor) || !Object.hasOwn(EFECTOS_REGLA, nivel) ||
+      !['>', '<'].includes(operador) || !Number.isFinite(umbral) || umbral < 0) {
+    throw new Error('Selecciona una condición, un umbral válido y un nivel de riesgo.');
+  }
+  const { nombre, unidad } = SENSORES_REGLA[sensor];
+  const efecto = EFECTOS_REGLA[nivel];
+  const si = `${nombre} ${operador} ${umbral} ${unidad}`;
+  return {
+    id, categoria: 'RIESGO', fuente: 'SIMULACIÓN', prioridad: efecto.prioridad,
+    definicion: { id, sensor, operador, umbral, nivel },
+    nombre: `${nombre}: ${efecto.nombre}`,
+    si, entonces: `Nivel de riesgo = ${efecto.nombre.toLowerCase()}`,
+    cond(f) {
+      const valor = valorHecho(f, sensor);
+      return Number.isFinite(valor) && (operador === '>' ? valor > umbral : valor < umbral);
+    },
+    out: { nivel_riesgo: nivel },
+    detalle: f => `${nombre} = ${valorHecho(f, sensor)} ${unidad} cumple ${si} → ${efecto.nombre}`
+  };
+}
+
+function inferirTuneles(escenario, reglasSimuladas = []) {
   const { lecturas, adyacencia } = prepararLecturas(escenario);
   const hechos = new Map();
 
   TUNELES.forEach(t => {
     const f = new Map();
     const l = lecturas[t.id];
-    ['co', 'no2', 'co2', 'h2s', 'o2', 'vel', 'anfo', 'incendio', 'derrumbe'].forEach(attr => {
+    Object.keys(SENSORES_BASE).forEach(attr => {
       f.set(attr, { valor: l[attr], prioridad: 0, regla: 'sensor' });
     });
     const vecinoEvento = adyacencia[t.id].some(id => lecturas[id].incendio || lecturas[id].derrumbe);
@@ -158,9 +199,7 @@ function inferirTuneles(escenario) {
     hechos.set(t.id, f);
   });
 
-  const reglasOrdenadas = REGLAS
-    .filter(r => MECANICAS[r.id])
-    .slice()
+  const reglasOrdenadas = [...REGLAS.filter(r => MECANICAS[r.id]), ...reglasSimuladas]
     .sort((a, b) => b.prioridad - a.prioridad);
 
   const disparadas = new Set();
@@ -178,7 +217,7 @@ function inferirTuneles(escenario) {
         const clave = `${regla.id}|${tunel.id}`;
         if (disparadas.has(clave)) continue;
         const f = hechos.get(tunel.id);
-        const mec = MECANICAS[regla.id];
+        const mec = MECANICAS[regla.id] ?? regla;
         const lecturasRegla = new Map();
         const memoriaConsultada = {
           get(atributo) {
@@ -247,6 +286,7 @@ function inferirTuneles(escenario) {
     return {
       ...t,
       lecturas: lecturas[t.id],
+      ventilacion: valorHecho(f, 'nivel_ventilacion'),
       nivel,
       cerrado,
       multiplicador,
@@ -259,9 +299,9 @@ function inferirTuneles(escenario) {
 }
 
 /* ---------- Ejecución de un escenario ---------- */
-function ejecutarMotor(escenario) {
+function ejecutarMotor(escenario, reglasSimuladas = []) {
   const inicio = performance.now();
-  const { tuneles, traza, conflictos, iteracion, paso: ultimoPaso } = inferirTuneles(escenario);
+  const { tuneles, traza, conflictos, iteracion, paso: ultimoPaso } = inferirTuneles(escenario, reglasSimuladas);
   let paso = ultimoPaso;
   const porTunel = Object.fromEntries(tuneles.map(t => [t.id, t]));
   const grafoExperto = construirGrafo(tuneles, 'experto');

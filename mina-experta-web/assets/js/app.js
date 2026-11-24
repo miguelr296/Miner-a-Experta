@@ -7,13 +7,18 @@ const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
 
 const state = {
   escenarioId: 'ESC-01',
+  escenariosGuardados: [],
   escenarioSimulado: null,
   testTunnelId: null,
   resultado: null,
+  ultimoRecalculo: null,
+  reglasSimuladas: [],
+  siguienteReglaSimulada: 1,
   selectedMiner: 'm1',
   selectedTunnel: null,
   tab: 'decisiones',
   recorrido: null,
+  presentacion: { activa: false, escenarios: false, decisiones: true },
   level: 'all',
   showBaseline: false,
   ruleFilter: 'all',
@@ -42,7 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const escParam = params.get('esc');
   const tabParam = params.get('tab');
   if (['decisiones', 'reglas', 'traza', 'comparativa'].includes(tabParam)) state.tab = tabParam;
-  const inicial = ESCENARIOS.some(e => e.id === escParam) ? escParam : 'ESC-01';
+  state.escenariosGuardados = cargarEscenariosGuardados();
+  const inicial = escenariosDisponibles().some(e => e.id === escParam) ? escParam : 'ESC-01';
   renderScenarioList();
   bindEvents();
   seleccionarEscenario(inicial, { silencioso: true });
@@ -58,6 +64,7 @@ function bindEvents() {
   $('#btnRules').addEventListener('click', abrirCatalogoReglas);
   $('#btnTest').addEventListener('click', abrirPanelDatos);
   $('#btnResetCustom').addEventListener('click', restablecerEscenarioOriginal);
+  $('#btnVerRecalculo').addEventListener('click', abrirRecalculo);
   $('#levelFilter').addEventListener('click', onLevelFilter);
   $('#toggleBaseline').addEventListener('change', e => {
     state.showBaseline = e.target.checked;
@@ -71,6 +78,15 @@ function bindEvents() {
   });
   $('#tabs').addEventListener('click', onTabClick);
   $('#scenarioList').addEventListener('click', onScenarioClick);
+  $('#btnPresentacion').addEventListener('click', () => {
+    state.presentacion.activa = !state.presentacion.activa;
+    if (state.recorrido) state.presentacion.decisiones = true;
+    renderPresentacion();
+  });
+  $('#btnPanelEscenarios').addEventListener('click', () => alternarPanelPresentacion('escenarios'));
+  $('#btnPanelDecisiones').addEventListener('click', () => alternarPanelPresentacion('decisiones'));
+  $('#btnGuardarEscenario').addEventListener('click', abrirGuardarEscenario);
+  $('#btnIntercambioEscenario').addEventListener('click', abrirIntercambioEscenario);
   $('#tabBody').addEventListener('click', onTabBodyClick);
 
   const map = $('#mineMap');
@@ -86,6 +102,7 @@ function bindEvents() {
   $('#modalBody').addEventListener('input', onModalInput);
   $('#modalBody').addEventListener('change', onModalChange);
   $('#modalBody').addEventListener('click', onModalBodyClick);
+  $('#modalBody').addEventListener('submit', onModalSubmit);
   $('#modalClose').addEventListener('click', cerrarModal);
   $('#modalBackdrop').addEventListener('click', e => {
     if (e.target.id === 'modalBackdrop') cerrarModal();
@@ -103,11 +120,179 @@ function bindEvents() {
   });
 }
 
+function alternarPanelPresentacion(panel) {
+  state.presentacion[panel] = !state.presentacion[panel];
+  renderPresentacion();
+}
+
+function renderPresentacion() {
+  const { activa, escenarios, decisiones } = state.presentacion;
+  const panelEscenarios = $('#panelEscenarios');
+  const panelDecisiones = $('#panelDecisiones');
+  $('.app-shell').classList.toggle('presentacion', activa);
+  $('#btnPresentacion').setAttribute('aria-pressed', String(activa));
+  $('#controlesPresentacion').hidden = !activa;
+  panelEscenarios.hidden = activa && !escenarios;
+  panelDecisiones.hidden = activa && !decisiones;
+
+  for (const [boton, panel, nombre] of [
+    [$('#btnPanelEscenarios'), panelEscenarios, 'escenarios'],
+    [$('#btnPanelDecisiones'), panelDecisiones, 'decisiones']
+  ]) {
+    boton.setAttribute('aria-expanded', String(!panel.hidden));
+    boton.textContent = `${panel.hidden ? 'Mostrar' : 'Ocultar'} ${nombre}`;
+  }
+}
+
 /* ============================================================
    ESCENARIOS
    ============================================================ */
+function escenariosDisponibles() {
+  return [...ESCENARIOS, ...state.escenariosGuardados];
+}
+
+function cargarEscenariosGuardados() {
+  try {
+    const guardados = JSON.parse(localStorage.getItem('mina-experta-escenarios') ?? '[]');
+    if (!Array.isArray(guardados)) return [];
+    return guardados.filter(e => e && /^ESC-P[0-9]+$/.test(e.id) &&
+      typeof e.nombre === 'string' && typeof e.descripcion === 'string' &&
+      Array.isArray(e.mineros) && e.mineros.every(id => MINEROS_BASE.some(m => m.id === id)) &&
+      e.sensores && typeof e.sensores === 'object' && !Array.isArray(e.sensores));
+  } catch {
+    return [];
+  }
+}
+
+function persistirEscenariosGuardados() {
+  try {
+    localStorage.setItem('mina-experta-escenarios', JSON.stringify(state.escenariosGuardados));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function abrirGuardarEscenario() {
+  const origen = escenarioActual();
+  abrirModal('Escenarios', 'Guardar como escenario', `
+    <p class="modal-note">Copia de ${escapar(origen.nombre)} con las lecturas y los eventos actuales.</p>
+    <form id="formGuardarEscenario" class="form-escenario">
+      <label>Nombre <input class="test-select" name="nombre" required maxlength="60"></label>
+      <label>Descripción <textarea class="test-select" name="descripcion" rows="3" maxlength="240"></textarea></label>
+      <button class="btn btn-primary" type="submit">Guardar y abrir</button>
+      <p id="errorEscenario" role="alert"></p>
+    </form>`);
+  $('#formGuardarEscenario [name="nombre"]')?.focus();
+}
+
+function guardarEscenario(formulario) {
+  const campos = new FormData(formulario);
+  const nombre = String(campos.get('nombre') ?? '').trim();
+  if (!nombre || nombre.length > 60) {
+    $('#errorEscenario').textContent = 'Escribe un nombre de 1 a 60 caracteres.';
+    return;
+  }
+  if (escenariosDisponibles().some(e => e.nombre.toLowerCase() === nombre.toLowerCase())) {
+    $('#errorEscenario').textContent = 'Ya existe un escenario con ese nombre.';
+    return;
+  }
+  const base = escenarioActual();
+  const activo = escenarioActivo();
+
+  const nuevo = {
+
+    nombre,
+    descripcion: String(campos.get('descripcion') ?? '').trim().slice(0, 240) || `Variante de ${base.nombre}.`,
+    hora: base.hora,
+    sensores: structuredClone(activo.sensores),
+    mineros: [...activo.mineros],
+    ...(base.reglasDelCaso ? { reglasDelCaso: structuredClone(base.reglasDelCaso) } : {})
+  };
+  agregarEscenarioGuardado(nuevo);
+}
+
+function agregarEscenarioGuardado(datos) {
+  const numero = Math.max(0, ...state.escenariosGuardados.map(e => Number(e.id.slice(5)))) + 1;
+  const nuevo = { ...datos, id: `ESC-P${String(numero).padStart(2, '0')}`, personalizado: true };
+  state.escenariosGuardados.push(nuevo);
+  const mensaje = persistirEscenariosGuardados()
+    ? 'Escenario guardado en este navegador'
+    : 'Escenario disponible hasta que recargues la página';
+  cerrarModal();
+  seleccionarEscenario(nuevo.id, { silencioso: true });
+  showToast(mensaje);
+}
+
+function abrirIntercambioEscenario() {
+  const nombre = escenarioActual().nombre;
+  abrirModal('Escenarios', 'Importar o exportar', `
+    <form id="formExportarCaso" class="form-escenario">
+      <h3>Exportar ${escapar(nombre)}</h3>
+      <label class="test-toggle"><input type="checkbox" name="reglas" checked> Incluir reglas de simulación activas</label>
+      <button type="submit" class="btn btn-primary">Descargar JSON</button>
+    </form>
+    <form id="formImportarCaso" class="form-escenario">
+      <h3>Importar un caso</h3>
+      <p class="modal-note">Se guarda una copia. Se aplican las reglas del archivo. Si no incluye reglas de simulación, se aplica solo el catálogo original.</p>
+      <label>Archivo JSON <input name="archivo" type="file" accept=".json,application/json" required></label>
+      <button type="submit" class="btn btn-ghost">Importar y abrir</button>
+      <p id="errorImportarCaso" role="alert"></p>
+    </form>`);
+}
+
+function descargarCaso(formulario) {
+  const incluir = new FormData(formulario).has('reglas');
+  const actual = escenarioActual();
+  const escenario = { ...escenarioActivo(), nombre: actual.nombre };
+  const json = exportarCaso(escenario, incluir ? reglasSimuladasActivas() : null);
+  const enlace = document.createElement('a');
+  const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
+  enlace.href = url;
+  enlace.download = `${actual.id}.json`;
+  enlace.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function abrirCasoImportado(formulario) {
+  const archivo = new FormData(formulario).get('archivo');
+  if (!archivo?.size || archivo.size > 1024 * 1024) {
+    $('#errorImportarCaso').textContent = 'Selecciona un archivo JSON de hasta 1 MB.';
+    return;
+  }
+  try {
+    const caso = importarCaso(await archivo.text());
+    if ($('#formImportarCaso') !== formulario) return;
+    const nombres = new Set(escenariosDisponibles().map(e => e.nombre.toLowerCase()));
+    const nombreBase = caso.nombre;
+    for (let i = 2; nombres.has(caso.nombre.toLowerCase()); i++) {
+      const sufijo = ` (${i})`;
+      caso.nombre = nombreBase.slice(0, 60 - sufijo.length) + sufijo;
+    }
+    agregarEscenarioGuardado(caso);
+  } catch (error) {
+    if ($('#formImportarCaso') === formulario) $('#errorImportarCaso').textContent = error.message;
+  }
+}
+
+function reglasSimuladasActivas() {
+  const guardadas = escenarioActual().reglasDelCaso;
+  return guardadas ? guardadas.map(r => crearReglaSimulada(r.id, r.sensor, r.operador, r.umbral, r.nivel))
+    : state.reglasSimuladas;
+}
+
+function guardarReglasSimuladas(reglas) {
+  const base = escenarioActual();
+  if (base.reglasDelCaso) {
+    base.reglasDelCaso = reglas.map(r => r.definicion);
+    return persistirEscenariosGuardados();
+  }
+  state.reglasSimuladas = reglas;
+  return true;
+}
+
 function escenarioActual() {
-  return ESCENARIOS.find(e => e.id === state.escenarioId) || ESCENARIOS[0];
+  return escenariosDisponibles().find(e => e.id === state.escenarioId) || ESCENARIOS[0];
 }
 
 function escenarioActivo() {
@@ -124,18 +309,21 @@ function seleccionarEscenario(id, opciones = {}) {
   $('#toggleBaseline').checked = false;
   state.level = 'all';
   $$('#levelFilter button').forEach(b => b.classList.toggle('active', b.dataset.level === 'all'));
-  ejecutarYRefrescar(!opciones.silencioso);
+  ejecutarYRefrescar(!opciones.silencioso, { cambiarEscenario: true });
 }
 
-function ejecutarYRefrescar(mostrarToast) {
+function ejecutarYRefrescar(mostrarToast, { cambiarEscenario = false } = {}) {
+  const anterior = state.resultado;
   const esc = escenarioActivo();
   state.recorrido = null;
-  state.resultado = ejecutarMotor(esc);
+  state.resultado = ejecutarMotor(esc, reglasSimuladasActivas());
+  state.ultimoRecalculo = anterior && !cambiarEscenario ? compararResultados(anterior, state.resultado) : null;
   if (!state.selectedMiner || !state.resultado.mineros.some(m => m.id === state.selectedMiner)) {
     state.selectedMiner = state.resultado.mineros[0]?.id || null;
   }
   renderScenarioList();
   renderHeader();
+  renderResumenRecalculo();
   renderKpis();
   renderMiniMetrics();
   renderMap();
@@ -149,21 +337,57 @@ function ejecutarYRefrescar(mostrarToast) {
 
 function renderScenarioList() {
   const cont = $('#scenarioList');
-  cont.innerHTML = ESCENARIOS.map(e => {
-    const sev = e.severidad === 'critica' ? 'CRÍTICO' : 'RIESGO ALTO';
-    return `
-      <button class="scenario-card ${e.id === state.escenarioId ? 'active' : ''}" data-scenario="${e.id}" data-sev="${e.severidad}" type="button">
+  cont.innerHTML = escenariosDisponibles().map(e => {
+    const sev = e.personalizado ? 'PERSONALIZADO' : e.severidad === 'critica' ? 'CRÍTICO' : 'RIESGO ALTO';
+    const tarjeta = `
+      <button class="scenario-card ${e.id === state.escenarioId ? 'active' : ''}" data-scenario="${e.id}" data-sev="${e.personalizado ? 'personalizado' : e.severidad}" type="button">
         <div class="scenario-top">
-          <span class="scenario-code">${e.id} · ${e.hora}</span>
-          <span class="severity ${e.severidad}">${sev}</span>
+          <span class="scenario-code">${escapar(e.id)} · ${escapar(e.hora)}</span>
+          <span class="severity ${e.personalizado ? 'personalizado' : e.severidad}">${sev}</span>
         </div>
-        <h3>${e.nombre}</h3>
-        <p>${e.evento}</p>
+        <h3>${escapar(e.nombre)}</h3>
+        <p>${escapar(e.personalizado ? e.descripcion : e.evento)}</p>
       </button>`;
+    return e.personalizado ? `<div class="escenario-personalizado">
+      ${tarjeta}
+      <button class="link-btn" type="button" data-eliminar-escenario="${e.id}"
+        aria-label="Eliminar ${escapar(e.nombre)}">Eliminar</button>
+    </div>` : tarjeta;
   }).join('');
 }
 
+function abrirEliminarEscenario(id) {
+  const escenario = state.escenariosGuardados.find(e => e.id === id);
+  if (!escenario) return;
+  abrirModal('Escenarios', 'Eliminar escenario', `
+    <p>¿Eliminar <strong>${escapar(escenario.nombre)}</strong>?</p>
+    <div class="escenario-acciones">
+      <button class="btn btn-ghost" type="button" data-cancelar-eliminar="${id}">Cancelar</button>
+      <button class="btn btn-ghost eliminar-escenario" type="button" data-confirmar-eliminar="${id}">Eliminar escenario</button>
+    </div>`);
+  $('[data-cancelar-eliminar]')?.focus();
+}
+
+function eliminarEscenario(id) {
+  if (!state.escenariosGuardados.some(e => e.id === id)) return;
+  state.escenariosGuardados = state.escenariosGuardados.filter(e => e.id !== id);
+  const persistido = persistirEscenariosGuardados();
+  cerrarModal();
+  if (state.escenarioId === id) {
+    seleccionarEscenario(ESCENARIOS[0].id, { silencioso: true });
+  } else {
+    renderScenarioList();
+  }
+  $('#btnGuardarEscenario')?.focus();
+  showToast(persistido ? 'Escenario eliminado' : 'Eliminado de esta sesión. El navegador no guardó el cambio.');
+}
+
 function onScenarioClick(e) {
+  const eliminar = e.target.closest('[data-eliminar-escenario]');
+  if (eliminar) {
+    abrirEliminarEscenario(eliminar.dataset.eliminarEscenario);
+    return;
+  }
   const card = e.target.closest('[data-scenario]');
   if (!card || card.dataset.scenario === state.escenarioId) return;
   seleccionarEscenario(card.dataset.scenario);
@@ -185,9 +409,59 @@ function renderHeader() {
   if (banner) {
     banner.hidden = !esc.simulado;
     if (esc.simulado) {
-      $('#customBannerText').innerHTML = `<strong>Datos personalizados</strong> en ${escapar(esc.simuladoTunelNombre)} · el resto de la mina mantiene el escenario original`;
+      $('#customBannerText').innerHTML = `<strong>Datos personalizados</strong> en ${Object.keys(esc.cambiosPorTunel).length} túnel(es) · Guarda una copia con «Guardar como»`;
     }
   }
+}
+
+function textoRecalculo(cambios) {
+  const { tuneles, decisiones, rutas } = cambios;
+  return [
+    `${tuneles.length} ${tuneles.length === 1 ? 'túnel con cambios' : 'túneles con cambios'}`,
+    `${decisiones} ${decisiones === 1 ? 'decisión distinta' : 'decisiones distintas'}`,
+    `${rutas} ${rutas === 1 ? 'ruta distinta' : 'rutas distintas'}`
+  ].join(' · ');
+}
+
+function renderResumenRecalculo() {
+  const resumen = $('#resumenRecalculo');
+  const cambios = state.ultimoRecalculo;
+  resumen.hidden = !cambios;
+  if (cambios) $('#textoRecalculo').textContent = textoRecalculo(cambios);
+}
+
+function abrirRecalculo() {
+  const cambios = state.ultimoRecalculo;
+  if (!cambios) return;
+  const verTunel = t => `${t.cerrado ? 'Cerrado' : 'Transitable'} · ${nivelTexto(t.nivel)} · costo ${t.cerrado ? '—' : fmt(t.costo)}` +
+    (t.ventilacion ? ` · ventilación ${t.ventilacion === 'critica' ? 'crítica' : t.ventilacion}` : '');
+  const verMinero = m => {
+    const r = m.rutaAsignada;
+    return [etiquetaDecision(m.decision), ...(r ? [
+      r.nodos.map(codigoNodo).join(' → '),
+      `${fmt(r.longitud)} m · costo ${fmt(r.costo)} · riesgo ${r.exposicion}`
+    ] : ['Sin ruta asignada'])].map(escapar).join('<br>');
+  };
+  const seccion = (titulo, filas) => filas.length ? `
+    <section class="modal-section">
+      <h3>${titulo}</h3>
+      <table class="sensor-table tabla-recalculo">
+        <thead><tr><th>Elemento</th><th>Antes</th><th>Después</th><th>Explicación</th></tr></thead>
+        <tbody>${filas.join('')}</tbody>
+      </table>
+    </section>` : '';
+
+  abrirModal('Último recálculo', 'Antes y después', `
+    <p class="modal-note">${textoRecalculo(cambios)}</p>
+    ${seccion('Túneles', cambios.tuneles.map(({ previo, actual }) => `
+      <tr><th scope="row">${escapar(actual.nombre)}</th>
+        <td>${escapar(verTunel(previo))}</td><td>${escapar(verTunel(actual))}</td>
+        <td><button class="link-btn" type="button" data-recalculo-tunel="${actual.id}">Ver traza</button></td></tr>`))}
+    ${seccion('Mineros', cambios.mineros.map(({ previo, actual }) => `
+      <tr><th scope="row">${escapar(actual.nombre)}</th>
+        <td>${verMinero(previo)}</td><td>${verMinero(actual)}</td>
+        <td><button class="link-btn" type="button" data-recalculo-minero="${actual.id}">Ver razonamiento</button></td></tr>`))}
+    ${!cambios.tuneles.length && !cambios.mineros.length ? '<p class="modal-note">El recálculo no cambió el estado de los túneles ni las rutas o decisiones de los mineros.</p>' : ''}`);
 }
 
 function renderKpis() {
@@ -227,7 +501,7 @@ function renderMiniMetrics() {
     </div>
     <div class="mini-metric ok">
       <span><i></i>Reglas activas</span>
-      <strong>${r.reglasUnicas}<small>de ${REGLAS.length}</small></strong>
+      <strong>${r.reglasUnicas}<small>de ${REGLAS.length + reglasSimuladasActivas().length}</small></strong>
     </div>`;
 }
 
@@ -803,7 +1077,7 @@ function codigoNodo(id) {
 /* ---------- Reglas ---------- */
 function renderReglas() {
   const r = state.resultado;
-  const disparadas = REGLAS.filter(x => r.reglasDisparadas[x.id]);
+  const disparadas = [...REGLAS, ...reglasSimuladasActivas()].filter(x => r.reglasDisparadas[x.id]);
   const filtros = ['all', 'DIAG', 'RIESGO', 'RUTA', 'DEC'];
   const chips = filtros.map(f => {
     const label = f === 'all' ? 'Todas' : f;
@@ -830,7 +1104,7 @@ function renderReglas() {
     }).join('');
 
   return `<div class="rule-filters">${chips}</div>
-    <div class="rules-note">Se muestran las reglas que se dispararon en este escenario. <strong>${r.resumen.reglasUnicas}</strong> de <strong>${REGLAS.length}</strong> reglas de la base fueron utilizadas.</div>
+    <div class="rules-note">Se muestran las reglas que se dispararon en este escenario. <strong>${r.resumen.reglasUnicas}</strong> de <strong>${REGLAS.length + reglasSimuladasActivas().length}</strong> reglas de la base fueron utilizadas.</div>
     ${lista || '<div class="empty-state">No hay reglas disparadas con este filtro.</div>'}`;
 }
 
@@ -936,10 +1210,12 @@ function abrirModal(eyebrow, titulo, html) {
 }
 
 function cerrarModal() {
+  const escenario = $('#modalBody [data-cancelar-eliminar]')?.dataset.cancelarEliminar;
   const minero = $('#modalBody [data-abrir-recorrido]')?.dataset.abrirRecorrido;
   $('#modalBackdrop').hidden = true;
   $('#modalBody').innerHTML = '';
   document.body.style.overflow = '';
+  if (escenario) $(`[data-eliminar-escenario="${escenario}"]`)?.focus();
   if (minero) {
     const origen = state.recorrido ? '[data-vista-detallada]' : `[data-explain="${minero}"]`;
     $(origen)?.focus();
@@ -1023,11 +1299,7 @@ function formularioPrueba(esc, tunelId, lecturasOverride) {
       <div class="test-scale">${ayudaCampoPrueba(c)}</div>
     </div>`;
   }).join('');
-  const eventos = [
-    ['incendio', 'Incendio'],
-    ['derrumbe', 'Derrumbe'],
-    ['anfo', 'ANFO activo']
-  ].map(([key, label]) => `<label class="test-toggle"><input type="checkbox" id="test-${key}" data-event="${key}" ${l[key] ? 'checked' : ''}><span>${label}</span></label>`).join('');
+  const eventos = Object.entries(EVENTOS_TUNEL).map(([key, label]) => `<label class="test-toggle"><input type="checkbox" id="test-${key}" data-event="${key}" ${l[key] ? 'checked' : ''}><span>${label}</span></label>`).join('');
 
   return `<p class="modal-note">Ajusta las lecturas de un túnel y observa cómo cambian el riesgo, las rutas y las decisiones.</p>
     <div class="test-row">
@@ -1071,7 +1343,82 @@ function onModalChange(e) {
   $('#modalBody').innerHTML = formularioPrueba(escenarioActivo(), state.testTunnelId);
 }
 
+function onModalSubmit(e) {
+  if (e.target.id === 'formExportarCaso') {
+    e.preventDefault();
+    descargarCaso(e.target);
+    return;
+  }
+  if (e.target.id === 'formImportarCaso') {
+    e.preventDefault();
+    abrirCasoImportado(e.target);
+    return;
+  }
+  if (e.target.id === 'formGuardarEscenario') {
+    e.preventDefault();
+    guardarEscenario(e.target);
+    return;
+  }
+  if (e.target.id !== 'formReglaSimulada') return;
+  e.preventDefault();
+  const datos = new FormData(e.target);
+  const umbral = String(datos.get('umbral') ?? '').trim();
+  const activas = reglasSimuladasActivas();
+  const ids = new Set(activas.map(r => r.id));
+  let numero = state.siguienteReglaSimulada;
+  while (ids.has(`SIM-${String(numero).padStart(2, '0')}`)) numero++;
+  const id = `SIM-${String(numero).padStart(2, '0')}`;
+  let regla;
+  try {
+    regla = crearReglaSimulada(id, datos.get('sensor'), datos.get('operador'),
+      umbral ? Number(umbral) : NaN, datos.get('nivel'));
+  } catch (error) {
+    $('#errorReglaSimulada').textContent = error.message;
+    return;
+  }
+  state.siguienteReglaSimulada = numero + 1;
+  const guardado = guardarReglasSimuladas([...activas, regla]);
+  actualizarReglasSimuladas(regla.id, guardado ? 'Regla añadida' : 'Regla añadida solo en esta sesión');
+}
+
+function actualizarReglasSimuladas(id, accion) {
+  ejecutarYRefrescar(false);
+  const disparos = state.resultado.reglasDisparadas[id]?.total ?? 0;
+  abrirCatalogoReglas(`${accion} (${id}). Activaciones en este escenario: ${disparos}. ${textoRecalculo(state.ultimoRecalculo)}.`);
+  $('#estadoReglasSimuladas')?.focus();
+}
+
 function onModalBodyClick(e) {
+  if (e.target.closest('[data-ver-recalculo]')) {
+    abrirRecalculo();
+    return;
+  }
+  const tunel = e.target.closest('[data-recalculo-tunel]');
+  if (tunel) {
+    abrirExplicacionTunel(tunel.dataset.recalculoTunel);
+    return;
+  }
+  const minero = e.target.closest('[data-recalculo-minero]');
+  if (minero) {
+    abrirExplicacionMinero(minero.dataset.recalculoMinero);
+    return;
+  }
+  const confirmar = e.target.closest('[data-confirmar-eliminar]');
+  if (confirmar) {
+    eliminarEscenario(confirmar.dataset.confirmarEliminar);
+    return;
+  }
+  if (e.target.closest('[data-cancelar-eliminar]')) {
+    cerrarModal();
+    return;
+  }
+  const quitarRegla = e.target.closest('[data-quitar-regla]');
+  if (quitarRegla) {
+    const id = quitarRegla.dataset.quitarRegla;
+    const guardado = guardarReglasSimuladas(reglasSimuladasActivas().filter(r => r.id !== id));
+    actualizarReglasSimuladas(id, guardado ? 'Regla retirada' : 'Regla retirada solo en esta sesión');
+    return;
+  }
   const recorrido = e.target.closest('[data-abrir-recorrido]');
   if (recorrido) {
     cerrarModal();
@@ -1101,7 +1448,7 @@ function aplicarPresetPrueba(nombre) {
     const salida = $(`#test-out-${c.key}`);
     if (salida) salida.textContent = `${fmt(preset[c.key], c.dec)} ${c.unidad}`;
   });
-  ['incendio', 'derrumbe', 'anfo'].forEach(key => {
+  Object.keys(EVENTOS_TUNEL).forEach(key => {
     const el = $(`#test-${key}`);
     if (el) el.checked = Boolean(preset[key]);
   });
@@ -1113,7 +1460,7 @@ function leerFormularioPrueba() {
     const el = $(`#test-${c.key}`);
     lecturas[c.key] = el ? Number(el.value) : SENSORES_BASE[c.key];
   });
-  ['incendio', 'derrumbe', 'anfo'].forEach(key => {
+  Object.keys(EVENTOS_TUNEL).forEach(key => {
     const el = $(`#test-${key}`);
     lecturas[key] = el ? el.checked : false;
   });
@@ -1126,68 +1473,22 @@ function aplicarDatosPrueba() {
   const lecturas = leerFormularioPrueba();
   const original = { ...SENSORES_BASE, ...(base.sensores[tunel.id] || {}) };
   const sinCambios = Object.keys(lecturas).every(k => Number(lecturas[k]) === Number(original[k]));
-  const anterior = state.resultado;
+  const cambiosPorTunel = { ...state.escenarioSimulado?.cambiosPorTunel };
+  if (sinCambios) delete cambiosPorTunel[tunel.id];
+  else cambiosPorTunel[tunel.id] = lecturas;
 
-  if (sinCambios) {
-    state.escenarioSimulado = null;
-    ejecutarYRefrescar(false);
-    cerrarModal();
-    showToast(anterior?.escenario?.simulado ? 'Datos originales · se restableció el escenario' : 'Datos originales · el escenario no cambia');
-    return;
-  }
-
-  const sensores = {
-    ...base.sensores,
-    [tunel.id]: { ...(base.sensores[tunel.id] || {}), ...lecturas }
-  };
-  const simulado = {
+  state.escenarioSimulado = Object.keys(cambiosPorTunel).length ? {
     ...base,
     id: `${base.id}-PRUEBA`,
     simulado: true,
     simuladoTunelId: tunel.id,
-    simuladoTunelNombre: tunel.nombre,
-    descripcion: `Prueba con datos propios en ${tunel.nombre}. El resto de la mina conserva el escenario ${base.nombre}.`,
-    sensores
-  };
-  state.escenarioSimulado = simulado;
+    cambiosPorTunel,
+    descripcion: `Prueba con datos propios sobre ${base.nombre}.`,
+    sensores: { ...base.sensores, ...cambiosPorTunel }
+  } : null;
   ejecutarYRefrescar(false);
   cerrarModal();
-  showToast(resumenCambiosPrueba(anterior, state.resultado));
-}
-
-function resumenCambiosPrueba(antes, despues) {
-  const partes = [];
-  const tunelId = despues.escenario?.simuladoTunelId;
-  const tunel = tunelId ? despues.tuneles.find(t => t.id === tunelId) : null;
-  const previo = tunelId ? antes?.tuneles.find(t => t.id === tunelId) : null;
-
-  if (tunel && previo) {
-    const estadoAntes = previo.cerrado ? 'cerrado' : nivelTexto(previo.nivel);
-    const estadoAhora = tunel.cerrado ? 'cerrado' : nivelTexto(tunel.nivel);
-    if (estadoAntes !== estadoAhora) {
-      partes.push(`${tunel.nombre}: ${estadoAntes} → ${estadoAhora}`);
-    }
-  }
-
-  const cambios = [];
-  despues.mineros.forEach(m => {
-    const anterior = antes?.mineros.find(x => x.id === m.id);
-    if (anterior && anterior.decision !== m.decision) {
-      cambios.push(`${m.nombre.split(' ')[0]}: ${etiquetaDecision(anterior.decision)} → ${etiquetaDecision(m.decision)}`);
-    }
-  });
-
-  if (cambios.length) {
-    partes.push(`${cambios.length} ${cambios.length === 1 ? 'decisión' : 'decisiones'}: ${cambios.slice(0, 2).join(' · ')}${cambios.length > 2 ? ` +${cambios.length - 2}` : ''}`);
-  } else {
-    const rutas = despues.mineros.filter(m => {
-      const anterior = antes?.mineros.find(x => x.id === m.id);
-      return anterior && (m.rutaAsignada?.nodos.join() || '') !== (anterior.rutaAsignada?.nodos.join() || '');
-    }).length;
-    partes.push(rutas ? `${rutas} ${rutas === 1 ? 'ruta recalculada' : 'rutas recalculadas'}` : 'sin cambios en las rutas');
-  }
-
-  return `Datos aplicados · ${partes.join(' · ')}`;
+  showToast(`Datos aplicados · ${textoRecalculo(state.ultimoRecalculo)}`);
 }
 
 function restablecerValoresPrueba() {
@@ -1206,18 +1507,44 @@ function restablecerEscenarioOriginal() {
   showToast('Escenario original restablecido');
 }
 
-function abrirCatalogoReglas() {
+function editorReglasSimuladas(mensaje) {
+  return `<section class="modal-section">
+    <h3>Reglas de simulación</h3>
+    <p class="modal-note"> Cada regla evalúa todos los túneles.</p>
+    ${mensaje ? `<p class="rules-note" id="estadoReglasSimuladas" role="status" tabindex="-1">${escapar(mensaje)} <button class="link-btn" type="button" data-ver-recalculo>Ver antes y después</button></p>` : ''}
+    <form id="formReglaSimulada" class="form-regla">
+      <label>Sensor<select name="sensor" class="test-select">${Object.entries(SENSORES_REGLA).map(([id, s]) =>
+        `<option value="${id}">${escapar(s.nombre)} (${escapar(s.unidad)})</option>`).join('')}</select></label>
+      <label>Condición<select name="operador" class="test-select"><option value="&gt;">Mayor que</option><option value="&lt;">Menor que</option></select></label>
+      <label>Umbral<input name="umbral" class="test-select" type="number" min="0" step="any" required></label>
+      <label>Efecto<select name="nivel" class="test-select">${Object.entries(EFECTOS_REGLA).map(([id, e]) =>
+        `<option value="${id}">${escapar(e.nombre)}</option>`).join('')}</select></label>
+      <button type="submit" class="btn btn-primary">Añadir y recalcular</button>
+      <p id="errorReglaSimulada" role="alert"></p>
+    </form>
+    ${reglasSimuladasActivas().length ? `<ul class="reglas-simuladas">
+      ${reglasSimuladasActivas().map(r => `<li>
+        <span><strong>${r.id}</strong> · ${escapar(r.si)} → ${escapar(r.entonces)}</span>
+        <button type="button" class="link-btn" data-quitar-regla="${r.id}">Retirar ${r.id}</button>
+      </li>`).join('')}
+    </ul>` : ''}
+  </section>`;
+}
+
+function abrirCatalogoReglas(mensaje = '') {
+  const reglas = [...REGLAS, ...reglasSimuladasActivas()];
   const r = state.resultado;
   const grupos = ['DIAG', 'RIESGO', 'RUTA', 'DEC'];
   const html = `<div class="modal-kpis">
-      <div class="modal-kpi"><span>Reglas</span><strong>${REGLAS.length}</strong></div>
+      <div class="modal-kpi"><span>Reglas</span><strong>${REGLAS.length + reglasSimuladasActivas().length}</strong></div>
       <div class="modal-kpi"><span>Norma</span><strong>${REGLAS.filter(x => x.fuente === 'NORMA').length}</strong></div>
       <div class="modal-kpi"><span>Supuesto</span><strong>${REGLAS.filter(x => x.fuente === 'SUPUESTO').length}</strong></div>
       <div class="modal-kpi"><span>Disparadas</span><strong>${r ? r.resumen.reglasUnicas : 0}</strong></div>
     </div>
+    ${editorReglasSimuladas(typeof mensaje === 'string' ? mensaje : '')}
     <p class="modal-note" style="margin-bottom:14px">Cada regla indica si su umbral proviene de una norma de seguridad o es un criterio propio del sistema. La prioridad resuelve conflictos y la refracción evita que una regla se dispare dos veces con el mismo hecho.</p>
     ${grupos.map(cat => {
-      const regs = REGLAS.filter(x => x.categoria === cat);
+      const regs = reglas.filter(x => x.categoria === cat);
       return `<section class="modal-section">
         <h3>${CATEGORIAS[cat].nombre} · ${regs.length} reglas</h3>
         <div class="rule-catalog-grid">
@@ -1281,11 +1608,17 @@ function abrirExplicacionTunel(id) {
       <td><span class="lvl ${nivel}">${nivelTexto(nivel)}</span></td>
     </tr>`;
   }).join('');
+  const estadoVentilacion = {
+    conforme: { clase: 'normal', texto: 'Conforme' },
+    insuficiente: { clase: 'alerta', texto: 'Insuficiente' },
+    critica: { clase: 'alto', texto: 'Crítica' }
+  }[t.ventilacion];
+  const minimoAire = l.anfo ? UMBRAL_VIENTO.minimoAnfo : UMBRAL_VIENTO.minimo;
   const ventilacion = `<tr>
       <td>Velocidad del aire</td>
       <td class="mono">${fmt(l.vel)} m/min</td>
-      <td class="mono">≥ ${UMBRAL_VIENTO.minimo} m/min</td>
-      <td><span class="lvl ${l.vel < UMBRAL_VIENTO.minimo ? 'alerta' : 'normal'}">${l.vel < UMBRAL_VIENTO.minimo ? 'Alerta' : 'Normal'}</span></td>
+      <td class="mono">≥ ${minimoAire} m/min</td>
+      <td><span class="lvl ${estadoVentilacion.clase}">${estadoVentilacion.texto}</span></td>
     </tr>`;
   const cadena = ex.reglas.map(reg => `<div class="explain-step regla">
       <h4><span class="rule-tag">Paso ${reg.paso} · ${reg.regla}</span>${escapar(reg.nombre)}</h4>
@@ -1300,11 +1633,8 @@ function abrirExplicacionTunel(id) {
       ? 'El túnel no tiene afectación: conserva su longitud como costo base.'
       : `El túnel sigue <strong>transitable</strong> con un costo de <strong>${fmt(t.costo)}</strong> (${t.longitud} m × ${t.multiplicador}).`;
 
-  const eventos = [
-    l.incendio ? 'Incendio reportado' : '',
-    l.derrumbe ? 'Derrumbe reportado' : '',
-    l.anfo ? 'ANFO activo' : ''
-  ].filter(Boolean);
+  const eventos = Object.entries(EVENTOS_TUNEL).filter(([id]) => l[id]).map(([, nombre]) => nombre);
+  if (l.corteElectrico && !l.ventilacionRespaldo) eventos.push('Sin ventilación de respaldo');
   const rutas = ex.minerosEnRuta.map(m => escapar(m.nombre)).join(', ');
   const efecto = rutas
     ? `El túnel forma parte de las rutas asignadas a ${rutas}.`
@@ -1385,6 +1715,10 @@ function abrirExplicacionMinero(id) {
 }
 
 function abrirRecorridoMinero(id) {
+  if (state.presentacion.activa && !state.presentacion.decisiones) {
+    state.presentacion.decisiones = true;
+    renderPresentacion();
+  }
   if (state.recorrido && state.selectedMiner === id) {
     $('#tabBody [aria-current="step"]')?.focus();
     return;

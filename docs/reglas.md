@@ -89,3 +89,25 @@ El O₂ funciona al revés (el peligro es que **falte**), por eso no sigue el cr
 ## Reglas
 
 *(se completan a partir de la semana 3)*
+
+## Reglas del prototipo web para ESC-04 y ESC-05
+
+### R-INU-01 — Inundación reportada
+
+- **Categoría:** DIAG.
+- **SI:** el evento `inundacion` está reportado en el túnel.
+- **ENTONCES:** `nivel_riesgo = peligro`. Las reglas existentes R-RIESGO-01 y R-RUTA-01 cierran el tramo y registran que no es transitable.
+- **Prioridad:** 82. El reporte puede elevar un diagnóstico previo de menor riesgo.
+- **Fuente y tipo:** diseño del caso ESC-04, **SUPUESTO**.
+- **Justificación:** permite representar un bloqueo físico aunque los sensores de gases estén en valores normales. El supuesto se limita al tramo reportado. La línea base también respeta el bloqueo físico.
+- **Prueba:** `test_inundacion_cierra_la_rampa` comprueba el cierre, el cambio de salida de Elmer y la reapertura al quitar el reporte.
+
+### R-VEN-04 — Corte eléctrico sin ventilación de respaldo
+
+- **Categoría:** DIAG.
+- **SI:** hay corte eléctrico **y** la ventilación de respaldo no está operativa.
+- **ENTONCES:** `nivel_ventilacion = critica`. R-RIESGO-02 eleva el riesgo y R-RIESGO-05 aumenta el costo del tramo.
+- **Prioridad:** 61. La condición de infraestructura prevalece sobre la clasificación general por velocidad del aire.
+- **Fuente y tipo:** diseño del caso ESC-05, **SUPUESTO**.
+- **Justificación:** una lectura de referencia puede coexistir con un reporte de pérdida de la ventilación. El caso simula un aumento de costo. Con respaldo operativo, el corte por sí solo no activa esta regla y siguen aplicándose las reglas de lecturas.
+- **Prueba:** `test_corte_electrico_distingue_el_respaldo` comprueba ambas condiciones, el costo y el desvío.

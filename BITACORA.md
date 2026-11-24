@@ -22,6 +22,42 @@ Una entrada por sesión, la más reciente arriba. Tres líneas bastan.
 - Falló / dudas: queda pendiente revisar la legibilidad del resaltado en el proyector.
 - Siguiente paso: ensayar el caso de Jorge en el incendio y revisar cuánto espacio necesita el plano.
 
+## 2026-11-24 · Reglas de simulación
+
+- Hice: añadí condiciones editables de sensor y efectos de riesgo al catálogo. Las reglas de sesión se ejecutan en el motor y aparecen en su traza.
+- Falló / dudas: queda por revisar el formulario en navegador.
+- Siguiente paso: probar una misma regla en los tres escenarios y comparar su efecto antes de retirarla.
+
+## 2026-11-24 · Escenarios propios
+
+- Hice: permití acumular cambios de varios túneles y guardar el escenario resultante como una copia con nombre y descripción.
+- Falló / dudas: queda pendiente la revisión visual en navegador.
+- Siguiente paso: reproducir un escenario guardado con una regla de simulación y revisar la traza.
+
+## 2026-11-24 · Inundación y corte eléctrico
+
+- Hice: añadí ESC-04 y ESC-05, sus eventos editables y dos reglas de diagnóstico documentadas en el catálogo.
+- Falló / dudas: pytest no está instalado en este entorno. Ejecuté directamente las dos funciones de prueba con Python y Node.js.
+- Siguiente paso: mostrar el cierre de la rampa y el desvío por ventilación en la demo.
+
+## 2026-11-24 · Intercambio de casos
+
+- Hice: añadí exportación e importación JSON con reglas opcionales y separé las reglas de un caso importado de las de sesión.
+- Falló / dudas: queda pendiente probar la descarga y selección de archivos en una sesión visual de navegador.
+- Siguiente paso: fijar los resultados esperados de los casos y ampliar la cobertura de las reglas y el planificador.
+
+## 2026-11-24 · Pruebas y resultados de referencia
+
+- Hice: fijé los resultados de los cinco escenarios en JSON y amplié las pruebas de reglas, rutas e intercambio.
+- Falló / dudas: el desempate por riesgo solo se aplicaba entre caminos al mismo destino. Lo corregí para que también compare destinos con igual costo.
+- Siguiente paso: mostrar las diferencias de túneles, decisiones y rutas al recalcular.
+
+## 2026-11-24 · Antes y después del recálculo
+
+- Hice: añadí un resumen del recálculo y una comparación por túnel y minero con acceso a la explicación.
+- Falló / dudas: falta revisar el panel visualmente en ambos temas.
+- Siguiente paso: ajustar la vista de presentación para dar más espacio al plano.
+
 ## Plantilla
 
 ```

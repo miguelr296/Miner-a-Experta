@@ -93,3 +93,31 @@ function nombreRegla(id) {
   const r = REGLAS.find(x => x.id === id);
   return r ? r.nombre : id;
 }
+
+function compararResultados(antes, despues) {
+  const cambios = { tuneles: [], mineros: [], decisiones: 0, rutas: 0 };
+  if (!antes) return cambios;
+
+  for (const actual of despues.tuneles) {
+    const previo = antes.porTunel[actual.id];
+    if (previo && (previo.cerrado !== actual.cerrado || previo.nivel !== actual.nivel ||
+        previo.costo !== actual.costo || previo.ventilacion !== actual.ventilacion)) {
+      cambios.tuneles.push({ previo, actual });
+    }
+  }
+
+  const previos = new Map(antes.mineros.map(m => [m.id, m]));
+  for (const actual of despues.mineros) {
+    const previo = previos.get(actual.id);
+    if (!previo) continue;
+    const decision = previo.decision !== actual.decision;
+    const a = previo.rutaAsignada;
+    const b = actual.rutaAsignada;
+    const ruta = (a?.nodos.join() ?? '') !== (b?.nodos.join() ?? '');
+    const metricas = a && b && (a.longitud !== b.longitud || a.costo !== b.costo || a.exposicion !== b.exposicion);
+    if (decision || ruta || metricas) cambios.mineros.push({ previo, actual });
+    if (decision) cambios.decisiones++;
+    if (ruta) cambios.rutas++;
+  }
+  return cambios;
+}

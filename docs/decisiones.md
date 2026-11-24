@@ -110,3 +110,9 @@ Formato: fecha · decisión · alternativas consideradas · por qué.
 **Alternativas:** traducir los nombres de las columnas y crear tarjetas separadas para cada integrante en las tareas compartidas.
 **Por qué:** conserva las opciones predeterminadas de GitHub Projects y evita duplicar el seguimiento de una misma tarea. Para Sprint 1 son 20 tareas y 20 tarjetas.
 
+
+## D21 — Reportes de infraestructura en el prototipo web
+
+**Decisión:** incorporar inundación reportada, corte eléctrico y ventilación de respaldo como hechos booleanos por túnel. Reutilizar el cierre por peligro y los costos de riesgo del motor. Ver [reglas de ESC-04 y ESC-05](reglas.md#reglas-del-prototipo-web-para-esc-04-y-esc-05).
+
+**Por qué:** los reportes permiten contrastar un bloqueo y un desvío por costo con lecturas de gases iguales. El respaldo permite comparar dos condiciones durante el mismo corte. Ambos casos son supuestos de simulación.

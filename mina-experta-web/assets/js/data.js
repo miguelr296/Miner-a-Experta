@@ -70,7 +70,19 @@ const SENSORES_BASE = {
   vel: 85,        // m/min
   anfo: false,
   incendio: false,
-  derrumbe: false
+  derrumbe: false,
+  inundacion: false,
+  corteElectrico: false,
+  ventilacionRespaldo: false
+};
+
+const EVENTOS_TUNEL = {
+  incendio: 'Incendio reportado',
+  derrumbe: 'Derrumbe reportado',
+  anfo: 'ANFO activo',
+  inundacion: 'Inundación reportada',
+  corteElectrico: 'Corte eléctrico',
+  ventilacionRespaldo: 'Ventilación de respaldo operativa'
 };
 
 const MINEROS_BASE = [
@@ -156,6 +168,31 @@ const ESCENARIOS = [
     },
     mineros: ['m1', 'm2', 'm3', 'm4', 'm5'],
     nota: 'La línea base no puede cruzar las labores con O₂ bajo TWA. El sistema graduó el riesgo y decidió refugiar o evacuar según cada minero.'
+  },
+  {
+    id: 'ESC-04',
+    nombre: 'Inundación en la Rampa de Escape',
+    corto: 'Inundación en la rampa',
+    severidad: 'critica',
+    hora: '08:25',
+    evento: 'Inundación reportada',
+    descripcion: 'Se reporta una inundación en el tramo final de la Rampa de Escape. Los sensores de gases siguen en sus valores de referencia.',
+    sensores: { t_r4_s2: { inundacion: true } },
+    mineros: ['m1', 'm2', 'm3', 'm4', 'm5']
+  },
+  {
+    id: 'ESC-05',
+    nombre: 'Corte eléctrico y respaldo de ventilación',
+    corto: 'Corte eléctrico',
+    severidad: 'alta',
+    hora: '16:40',
+    evento: 'Falla de alimentación eléctrica',
+    descripcion: 'El Crucero Norte queda sin ventilación de respaldo. La Rampa Central mantiene su respaldo operativo durante el mismo corte. Las últimas lecturas de aire permanecen en sus valores de referencia.',
+    sensores: {
+      t_i1_i2: { corteElectrico: true, ventilacionRespaldo: false },
+      t_i3_i6: { corteElectrico: true, ventilacionRespaldo: true }
+    },
+    mineros: ['m1', 'm2', 'm3', 'm4', 'm5']
   }
 ];
 
@@ -205,6 +242,9 @@ const REGLAS = [
   { id: 'R-VEN-03', categoria: 'DIAG', nombre: 'Ventilación general conforme', si: 'Velocidad ≥ 20 m/min', entonces: 'Nivel de ventilación = conforme', prioridad: 30, fuente: 'NORMA', detalle: 'Regla general. En conflicto con R-VEN-02 pierde por prioridad.', cita: 'Art. 248' },
   { id: 'R-FUE-01', categoria: 'DIAG', nombre: 'Incendio declarado', si: 'Incendio reportado = sí', entonces: 'Nivel de riesgo = peligro', prioridad: 80, fuente: 'NORMA', detalle: 'Un incendio activo hace intransitable la labor.', cita: 'Procedimiento de emergencia' },
   { id: 'R-DER-01', categoria: 'DIAG', nombre: 'Derrumbe reportado', si: 'Derrumbe reportado = sí', entonces: 'Túnel cerrado', prioridad: 85, fuente: 'NORMA', detalle: 'La caída de rocas se modela como evento reportado que bloquea la labor.', cita: 'D04' },
+
+  { id: 'R-INU-01', categoria: 'DIAG', nombre: 'Inundación reportada', si: 'Inundación reportada = sí', entonces: 'Nivel de riesgo = peligro', prioridad: 82, fuente: 'SUPUESTO', detalle: 'El reporte simulado marca el tramo como comprometido y habilita el cierre.', cita: 'Prototipo web · ESC-04' },
+  { id: 'R-VEN-04', categoria: 'DIAG', nombre: 'Corte eléctrico sin ventilación de respaldo', si: 'Corte eléctrico = sí Y ventilación de respaldo operativa = no', entonces: 'Nivel de ventilación = crítica', prioridad: 61, fuente: 'SUPUESTO', detalle: 'La pérdida del sistema principal sin respaldo eleva el riesgo aunque la última lectura de aire siga en referencia.', cita: 'Prototipo web · ESC-05' },
 
   // --- RIESGO: agregación y propagación ----------------------------
   { id: 'R-RIESGO-07', categoria: 'RIESGO', nombre: 'Agregación de peligro por gas', si: 'Algún gas en peligro inmediato', entonces: 'Nivel de riesgo = peligro', prioridad: 79, fuente: 'SUPUESTO', detalle: 'Traslada el diagnóstico del gas al riesgo del túnel y habilita la regla de cierre.', cita: 'D09 / D12' },

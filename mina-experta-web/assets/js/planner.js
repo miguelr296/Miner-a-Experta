@@ -17,7 +17,7 @@ function construirGrafo(tuneles, modo) {
 }
 
 function esBloqueoBase(t) {
-  if (t.lecturas.incendio || t.lecturas.derrumbe) return true;
+  if (t.lecturas.incendio || t.lecturas.derrumbe || t.lecturas.inundacion) return true;
   return ORDEN_GASES.some(g => nivelGas(t.lecturas[g], UMBRALES[g]) === 'peligro');
 }
 
@@ -33,8 +33,15 @@ function dijkstra(adj, inicio, desempatarRiesgo = false) {
   while (pendientes.size) {
     let actual = null;
     let mejor = Infinity;
+    let menorRiesgo = Infinity;
     pendientes.forEach(id => {
-      if (dist.get(id) < mejor) { mejor = dist.get(id); actual = id; }
+      const costo = dist.get(id);
+      const exposicion = riesgo.get(id);
+      if (costo < mejor || (costo === mejor && exposicion < menorRiesgo)) {
+        mejor = costo;
+        menorRiesgo = exposicion;
+        actual = id;
+      }
     });
     if (actual === null) break;
     pendientes.delete(actual);
@@ -43,7 +50,7 @@ function dijkstra(adj, inicio, desempatarRiesgo = false) {
       const alt = dist.get(actual) + arista.peso;
       const altRiesgo = riesgo.get(actual) + (desempatarRiesgo ? NIVEL_VALOR[arista.tunel.nivel] : 0);
       const actualDist = dist.get(arista.nodo);
-      const mismoCosto = Math.abs(alt - actualDist) < 0.0001;
+      const mismoCosto = alt === actualDist;
       if (alt < actualDist || (mismoCosto && altRiesgo < riesgo.get(arista.nodo))) {
         dist.set(arista.nodo, alt);
         riesgo.set(arista.nodo, altRiesgo);
@@ -51,7 +58,7 @@ function dijkstra(adj, inicio, desempatarRiesgo = false) {
       }
     }
   }
-  return { dist, prev };
+  return { dist, riesgo, prev };
 }
 
 function reconstruir(prev, inicio, destino) {
@@ -72,13 +79,18 @@ function reconstruir(prev, inicio, destino) {
 }
 
 function mejorRuta(adj, inicio, destinos, desempatarRiesgo = false) {
-  const { dist, prev } = dijkstra(adj, inicio, desempatarRiesgo);
+  const { dist, riesgo, prev } = dijkstra(adj, inicio, desempatarRiesgo);
   let destino = null;
   let mejor = Infinity;
   destinos.forEach(id => {
-    if (dist.has(id) && dist.get(id) < mejor) { mejor = dist.get(id); destino = id; }
+    const costo = dist.get(id);
+    if (!Number.isFinite(costo)) return;
+    if (costo < mejor || (desempatarRiesgo && costo === mejor && riesgo.get(id) < riesgo.get(destino))) {
+      mejor = costo;
+      destino = id;
+    }
   });
-  if (destino === null || !isFinite(mejor)) return null;
+  if (destino === null) return null;
   const camino = reconstruir(prev, inicio, destino);
   if (!camino) return null;
   const longitud = camino.tuneles.reduce((s, t) => s + t.longitud, 0);

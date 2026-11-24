@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "casos": {
+    "ESC-01": {
+      "entrada": {"mineros":["m1","m2","m3","m4","m5"],"sensores":{"t_i2_f1":{"co":88,"no2":8.4,"o2":19.2,"vel":18,"anfo":true},"t_i3_f2":{"co":54,"no2":6.1,"o2":19.4,"vel":23,"anfo":true},"t_i2_r1":{"co":65,"no2":3.6,"o2":20.1,"vel":40},"t_i3_r1":{"co":29,"no2":2.1,"o2":20.2,"vel":45},"t_i1_i2":{"co":20,"o2":20.5,"vel":62},"t_i1_i3":{"co":18,"o2":20.6,"vel":64},"t_i1_i6":{"co":14,"o2":20.7,"vel":70},"t_r1_r2":{"co":12,"o2":20.6,"vel":60}}},
+      "esperado": {
+        "tunelesAfectados": [["t_i2_f1","alto",false,435],["t_i3_f2","alto",false,465],["t_i2_r1","alto",false,555],["t_i3_r1","alerta",false,380]],
+        "mineros": [
+          {"id":"m1","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s1","nodos":["f1","i2","i1","s1"],"longitud":470,"costo":760,"puntajeRiesgo":2},"lineaBase":{"destino":"s1","nodos":["f1","i2","i1","s1"],"longitud":470,"costo":470,"puntajeRiesgo":2}},
+          {"id":"m2","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s1","nodos":["f2","i3","i1","s1"],"longitud":485,"costo":795,"puntajeRiesgo":2},"lineaBase":{"destino":"s1","nodos":["f2","i3","i1","s1"],"longitud":485,"costo":485,"puntajeRiesgo":2}},
+          {"id":"m3","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s2","nodos":["f3","i5","r4","s2"],"longitud":540,"costo":540,"puntajeRiesgo":0},"lineaBase":{"destino":"s2","nodos":["f3","i5","r4","s2"],"longitud":540,"costo":540,"puntajeRiesgo":0}},
+          {"id":"m4","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s2","nodos":["f4","r4","s2"],"longitud":310,"costo":310,"puntajeRiesgo":0},"lineaBase":{"destino":"s2","nodos":["f4","r4","s2"],"longitud":310,"costo":310,"puntajeRiesgo":0}},
+          {"id":"m5","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s1","nodos":["i1","s1"],"longitud":150,"costo":150,"puntajeRiesgo":0},"lineaBase":{"destino":"s1","nodos":["i1","s1"],"longitud":150,"costo":150,"puntajeRiesgo":0}}
+        ]
+      }
+    },
+    "ESC-02": {
+      "entrada": {"mineros":["m1","m2","m3","m4","m5"],"sensores":{"t_s1_i1":{"co":210,"no2":7.2,"o2":17.4,"vel":34,"incendio":true},"t_i1_i2":{"co":72,"no2":4.8,"o2":18.9,"vel":38},"t_i1_i3":{"co":58,"no2":4.1,"o2":19.1,"vel":40},"t_i1_i6":{"co":44,"no2":3.2,"o2":19.3,"vel":36},"t_i2_r1":{"co":22,"o2":20.3,"vel":16},"t_i2_i6":{"co":25,"o2":20.1,"vel":28},"t_i3_i6":{"co":24,"o2":20.2,"vel":30},"t_i2_f1":{"co":18,"o2":20.6,"vel":55},"t_i3_f2":{"co":16,"o2":20.7,"vel":58},"t_i3_r1":{"co":21,"o2":20.5,"vel":62},"t_r1_r2":{"co":8,"o2":20.8,"vel":100},"t_r2_r4":{"co":5,"o2":20.9,"vel":80},"t_r4_s2":{"co":6,"o2":20.9,"vel":95}}},
+      "esperado": {
+        "tunelesAfectados": [["t_s1_i1","peligro",true,null],["t_i1_i2","alto",false,525],["t_i1_i3","alto",false,540],["t_i1_i6","alerta",false,190],["t_i2_r1","alerta",false,370],["t_i1_i4","alerta",false,440]],
+        "mineros": [
+          {"id":"m1","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s2","nodos":["f1","i2","i6","i3","r1","r2","r4","s2"],"longitud":905,"costo":905,"puntajeRiesgo":0},"lineaBase":{"destino":"s2","nodos":["f1","i2","r1","r2","r4","s2"],"longitud":720,"costo":720,"puntajeRiesgo":1}},
+          {"id":"m2","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s2","nodos":["f2","i3","r1","r2","r4","s2"],"longitud":735,"costo":735,"puntajeRiesgo":0},"lineaBase":{"destino":"s2","nodos":["f2","i3","r1","r2","r4","s2"],"longitud":735,"costo":735,"puntajeRiesgo":0}},
+          {"id":"m3","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s2","nodos":["f3","i5","r4","s2"],"longitud":540,"costo":540,"puntajeRiesgo":0},"lineaBase":{"destino":"s2","nodos":["f3","i5","r4","s2"],"longitud":540,"costo":540,"puntajeRiesgo":0}},
+          {"id":"m4","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s2","nodos":["f4","r4","s2"],"longitud":310,"costo":310,"puntajeRiesgo":0},"lineaBase":{"destino":"s2","nodos":["f4","r4","s2"],"longitud":310,"costo":310,"puntajeRiesgo":0}},
+          {"id":"m5","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s2","nodos":["i1","i6","i3","r1","r2","r4","s2"],"longitud":765,"costo":860,"puntajeRiesgo":1},"lineaBase":{"destino":"s2","nodos":["i1","i2","r1","r2","r4","s2"],"longitud":750,"costo":750,"puntajeRiesgo":3}}
+        ]
+      }
+    },
+    "ESC-03": {
+      "entrada": {"mineros":["m1","m2","m3","m4","m5"],"sensores":{"t_i2_f1":{"co":8,"o2":20.7,"vel":20,"derrumbe":true},"t_r4_s2":{"co":6,"o2":20.8,"vel":18,"derrumbe":true},"t_i4_r3":{"o2":17.6,"co2":14000,"vel":8},"t_r3_i5":{"o2":18.1,"co2":10000,"vel":10},"t_i5_r4":{"o2":18.8,"co2":7000,"vel":12},"t_i5_f4":{"o2":18.4,"co2":8500,"vel":11},"t_r3_f3":{"o2":19,"co2":6000,"vel":14},"t_r4_f4":{"o2":18.9,"co2":6500,"vel":13},"t_f3_i5":{"o2":18.6,"co2":7200,"vel":10},"t_r2_r4":{"o2":19.4,"vel":24},"t_i1_i4":{"o2":20.1,"vel":35}}},
+      "esperado": {
+        "tunelesAfectados": [["t_i1_i2","alerta",false,350],["t_i2_i6","alerta",false,180],["t_i2_f1","normal",true,null],["t_i2_r1","alerta",false,370],["t_r2_r4","alerta",false,120],["t_i4_r3","alto",false,525],["t_r3_f3","alerta",false,350],["t_f3_i5","alerta",false,380],["t_r3_i5","alerta",false,350],["t_i5_f4","alerta",false,390],["t_i5_r4","alerta",false,390],["t_r4_f4","alerta",false,310],["t_r4_s2","alerta",true,null]],
+        "mineros": [
+          {"id":"m1","decision":"esperar","regla":"DEC-03","asignada":null,"lineaBase":null},
+          {"id":"m2","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s1","nodos":["f2","i3","i1","s1"],"longitud":485,"costo":485,"puntajeRiesgo":0},"lineaBase":{"destino":"s1","nodos":["f2","i3","i1","s1"],"longitud":485,"costo":485,"puntajeRiesgo":0}},
+          {"id":"m3","decision":"refugiarse","regla":"DEC-02","asignada":{"destino":"r3","nodos":["f3","r3"],"longitud":175,"costo":350,"puntajeRiesgo":1},"lineaBase":{"destino":"s1","nodos":["f3","r3","i4","i1","s1"],"longitud":720,"costo":720,"puntajeRiesgo":3}},
+          {"id":"m4","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s1","nodos":["f4","r4","r2","r1","i3","i1","s1"],"longitud":910,"costo":1125,"puntajeRiesgo":2},"lineaBase":{"destino":"s1","nodos":["f4","r4","r2","r1","i2","i1","s1"],"longitud":900,"costo":900,"puntajeRiesgo":4}},
+          {"id":"m5","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s1","nodos":["i1","s1"],"longitud":150,"costo":150,"puntajeRiesgo":0},"lineaBase":{"destino":"s1","nodos":["i1","s1"],"longitud":150,"costo":150,"puntajeRiesgo":0}}
+        ]
+      }
+    },
+    "ESC-04": {
+      "entrada": {"mineros":["m1","m2","m3","m4","m5"],"sensores":{"t_r4_s2":{"inundacion":true}}},
+      "esperado": {
+        "tunelesAfectados": [["t_r4_s2","peligro",true,null]],
+        "mineros": [
+          {"id":"m1","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s1","nodos":["f1","i2","i1","s1"],"longitud":470,"costo":470,"puntajeRiesgo":0},"lineaBase":{"destino":"s1","nodos":["f1","i2","i1","s1"],"longitud":470,"costo":470,"puntajeRiesgo":0}},
+          {"id":"m2","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s1","nodos":["f2","i3","i1","s1"],"longitud":485,"costo":485,"puntajeRiesgo":0},"lineaBase":{"destino":"s1","nodos":["f2","i3","i1","s1"],"longitud":485,"costo":485,"puntajeRiesgo":0}},
+          {"id":"m3","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s1","nodos":["f3","r3","i4","i1","s1"],"longitud":720,"costo":720,"puntajeRiesgo":0},"lineaBase":{"destino":"s1","nodos":["f3","r3","i4","i1","s1"],"longitud":720,"costo":720,"puntajeRiesgo":0}},
+          {"id":"m4","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s1","nodos":["f4","r4","r2","r1","i2","i1","s1"],"longitud":900,"costo":900,"puntajeRiesgo":0},"lineaBase":{"destino":"s1","nodos":["f4","r4","r2","r1","i2","i1","s1"],"longitud":900,"costo":900,"puntajeRiesgo":0}},
+          {"id":"m5","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s1","nodos":["i1","s1"],"longitud":150,"costo":150,"puntajeRiesgo":0},"lineaBase":{"destino":"s1","nodos":["i1","s1"],"longitud":150,"costo":150,"puntajeRiesgo":0}}
+        ]
+      }
+    },
+    "ESC-05": {
+      "entrada": {"mineros":["m1","m2","m3","m4","m5"],"sensores":{"t_i1_i2":{"corteElectrico":true,"ventilacionRespaldo":false},"t_i3_i6":{"corteElectrico":true,"ventilacionRespaldo":true}}},
+      "esperado": {
+        "tunelesAfectados": [["t_i1_i2","alto",false,525]],
+        "mineros": [
+          {"id":"m1","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s1","nodos":["f1","i2","i6","i1","s1"],"longitud":480,"costo":480,"puntajeRiesgo":0},"lineaBase":{"destino":"s1","nodos":["f1","i2","i1","s1"],"longitud":470,"costo":470,"puntajeRiesgo":2}},
+          {"id":"m2","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s1","nodos":["f2","i3","i1","s1"],"longitud":485,"costo":485,"puntajeRiesgo":0},"lineaBase":{"destino":"s1","nodos":["f2","i3","i1","s1"],"longitud":485,"costo":485,"puntajeRiesgo":0}},
+          {"id":"m3","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s2","nodos":["f3","i5","r4","s2"],"longitud":540,"costo":540,"puntajeRiesgo":0},"lineaBase":{"destino":"s2","nodos":["f3","i5","r4","s2"],"longitud":540,"costo":540,"puntajeRiesgo":0}},
+          {"id":"m4","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s2","nodos":["f4","r4","s2"],"longitud":310,"costo":310,"puntajeRiesgo":0},"lineaBase":{"destino":"s2","nodos":["f4","r4","s2"],"longitud":310,"costo":310,"puntajeRiesgo":0}},
+          {"id":"m5","decision":"evacuar","regla":"DEC-01","asignada":{"destino":"s1","nodos":["i1","s1"],"longitud":150,"costo":150,"puntajeRiesgo":0},"lineaBase":{"destino":"s1","nodos":["i1","s1"],"longitud":150,"costo":150,"puntajeRiesgo":0}}
+        ]
+      }
+    }
+  }
+}

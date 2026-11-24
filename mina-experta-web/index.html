@@ -42,6 +42,7 @@
       </div>
 
       <div class="topbar-actions">
+        <button class="btn btn-ghost" id="btnPresentacion" type="button" aria-pressed="false">Modo presentación</button>
         <button class="btn btn-ghost" id="btnTheme" type="button" aria-pressed="false">Modo oscuro</button>
         <button class="btn btn-ghost" id="btnTest" type="button">
           <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 6h13M3.5 14h13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="7.5" cy="6" r="2.2" fill="var(--panel)" stroke="currentColor" stroke-width="1.5"/><circle cx="12.5" cy="14" r="2.2" fill="var(--panel)" stroke="currentColor" stroke-width="1.5"/></svg>
@@ -61,13 +62,16 @@
     <!-- ================= WORKSPACE ================= -->
     <main class="workspace">
       <!-- ---------- SIDEBAR IZQUIERDA ---------- -->
-      <aside class="sidebar sidebar-left">
+      <aside class="sidebar sidebar-left" id="panelEscenarios">
         <section class="panel">
           <div class="panel-head">
             <h2>Escenarios</h2>
-            <span class="panel-tag">03</span>
+            <button class="btn btn-ghost small" id="btnGuardarEscenario" type="button">Guardar como</button>
           </div>
           <div class="scenario-list" id="scenarioList"></div>
+          <div class="scenario-transferencia">
+            <button class="link-btn" id="btnIntercambioEscenario" type="button">Importar o exportar</button>
+          </div>
         </section>
 
         <section class="panel">
@@ -98,6 +102,11 @@
           <button class="link-btn" id="btnResetCustom" type="button">Volver al escenario original</button>
         </div>
 
+        <div class="custom-banner recalculo-banner" id="resumenRecalculo" hidden>
+          <span id="textoRecalculo" role="status"></span>
+          <button class="link-btn" id="btnVerRecalculo" type="button">Ver antes y después</button>
+        </div>
+
         <div class="map-toolbar">
           <div class="segmented" id="levelFilter" role="group" aria-label="Filtrar por nivel">
             <button class="active" data-level="all" type="button">Todo el plano</button>
@@ -110,6 +119,10 @@
               <span class="switch-track"><span></span></span>
               <span class="switch-label">Línea base</span>
             </label>
+            <div class="presentacion-paneles" id="controlesPresentacion" role="group" aria-label="Paneles de presentación" hidden>
+              <button class="btn btn-ghost small" id="btnPanelEscenarios" type="button" aria-controls="panelEscenarios" aria-expanded="false">Mostrar escenarios</button>
+              <button class="btn btn-ghost small" id="btnPanelDecisiones" type="button" aria-controls="panelDecisiones" aria-expanded="true">Ocultar decisiones</button>
+            </div>
             <div class="zoom-controls">
               <button id="zoomOut" type="button" aria-label="Alejar">−</button>
               <button id="zoomReset" type="button" aria-label="Restablecer zoom">⌂</button>
@@ -136,7 +149,7 @@
       </section>
 
       <!-- ---------- CONSOLA DERECHA ---------- -->
-      <aside class="sidebar sidebar-right">
+      <aside class="sidebar sidebar-right" id="panelDecisiones">
         <div class="console-head">
           <div>
             <h2>Decisiones y explicación</h2>
@@ -180,6 +193,7 @@
   <script src="assets/js/engine.js"></script>
   <script src="assets/js/planner.js"></script>
   <script src="assets/js/explanations.js"></script>
+  <script src="assets/js/casos.js"></script>
   <script src="assets/js/app.js"></script>
 </body>
 </html>

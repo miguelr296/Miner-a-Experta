@@ -6,7 +6,7 @@ Sistema que, ante una emergencia simulada en una mina metálica subterránea, **
 
 ## Prototipo web de la presentación
 
-El prototipo de la presentación ejecuta la inferencia y el cálculo de rutas en JavaScript. Para probar sus tres escenarios, abre el archivo `mina-experta-web/index.html` en el navegador. El plan del curso documenta la implementación en Python. El [README del prototipo](mina-experta-web/README.md) explica cómo seguir una decisión desde las lecturas hasta la ruta.
+El prototipo de la presentación ejecuta la inferencia y el cálculo de rutas en JavaScript. Para probar sus cinco escenarios originales del prototipo web, abre el archivo `mina-experta-web/index.html` en el navegador. El plan del curso documenta la implementación en Python. El [README del prototipo](mina-experta-web/README.md) explica cómo seguir una decisión desde las lecturas hasta la ruta.
 
 El [registro de cambios del prototipo](mina-experta-web/CAMBIOS.md) explica las decisiones de esta rama y cómo revisar la demo.
 

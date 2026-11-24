@@ -15,9 +15,24 @@ Esta revisión incorpora la demo de Mina Experta al repositorio y reúne los aju
 | `20be463` | Se recuperó la vista detallada con decisión, regla, recorrido, costo y comparación. Se puede pasar de esa vista a la secuencia y volver al mismo paso. | La vista detallada sirve para consultar los valores y la secuencia para seguir la decisión sobre el plano. |
 | `a38b827` | La traza del túnel registra los hechos leídos por la condición, su origen y los valores antes y después de cada escritura. **Ver motor paso a paso** permite inspeccionar una activación. | El detalle se produce durante la inferencia y permite auditar una decisión con las lecturas recién introducidas. |
 
+## Ampliación del prototipo para la revisión
+
+| Qué cambió | Por qué y cómo comprobarlo |
+| --- | --- |
+| **Reglas de simulación desde el catálogo.** Se puede añadir o retirar una condición de sensor con umbral y efecto de riesgo. | Permite comparar resultados sin cambiar código. En Voladura, añade CO > 80 ppm → peligro y busca la regla SIM en la traza de la Galería 340-N. |
+| **Escenarios propios.** Se acumulan cambios de varios túneles, se guarda una copia con nombre y se puede eliminar. | Permite repetir una variante sin tocar los casos originales. Al borrar la copia activa, la app vuelve a Voladura. |
+| **ESC-04 e inundación.** Una regla de diagnóstico traduce el reporte en peligro y reutiliza la cadena de cierre. | Demuestra un bloqueo físico con gases en referencia. Ambas estrategias excluyen la Rampa de Escape cerrada. |
+| **ESC-05 y corte eléctrico.** La regla distingue si la ventilación de respaldo está operativa. | Demuestra un desvío por costo sin cierre. Jorge recorre 480 m frente a 470 m por el trayecto de la línea base. |
+| **Importación y exportación JSON.** Se exporta el escenario activo con reglas opcionales y se importa como copia. | Permite compartir un caso reproducible. Las reglas de una copia importada se guardan y se aplican solo a esa copia. |
+| **Pruebas y resultados de referencia.** Se fijaron las entradas, cierres, costos, decisiones y rutas de los cinco casos. | Permite comprobar regresiones y comparar la implementación futura. Se corrigió el desempate entre destinos de igual costo para preferir la de menor puntaje de riesgo. |
+| **Antes y después del recálculo.** Lista túneles y mineros afectados, muestra ambas lecturas del resultado y enlaza sus explicaciones. | Permite identificar los efectos de una regla o un cambio de datos sin recorrer todos los paneles. |
+| **Modo presentación.** Agranda etiquetas y permite plegar los laterales. El panel de decisiones vuelve al abrir la secuencia interactiva. | Da más espacio al plano durante la demo y permite seguir el razonamiento junto al mapa. |
+
+Las condiciones, prioridades y justificaciones de `R-INU-01` y `R-VEN-04` figuran en el [catálogo](../docs/reglas.md#reglas-del-prototipo-web-para-esc-04-y-esc-05). El [archivo de referencia](../tests/fixtures/escenarios_web.json) contiene los cinco casos.
+
 ## Datos, reglas y rutas
 
-- **Simulación.** El formulario modifica las lecturas y eventos de un túnel en una copia del escenario. Se pueden editar los cinco gases, incluida la incorporación de H₂S. El máximo del control de CO₂ permite superar el umbral de peligro del modelo. Las ayudas de los gases se derivan de la configuración y los preajustes agilizan la demostración. El aviso del plano permite restaurar el escenario original.
+- **Simulación.** El formulario modifica las lecturas y eventos de un túnel a la vez y acumula los cambios en una copia del escenario. Se pueden editar los cinco gases, incluida la incorporación de H₂S. El máximo del control de CO₂ permite superar el umbral de peligro del modelo. Las ayudas de los gases se derivan de la configuración y los preajustes agilizan la demostración. El aviso del plano permite restaurar el escenario original.
 - **Cierre por gas.** `R-RIESGO-07` pertenece a la categoría RIESGO, tiene prioridad 79 y se registra como SUPUESTO (D09/D12). Si un gas está en peligro inmediato, escribe `nivel_riesgo = peligro`. Después `R-RIESGO-01` escribe `cerrado = true` y `R-RUTA-01` registra `transitable = false`. El planificador omite el túnel cerrado al construir el grafo.
 - **Comparación.** La línea base usa distancia y bloquea tramos críticos. El sistema aplica los costos ajustados por riesgo. El puntaje suma niveles simulados por tramo y los totales se calculan para los mismos mineros en ambos métodos. La referencia por distancia sin restricciones se consulta únicamente para explicar cierres en el camino hipotético más corto.
 - **Traza.** Las lecturas reflejan los atributos consultados por la condición al evaluarse. Una condición con cortocircuito puede omitir otros atributos. Las escrituras incluyen el valor anterior y la conclusión registrada. La vista presenta las reglas disparadas. Los conflictos registrados se muestran en su propia sección.
@@ -35,10 +50,10 @@ Esta revisión incorpora la demo de Mina Experta al repositorio y reúne los aju
 
 ## Verificación y revisión
 
-- Se ejecutaron los tres escenarios originales en Node.js. En el escenario de derrumbe se verificaron las tres recomendaciones: evacuar, refugiarse y esperar a la brigada.
+- Se ejecutaron los cinco escenarios en Node.js. Las nueve pruebas de regresión cubren resultados de referencia, umbrales, empates, cierres, intercambio y recálculo. En el escenario de derrumbe se verificaron las tres recomendaciones: evacuar, refugiarse y esperar a la brigada.
 - Se probó el cierre por cada gas de forma aislada y se verificó la cadena de reglas y su efecto en la ruta.
 - Se verificaron con DOM simulado las vistas de razonamiento, la navegación entre pasos, el retorno al mismo punto del plano y la persistencia del tema.
 - Se calcularon relaciones de contraste para 15 pares de colores del tema oscuro. El mínimo de los pares de texto evaluados fue 5,84:1.
-- Para revisar en navegador, seguir el [guion de demostración](README.md#demostración-del-motor), comprobar los resaltados en ambos temas y restaurar el escenario. La revisión visual completa y en proyector queda pendiente.
+- Para revisar en navegador, seguir el [guion de demostración](README.md#demostración-del-motor), comprobar los resaltados en ambos temas y restaurar el escenario. La revisión visual completa y al 125 % de zoom queda pendiente. El comportamiento de los paneles se comprobó con un DOM simulado.
 
 Los datos, umbrales de emergencia y multiplicadores describen una simulación académica.
