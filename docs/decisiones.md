@@ -2,6 +2,8 @@
 
 [← Índice](../README.md)
 
+Las decisiones [D22 y D23](motor-python.md#d22--factores-de-certeza-en-la-traza) documentan la certeza y la heurística de A* en el informe de implementación.
+
 Formato: fecha · decisión · alternativas consideradas · por qué.
 
 ## D01 — Las reglas solo aumentan costos

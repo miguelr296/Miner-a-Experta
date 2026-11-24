@@ -4,6 +4,42 @@
 
 Una entrada por sesión, la más reciente arriba. Tres líneas bastan.
 
+### 2026-11-24 · Certeza, A* y cierre de implementación
+
+- Hice: añadí certeza en la traza, A* con geometría física 3D y un informe con guion de demo. Ejecuté las 41 pruebas.
+- Falló / dudas: la topología web es esquemática. La paridad se verifica con Dijkstra y A* se comprueba en la mina con cotas físicas.
+- Siguiente paso exacto: revisar el PR de Python con Miguel y ejecutar los comandos del guion durante la exposición.
+
+### 2026-11-24 · Paridad de decisiones en Python
+
+- Hice: implementé DEC-01, DEC-02 y DEC-03, y añadí los cinco escenarios web a la consola y a las pruebas de paridad.
+- Falló / dudas: los 25 resultados por minero y los túneles afectados coinciden con la referencia web. Los factores de certeza y A* siguen pendientes.
+- Siguiente paso exacto: revisar las tareas del alcance que faltan y fijar qué parte corresponde al próximo incremento de Python.
+
+### 2026-11-24 · Ventilación e infraestructura en Python
+
+- Hice: añadí diagnósticos de ventilación, ANFO, respaldo, incendio, derrumbe e inundación, además de la propagación según la topología.
+- Falló / dudas: los 105 estados comparados coinciden con la web. Una regla redundante del caso de incendio se omite en la traza Python para conservar el origen de mayor prioridad.
+- Siguiente paso exacto: portar la política de decisiones y comprobar rutas y recomendaciones completas contra los cinco casos web.
+
+### 2026-11-24 · Gases y línea base en Python
+
+- Hice: porté los cinco gases, los multiplicadores configurables y la comparación de rutas por minero.
+- Falló / dudas: siguen pendientes los diagnósticos de ventilación y los eventos de infraestructura.
+- Siguiente paso exacto: añadir hechos y reglas de ventilación y eventos con una traza verificable contra el prototipo.
+
+### 2026-11-24 · Topología y rutas en Python
+
+- Hice: cargué una mina de siete nodos desde JSON y conecté la traza de cierre por CO con Dijkstra. La consola muestra rutas para dos mineros.
+- Falló / dudas: falta portar los demás diagnósticos y la línea base de comparación.
+- Siguiente paso exacto: incorporar la clasificación de gases y sus multiplicadores, luego contrastar el planificador con la línea base.
+
+### 2026-11-24 · Inicio del motor Python
+
+- Hice: implementé memoria de hechos, encadenamiento, prioridad y refracción. Añadí la traza por consola para el cierre por CO y las pruebas del motor.
+- Falló / dudas: la cadena cubre el cierre por CO. Falta cargar la topología y probar los demás diagnósticos.
+- Siguiente paso exacto: definir el JSON de la mina de prueba y cargar nodos y aristas para conectar el motor con Dijkstra.
+
 ## Plantilla
 
 ```

@@ -1,0 +1,8 @@
+{
+  "hechos": [
+    { "entidad": "t_i1_i2", "atributo": "co_ppm", "valor": 55 }
+  ],
+  "mineros": [
+    { "id": "m1", "nodo": "f1" }
+  ]
+}

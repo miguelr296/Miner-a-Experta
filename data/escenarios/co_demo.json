@@ -1,0 +1,10 @@
+{
+  "hechos": [
+    { "entidad": "t_i2_f1", "atributo": "co_ppm", "valor": 101 },
+    { "entidad": "t_i3_f2", "atributo": "co_ppm", "valor": 88 }
+  ],
+  "mineros": [
+    { "id": "m1", "nodo": "f1" },
+    { "id": "m2", "nodo": "f2" }
+  ]
+}

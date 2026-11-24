@@ -1,0 +1,13 @@
+{
+  "gases": {
+    "co":  { "atributo": "co_ppm",  "operador": ">", "alerta": 25,   "alto": 50,    "peligro": 100,   "fuente_alto": "SUPUESTO" },
+    "no2": { "atributo": "no2_ppm", "operador": ">", "alerta": 3,    "alto": 5,     "peligro": 10,    "fuente_alto": "NORMA" },
+    "co2": { "atributo": "co2_ppm", "operador": ">", "alerta": 5000, "alto": 30000, "peligro": 60000, "fuente_alto": "NORMA" },
+    "h2s": { "atributo": "h2s_ppm", "operador": ">", "alerta": 10,   "alto": 15,    "peligro": 30,    "fuente_alto": "NORMA" },
+    "o2":  { "atributo": "o2_pct",  "operador": "<", "alerta": 19.5, "alto": 18,    "peligro": 16,    "fuente_alto": "SUPUESTO" }
+  },
+  "certeza_reglas": {},
+  "ventilacion": { "minimo": 20, "minimo_anfo": 25 },
+  "multiplicadores": { "alerta": 2, "alto": 3 },
+  "decision": { "distancia_refugio_maxima": 400, "relacion_costo_minima": 2.5 }
+}

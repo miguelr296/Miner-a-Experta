@@ -1,0 +1,14 @@
+{
+  "hechos": [
+    { "entidad": "t_i2_f1", "atributo": "inundacion", "valor": true },
+    { "entidad": "t_i1_i3", "atributo": "corte_electrico", "valor": true },
+    { "entidad": "t_i1_i3", "atributo": "vel_m_min", "valor": 85 },
+    { "entidad": "t_i3_f2", "atributo": "corte_electrico", "valor": true },
+    { "entidad": "t_i3_f2", "atributo": "ventilacion_respaldo", "valor": true },
+    { "entidad": "t_i3_f2", "atributo": "vel_m_min", "valor": 85 }
+  ],
+  "mineros": [
+    { "id": "m1", "nodo": "f1" },
+    { "id": "m2", "nodo": "f2" }
+  ]
+}
