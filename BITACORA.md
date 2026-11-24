@@ -4,6 +4,12 @@
 
 Una entrada por sesión, la más reciente arriba. Tres líneas bastan.
 
+## 2026-11-24 · Prototipo web
+
+- Hice: incorporé el ZIP de la presentación a la rama local y conecté el diagnóstico de peligro por gases con el cierre del túnel.
+- Falló: el diagnóstico de gas en peligro podía coexistir con un túnel transitable.
+- Siguiente paso: presentar en el plano la secuencia de lectura, reglas activadas y efecto sobre la ruta del minero.
+
 ## Plantilla
 
 ```
