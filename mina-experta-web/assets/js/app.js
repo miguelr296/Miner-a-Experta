@@ -21,12 +21,6 @@ const state = {
   toastTimer: null
 };
 
-const COLOR_NIVEL = {
-  normal: '#94a3b8',
-  alerta: '#eab308',
-  alto: '#f97316',
-  peligro: '#dc2626'
-};
 const COLOR_DECISION = {
   evacuar: '#16a34a',
   refugiarse: '#2563eb',
@@ -260,7 +254,7 @@ function renderMap() {
 
   let html = `<defs>
     <pattern id="gridP" width="38" height="38" patternUnits="userSpaceOnUse">
-      <path d="M38 0H0V38" fill="none" stroke="#e2e8f0" stroke-width=".6" opacity=".8"/>
+      <path d="M38 0H0V38" fill="none" stroke="var(--line)" stroke-width=".6" opacity=".8"/>
     </pattern>
     <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur stdDeviation="2" result="b"/>
@@ -577,7 +571,7 @@ function showTunnelTooltip(e, id) {
   tooltip.innerHTML = `
     <h4>${escapar(t.nombre)}</h4>
     <div class="tt-sub">${t.via.toUpperCase()} · ${t.longitud} m</div>
-    <span class="tt-risk" style="color:${COLOR_NIVEL[t.nivel]};background:${hexAlpha(COLOR_NIVEL[t.nivel], .13)};border:1px solid ${hexAlpha(COLOR_NIVEL[t.nivel], .35)}">${est}</span>
+    <span class="tt-risk risk-badge ${t.nivel}">${est}</span>
     <div class="tt-row"><span>CO</span><b>${fmt(l.co)} ppm</b></div>
     <div class="tt-row"><span>O₂</span><b>${fmt(l.o2, 1)} %</b></div>
     <div class="tt-row"><span>Velocidad aire</span><b>${fmt(l.vel)} m/min</b></div>
@@ -592,7 +586,7 @@ function showMinerTooltip(e, id) {
   tooltip.innerHTML = `
     <h4>${escapar(m.nombre)}</h4>
     <div class="tt-sub">${escapar(m.rol)} · ${escapar(m.nodoNombre)}</div>
-    <span class="tt-risk" style="color:${COLOR_DECISION[m.decision]};background:${hexAlpha(COLOR_DECISION[m.decision], .13)};border:1px solid ${hexAlpha(COLOR_DECISION[m.decision], .35)}">${etiquetaDecision(m.decision)}</span>
+    <span class="tt-risk decision-badge ${m.decision}">${etiquetaDecision(m.decision)}</span>
     <div class="tt-row"><span>Ruta</span><b>${m.rutaAsignada ? `${m.rutaAsignada.longitud} m` : 'sin ruta'}</b></div>
     <div class="tt-row"><span>Regla</span><b>${m.reglaDecision}</b></div>`;
   positionTooltip(e, tooltip);

@@ -4,10 +4,10 @@
   --panel: #162132;
   --panel-2: #1c293c;
   --line: #32435a;
-  --line-2: #526782;
+  --line-2: #7187a4;
   --text: #edf3fa;
   --muted: #bbc8d9;
-  --faint: #98aac2;
+  --faint: #a9bad0;
   --accent: #8bb8ff;
   --accent-soft: #21385b;
   --green: #86efac;
@@ -18,13 +18,17 @@
   --red-soft: #48262c;
   --blue: #8bb8ff;
   --violet: #c4b5fd;
+  --orange: #ffbb86;
+  --orange-soft: #442b21;
+  --control-ink: #101a2a;
+  --control-hover: #aacaff;
 }
 
 [data-tema="oscuro"] :is(.scenario-card:hover, .zoom-controls, .test-select, .risk-badge.normal, .sensor-table .lvl.normal) {
   background: var(--panel-2);
 }
 
-[data-tema="oscuro"] :is(.risk-badge.alerta, .risk-badge.alto, .sensor-table .lvl.alerta, .sensor-table .lvl.alto, .cat-pill.RIESGO) {
+[data-tema="oscuro"] :is(.risk-badge.alerta, .sensor-table .lvl.alerta, .cat-pill.RIESGO) {
   color: var(--amber);
   background: var(--amber-soft);
 }
@@ -36,7 +40,7 @@
 }
 
 [data-tema="oscuro"] .btn-primary {
-  color: #101a2a;
+  color: var(--control-ink);
 }
 
 [data-tema="oscuro"] .level-band { fill: var(--panel); stroke: var(--line); }
@@ -49,7 +53,83 @@
   background-image: radial-gradient(var(--line) 1px, transparent 1px);
 }
 
-[data-tema="oscuro"] :is(.modal, .tooltip, .map-toast),
+[data-tema="oscuro"] :is(.modal, .tooltip, .map-toast, .inspector, .map-hint, .map-legend),
 [data-tema="oscuro"] .explain-step::before {
   background: var(--panel);
 }
+
+[data-tema="oscuro"] :is(.trace-conflict, .compare-note) {
+  color: var(--amber);
+  border-color: #a78343;
+}
+
+[data-tema="oscuro"] :is(.source-pill.NORMA, .custom-banner, .custom-banner .link-btn) {
+  color: var(--accent);
+  border-color: var(--line-2);
+}
+
+[data-tema="oscuro"] :is(.segmented, .tab:not(.active) span, .exposure-bar i) {
+  background: var(--panel-2);
+}
+
+[data-tema="oscuro"] .segmented button.active {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+[data-tema="oscuro"] .btn-primary:hover {
+  background: var(--control-hover);
+  border-color: var(--control-hover);
+}
+
+[data-tema="oscuro"] :focus-visible,
+[data-tema="oscuro"] .switch-control input:focus-visible + .switch-track {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+[data-tema="oscuro"] .switch-track {
+  background: var(--line);
+  border-color: var(--line-2);
+}
+
+[data-tema="oscuro"] .switch-control input:checked + .switch-track span {
+  background: var(--control-ink);
+}
+
+[data-tema="oscuro"] :is(.risk-badge.alto, .sensor-table .lvl.alto) {
+  color: var(--orange);
+  background: var(--orange-soft);
+}
+
+[data-tema="oscuro"] :is(.level-label, .level-sub, .node-code) { fill: var(--muted); }
+
+[data-tema="oscuro"] :is(.node-label, .tunnel-label) {
+  fill: var(--text);
+  stroke: var(--panel);
+}
+
+[data-tema="oscuro"] .tunnel-base { stroke: var(--line); }
+[data-tema="oscuro"] .tunnel-inner { stroke: var(--line-2); }
+[data-tema="oscuro"] .tunnel-shine { stroke: var(--line-2); }
+[data-tema="oscuro"] .tunnel-group:hover .tunnel-base { stroke: var(--line-2); }
+[data-tema="oscuro"] .tunnel-group.selected .tunnel-base { stroke: var(--accent-soft); }
+[data-tema="oscuro"] .tunnel-group.selected .tunnel-shine { stroke: var(--accent); }
+
+[data-tema="oscuro"] .flag-alerta .flag-bg { fill: var(--amber-soft); stroke: var(--amber); }
+[data-tema="oscuro"] .flag-alerta .tunnel-flag { fill: var(--amber); }
+[data-tema="oscuro"] .flag-alto .flag-bg { fill: var(--orange-soft); stroke: var(--orange); }
+[data-tema="oscuro"] .flag-alto .tunnel-flag { fill: var(--orange); }
+[data-tema="oscuro"] .flag-peligro .flag-bg { fill: var(--red-soft); stroke: var(--red); }
+[data-tema="oscuro"] .flag-peligro .tunnel-flag { fill: var(--red); }
+
+[data-tema="oscuro"] .tunnel-risk.alerta { stroke: var(--amber); }
+[data-tema="oscuro"] .tunnel-risk.alto { stroke: var(--orange); }
+[data-tema="oscuro"] .tunnel-risk.peligro { stroke: var(--red); }
+[data-tema="oscuro"] .swatch.alerta { background: var(--amber); }
+[data-tema="oscuro"] .swatch.alto { background: var(--orange); }
+[data-tema="oscuro"] .swatch.peligro { background: var(--red); }
+[data-tema="oscuro"] .dot.salida { background: var(--green); }
+[data-tema="oscuro"] .dot.refugio { background: var(--blue); }
+[data-tema="oscuro"] .dot.frente { background: var(--amber); }
+[data-tema="oscuro"] .dot.minero { background: var(--text); }
