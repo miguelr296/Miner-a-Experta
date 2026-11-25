@@ -23,6 +23,7 @@
 - Las tarjetas de aprendizaje con ejercicios (S1-01, S1-02, S1-05, S1-06) se cierran con un PR que solo toca documentación (bitácora/capítulo), porque el ejercicio vive en una carpeta local fuera del repositorio.
 - La automatización "PR con `Closes #N` → Done" funciona: S1-02 (PR #27) pasó sola a Done. S1-01 y S1-04 se habían cerrado a mano; no hace falta repetirlo.
 - Los enlaces de dependencia se crean en la tarjeta que espera ("Blocked by"). Un enlace invertido en una tarjeta de cierre (S1-18) bloquea en silencio a media columna: al revisar el tablero, comprobar que ninguna tarjeta de cierre bloquee a otras.
+- Cuando una decisión mueve una tarea de sprint, actualizar los cuatro lugares: tabla de `sprints.md`, cronograma, tabla del sprint en `kanban.md` y títulos del Backlog. "Varios mineros" estaba en Nivel 1 en `alcance.md` y en el Sprint 3 en `sprints.md` a la vez.
 
 ## Pendientes que no son del sprint actual
 - (ninguno por ahora)
