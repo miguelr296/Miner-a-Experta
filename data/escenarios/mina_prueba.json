@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "nombre": "Mina de prueba",
+    "version": 1,
+    "unidad": "m",
+    "altura_nivel_m": 30
+  },
+  "nodos": [
+    { "id": "sal_1", "x": -40, "y": 0, "nivel": 1, "tipo": "salida" },
+    { "id": "int_1", "x": 0, "y": 0, "nivel": 1, "tipo": "interseccion" },
+    { "id": "int_2", "x": 120, "y": 0, "nivel": 1, "tipo": "interseccion" },
+    { "id": "ref_1", "x": 120, "y": 45, "nivel": 1, "tipo": "refugio" },
+    { "id": "frente_1", "x": 260, "y": 0, "nivel": 1, "tipo": "frente" },
+    { "id": "int_3", "x": 0, "y": 90, "nivel": 2, "tipo": "interseccion" },
+    { "id": "frente_2", "x": 150, "y": 90, "nivel": 2, "tipo": "frente" }
+  ],
+  "aristas": [
+    { "id": "tunel_sal_1_int_1", "desde": "sal_1", "hasta": "int_1" },
+    { "id": "tunel_int_1_int_2", "desde": "int_1", "hasta": "int_2" },
+    { "id": "tunel_int_2_ref_1", "desde": "int_2", "hasta": "ref_1" },
+    { "id": "tunel_int_2_frente_1", "desde": "int_2", "hasta": "frente_1" },
+    { "id": "rampa_int_1_int_3", "desde": "int_1", "hasta": "int_3", "labor": "rampa" },
+    { "id": "tunel_int_3_frente_2", "desde": "int_3", "hasta": "frente_2" }
+  ]
+}

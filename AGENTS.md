@@ -6,7 +6,7 @@ Proyecto académico (curso Sistemas Expertos, 2 integrantes: A y B). Todo en esp
 
 - **Aún no hay código**: `src/`, `tests/` y `data/escenarios/` solo tienen `.gitkeep`. No existen manifiestos, dependencias, CI, linter ni comandos de build/test. No inventes comandos
 - Lo que existe es documentación en `docs/` más `BITACORA.md`. El plan es la fuente de verdad de lo que se debe construir.
-- Plan: 8 semanas, 4 sprints de 2 semanas. Puntos de control en las semanas 4 y 6 (reglas de recorte en `docs/plan/alcance.md`). La semana actual está en `BITACORA.md`.
+- Plan: 8 semanas, 4 sprints de 2 semanas. Puntos de control en las semanas 4 y 6 (reglas de recorte en `docs/plan/alcance.md`). La semana actual está en `docs/contexto.md`.
 
 ## Qué se construye
 
@@ -27,7 +27,7 @@ Las reglas traducen sensores en costos y cierres de aristas; el planificador con
 - Lenguaje: Python con pytest. Dependencias mínimas.
 - Fuera de alcance: bases de datos, interfaz web elaborada, datos reales, ML, modelado completo del reglamento, geomecánica (la caída de rocas es un evento reportado que bloquea un túnel).
 - Sistema: salida por consola, ejecutable con un solo comando.
-- Mina de prueba: JSON con nodos `(x, y, nivel)` en metros y tipo (intersección, salida, refugio, frente). Todo frente debe tener un refugio a ≤ 500 m de recorrido (D10). Nivel 1: 15–20 nodos y 2 niveles (la mina de prueba de la semana 2 tiene 6–8 nodos).
+- Mina de prueba: JSON con nodos `(x, y, nivel)` en metros y tipo (intersección, salida, refugio, frente). Todo frente debe tener un refugio a ≤ 500 m de recorrido (D10). Nivel 1: 15–20 nodos y 2 niveles; la mina de prueba de S1-09 tiene 6–8 nodos.
 - Línea base de comparación: Dijkstra con filtro por umbral de sensor (D06), no Dijkstra ciego.
 
 ## Conocimiento y umbrales
@@ -40,7 +40,7 @@ Las reglas traducen sensores en costos y cierres de aristas; el planificador con
 
 ## Reglas de documentación (obligatorias)
 
-- Cada decisión de diseño va a `docs/decisiones.md` (formato `Dnn`, siguiente: D22).
+- Cada decisión de diseño va a `docs/decisiones.md` (formato `Dnn`, siguiente: D23).
 - Cada regla nueva va a `docs/reglas.md` con la plantilla (categoría, SI, ENTONCES, prioridad, fuente, tipo de fuente, justificación, prueba). Cada regla tiene al menos una prueba pytest.
 - Cada sigla o término nuevo va a `docs/glosario.md` en la misma sesión (D14).
 - Un capítulo por semana en `docs/capitulos/semana-NN.md` desde `_plantilla.md`, enlazando al tag de la semana.

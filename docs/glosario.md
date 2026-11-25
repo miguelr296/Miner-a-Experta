@@ -14,10 +14,13 @@ Todas las siglas y términos técnicos usados en el proyecto, explicados para qu
 |---|---|
 | **Mina subterránea** | Mina cuyo mineral se extrae por túneles bajo tierra, no a cielo abierto. |
 | **Mina metálica** | Mina de la que se extraen metales (cobre, zinc, plata, oro, plomo). Es el tipo predominante en el Perú. |
+| **Mina de prueba** | Mina pequeña (6–8 nodos y 2 niveles) usada para probar el cargador y el planificador; se crea en S1-09. |
 | **Mina de carbón** | Mina de carbón mineral. Su peligro típico es el metano; por eso no es nuestro caso. |
 | **Labor** | Cualquier excavación subterránea donde se trabaja o por donde se circula (galería, rampa, chimenea, etc.). |
 | **Labor ciega** | Labor con una sola entrada; el aire y las personas entran y salen por el mismo lugar. |
 | **Frente (de trabajo)** | Extremo de un túnel que se está excavando; donde se perfora y se dispara. |
+| **Intersección** | Punto donde se cruzan dos o más labores. En el modelo es un tipo de nodo (`interseccion`, D22). |
+| **Salida** | Labor que comunica la mina con la superficie. En el modelo es un tipo de nodo (`salida`, D22). |
 | **Galería** | Túnel aproximadamente horizontal. En el modelo, la mayoría de aristas del grafo son galerías. |
 | **Socavón** | Túnel horizontal que comunica el interior de la mina con la superficie. Suele ser una salida. |
 | **Crucero** | Galería que cruza transversalmente a otras o a la veta. |

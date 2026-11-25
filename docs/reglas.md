@@ -88,4 +88,4 @@ El O₂ funciona al revés (el peligro es que **falte**), por eso no sigue el cr
 
 ## Reglas
 
-*(se completan a partir de la semana 3)*
+*(se completan desde la semana 2: borrador de 5 reglas en S1-17; el resto, a partir de la semana 3)*

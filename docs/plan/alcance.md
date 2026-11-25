@@ -16,7 +16,7 @@ Es una estimación con incertidumbre alta. Se recalibra con las horas reales reg
 
 ## 2.2 Nivel 1 — Obligatorio (semanas 1–4)
 
-- Mina en JSON: 15–20 nodos, 2 niveles, con coordenadas (x, y, nivel) y tipo (intersección, salida, refugio).
+- Mina en JSON: 15–20 nodos, 2 niveles, con coordenadas (x, y, nivel) y tipo (intersección, salida, refugio y frente).
 - Motor forward chaining con **prioridad** y **refracción**.
 - **15 reglas** en tres categorías: diagnóstico, riesgo encadenado y efecto sobre la ruta.
   - Cobertura: gases, ventilación, incendio y caída de rocas.

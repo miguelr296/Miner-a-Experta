@@ -22,8 +22,8 @@ Las semanas se agrupan en 4 sprints de 2 semanas (ver [Sprints](sprints.md)); la
 | 1 | Nivelación Python; umbrales de la normativa; mina de prueba en JSON | Nivelación Python; apoyo en el esquema JSON | Esquema JSON, repositorio, acuerdo de trabajo | Mina de prueba en JSON + umbrales con fuente |
 | 2 | **Motor mínimo (en pareja)**; borrador de 5 reglas en el catálogo; pytest básico | **Motor mínimo (en pareja)**; clases del grafo; cargador JSON + pruebas | Integrar motor y cargador | Motor que dispara 2–3 reglas con traza |
 | 3 | 15 reglas + explicación "¿por qué?" | Dijkstra + línea base con filtro | Revisión cruzada | Reglas probadas; rutas calculadas |
-| 4 | Conectar motor → costos de aristas | Conectar planificador → salida en consola | **3 escenarios de punta a punta** | **Punto de control** |
-| 5 | Factores de certeza | A\* + varios mineros | Revisión cruzada | Certeza propagada; A\* operativo |
+| 4 | Conectar motor → costos de aristas | Conectar planificador → varios mineros y salida en consola | **3 escenarios de punta a punta** | **Punto de control** |
+| 5 | Factores de certeza | A\* | Revisión cruzada | Certeza propagada; A\* operativo |
 | 6 | Reglas de decisión + conflictos | Escenarios de conflicto + métricas | **Decisión sobre Nivel 3** | Nivel 2 completo |
 | 7 | Pulido / Nivel 3 | Pulido / Nivel 3 | Documentación final | Sistema final |
 | 8 | Corregir errores; ensayar explicación del motor | Corregir errores; ensayar escenarios | Ensayo de la demo; tag `final` | Demo lista |

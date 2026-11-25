@@ -22,7 +22,7 @@ El trabajo se organiza en [sprints de 2 semanas](sprints.md) y se gestiona en el
 ## 4.3 Git (versión mínima)
 
 - `main` **siempre funciona**.
-- Una rama por tarea: `nombre/tarea` (ej. `lucas/motor-minimo`).
+- Una rama por tarea: `nombre/tarea` (ej. `miguel/s1-10`).
 - Se une a `main` con un **Pull Request revisado por el otro integrante**.
 - **Un archivo, un dueño por semana:** los dos no editan el mismo archivo la misma semana.
 - Commits pequeños con prefijo: `feat:`, `fix:`, `test:`, `docs:`.

@@ -70,7 +70,7 @@ En GitHub Projects **las columnas del tablero son las opciones del campo `Status
 
 ```
 Objetivo del sprint  →  Historias (funcionalidades)  →  Tareas (tarjetas)
-"motor mínimo"           "motor con refracción"          "S1-13 Ciclo de disparo con refracción"
+"motor mínimo"           "motor con refracción"          "S1-14 Ciclo de disparo, refracción y traza"
 ```
 
 ### Reglas para escribir una tarjeta
@@ -91,7 +91,7 @@ Objetivo del sprint  →  Historias (funcionalidades)  →  Tareas (tarjetas)
 | Dueño | B o A y B |
 | Estimación | 2 h |
 | Criterio de aceptación | Carga `mina_prueba.json` y crea todos los nodos y aristas |
-| Depende de | `S1-08`, `S1-10` |
+| Depende de | `S1-09`, `S1-10` |
 | Prioridad | Núcleo / Si alcanza |
 
 ### Plantilla para el cuerpo del Issue
@@ -142,12 +142,12 @@ S2-H07 Validar refugio a ≤ 500 m
 S2-H08 Salida por consola
 S2-H09 3 escenarios JSON
 S2-H10 Integración de punta a punta
+S2-H11 Varios mineros (una ruta por minero)
 S3-H01 Factores de certeza en el motor
 S3-H02 Explicación "¿cómo?"
 S3-H03 Reglas de decisión (evacuar / refugiarse / esperar)
 S3-H04 Conflictos de reglas (incluye Art. 248 con ANFO)
 S3-H05 A* con heurística admisible
-S3-H06 Varios mineros
 S3-H07 Escenarios de conflicto
 S3-H08 Métricas contra la línea base
 S4-H01 Corrección de errores
@@ -190,12 +190,12 @@ Las tareas de aprendizaje con dueño A y B se crean como **una tarjeta compartid
 | S1-06 | Aprender pytest básico | 📚 | A y B | 1 h c/u | Una prueba que pasa y otra que falla a propósito | S1-02 | Núcleo |
 | S1-07 | Leer forward chaining y refracción (documentación del proyecto + glosario) | 📚 | A y B | 1 h c/u | Explicar al compañero el ciclo del motor sin mirar notas | — | Núcleo |
 | S1-08 | Diseñar el esquema JSON de la mina (sesión conjunta) | 📝 | A + B (dueño B) | 1,5 h c/u | Esquema documentado en `decisiones.md`: nodos con coordenadas en metros, tipos, aristas | S1-05 | Núcleo |
-| S1-09 | Crear `mina_prueba.json` (6–8 nodos, 1 refugio a ≤ 500 m) | ⚙️ | A | 1 h | Archivo válido que respeta el esquema | S1-08 | Núcleo |
+| S1-09 | Crear `mina_prueba.json` (6–8 nodos, refugio a ≤ 500 m de cada frente) | ⚙️ | A | 1 h | Archivo válido que respeta el esquema | S1-08 | Núcleo |
 | S1-10 | Implementar clases `Nodo`, `Arista` y `Mina` | ⚙️ | B | 2 h | Se puede crear una mina en código y consultar los vecinos de un nodo | S1-02 | Núcleo |
 | S1-11 | Implementar cargador JSON de la mina | ⚙️ | B | 1,5 h | Carga `mina_prueba.json` y crea todos los nodos y aristas | S1-09, S1-10 | Núcleo |
 | S1-12 | Diseñar las clases `Hecho` y `Regla` | 📝 | A | 1,5 h | Diseño y pseudocódigo en `decisiones.md` | S1-07 | Núcleo |
-| S1-13 | Motor mínimo I: memoria de trabajo y búsqueda de reglas aplicables (en pareja) | ⚙️ | A | 2 h c/u | Dada una lista de hechos, el motor devuelve las reglas cuyas condiciones se cumplen | S1-12 | Núcleo |
-| S1-14 | Motor mínimo II: ciclo de disparo, refracción y traza (en pareja) | ⚙️ | A | 2 h c/u | 2–3 reglas encadenadas se disparan una sola vez y la traza se imprime | S1-13 | Núcleo |
+| S1-13 | Motor mínimo I: memoria de trabajo y búsqueda de reglas aplicables (en pareja) | ⚙️ | A + B (dueño A) | 2 h c/u | Dada una lista de hechos, el motor devuelve las reglas cuyas condiciones se cumplen | S1-12 | Núcleo |
+| S1-14 | Motor mínimo II: ciclo de disparo, refracción y traza (en pareja) | ⚙️ | A + B (dueño A) | 2 h c/u | 2–3 reglas encadenadas se disparan una sola vez y la traza se imprime | S1-13 | Núcleo |
 | S1-15 | Prueba pytest del motor mínimo | 🧪 | A | 1 h | La prueba verifica la cadena de reglas y pasa | S1-14, S1-06 | Si alcanza |
 | S1-16 | Pruebas pytest del cargador | 🧪 | B | 1 h | 2 pruebas pasan (mina válida y archivo con error) | S1-11, S1-06 | Si alcanza |
 | S1-17 | Borrador de 5 reglas en el catálogo | 📝 | A | 1 h | 5 reglas con la plantilla completa, sin código | — | Si alcanza |
