@@ -1,6 +1,6 @@
 # Semana N — [Título]
 
-[← Índice](../../README.md) · Código de esta semana: tag [`semana-NN`](../../../../tree/semana-NN)
+[← Índice](../../README.md) · Código de esta semana: tag [`semana-NN`](../../tree/semana-NN)
 
 **Fechas:** dd/mm – dd/mm · **Horas reales:** A: __ h · B: __ h · **Entregable:** Sí / Parcial / No
 

@@ -40,6 +40,7 @@ mina-experta/
 ├── docs/
 │   ├── plan/            # enfoque, alcance, cronograma, flujo, sprints, kanban
 │   ├── capitulos/       # un capítulo por semana
+│   ├── contexto.md      # estado vivo del proyecto (interno)
 │   ├── reglas.md        # catálogo de reglas con fuente y prueba
 │   ├── decisiones.md    # decisiones de diseño y su porqué
 │   └── glosario.md      # siglas y términos técnicos

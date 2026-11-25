@@ -1,6 +1,6 @@
 # Semana 1 — Nivelación, modelo de la mina y fuentes
 
-[← Índice](../../README.md) · Código de esta semana: tag [`semana-01`](../../../../tree/semana-01)
+[← Índice](../../README.md) · Código de esta semana: tag [`semana-01`](../../tree/semana-01)
 
 **Fechas:** dd/mm – dd/mm · **Horas reales:** A: __ h · B: __ h · **Entregable:** Sí / Parcial / No
 
@@ -22,12 +22,18 @@
 
 ## 3. Decisiones tomadas y por qué
 
-- D09: gases en niveles (normal / alerta / riesgo alto) según TWA y STEL.
+- D09: gases en niveles (normal / alerta / riesgo alto / peligro inmediato) según TWA y STEL.
 - D10: refugio a ≤ 500 m de cada frente como restricción del modelo de mina.
 - D11: cada regla declara si su fuente es `NORMA` o `SUPUESTO`.
 - D12: el nivel de peligro inmediato (cierre del túnel) es un supuesto del equipo.
 - D13: umbrales en un JSON de configuración.
 - D14: glosario obligatorio.
+- D15: 4 sprints de 2 semanas, con ≈ 18 h de tareas por persona y sprint.
+- D16–D18: tablero Kanban en GitHub Projects, con columnas en inglés y los sprints como campo *Iteration*.
+- D19: las tareas que no tocan el repositorio se cierran sin PR; el resto pasa por PR revisado.
+- D20: una tarjeta por tarea; si A y B comparten el trabajo, se asignan ambos a la misma tarjeta.
+- D21: refracción por firma `(regla, hechos que la activaron)`, no por una marca permanente.
+- D22: esquema JSON de la mina con `meta`, `nodos` y `aristas`; `z` y `longitud` se calculan y `refugio` es un tipo de nodo.
 
 ## 4. Qué se implementó
 
@@ -39,7 +45,8 @@
 - Práctica de Git y GitHub: rama, commit, push y PR revisado (S1-04).
 - Nivelación de clases y módulos (S1-02): `modelo.py` con `Nodo` (`distancia_a` en 3D con `math.dist`) y `Tunel` (`longitud`, `__len__`, `__repr__`), importado desde `demo.py`.
 - Nivelación de JSON (S1-05): `leer_json.py` y `escribir_json.py`, con manejo de `JSONDecodeError` (línea y columna) y escritura con `indent=2` y `ensure_ascii=False` sin perder los nodos.
-- *(pendiente: esquema JSON de la mina y mina de prueba, S1-08 y S1-09)*
+- Esquema JSON de la mina (S1-08, D22): bloques `meta`, `nodos` y `aristas`; grafo no dirigido, ids descriptivos y `z`/`longitud` calculadas en vez de guardadas.
+- *(pendiente: mina de prueba en JSON, S1-09)*
 
 ## 5. Pruebas
 

@@ -24,7 +24,7 @@ Las horas de los sprints 2–4 son **estimaciones brutas**: se recalculan en cad
 Detalle de tareas: [tablero Kanban](kanban.md#7-sprint-1--tareas).
 
 ### Sprint 2 — Sistema de punta a punta ⚑
-**Objetivo:** los 3 escenarios corren completos con un solo comando (sensores → reglas → costos → rutas → explicación).
+**Objetivo:** los 3 escenarios corren completos con un solo comando (sensores → reglas → costos → rutas → explicación), con una ruta por minero.
 
 | Historia | Dueño | Estimación bruta |
 |---|---|---|
@@ -39,6 +39,7 @@ Detalle de tareas: [tablero Kanban](kanban.md#7-sprint-1--tareas).
 | Validar refugio a ≤ 500 m | B | 2 h |
 | Salida por consola | B | 2 h |
 | 3 escenarios JSON | B | 3 h |
+| Varios mineros (una ruta por minero) | B | 3 h |
 | Integración y prueba final | A + B | 2 h c/u |
 
 ### Sprint 3 — Nivel 2 ⚑
@@ -53,7 +54,6 @@ Detalle de tareas: [tablero Kanban](kanban.md#7-sprint-1--tareas).
 | Reglas de decisión (evacuar / refugiarse / esperar) | A | 4 h |
 | Conflictos de reglas (incluye Art. 248 con ANFO) | A | 3 h |
 | A\* | B | 4 h |
-| Varios mineros | B | 3 h |
 | Escenarios de conflicto | B | 3 h |
 | Métricas contra línea base | B | 5 h |
 
@@ -88,7 +88,7 @@ Una tarea solo pasa a **Done** si:
 - [ ] Los términos nuevos están en el [glosario](../glosario.md).
 - [ ] La bitácora está actualizada.
 
-Las tareas de aprendizaje (📚) no requieren PR: se cierran cuando se cumple su criterio de aceptación.
+Las tareas de aprendizaje (📚) se practican fuera del repositorio y se cierran con un PR que solo toca documentación (bitácora y capítulo); el ejercicio no entra a `src/`. Si la tarea no toca ningún archivo del repositorio, aplica la excepción de D19.
 
 ## 5.5 Riesgos
 
