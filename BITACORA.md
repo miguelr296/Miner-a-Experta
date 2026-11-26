@@ -30,6 +30,11 @@ Una entrada por sesión, la más reciente arriba. Tres líneas bastan.
 
 ## Sesiones
 
+### 2026-11-26 · S1-06: pytest básico · 1 h
+- Hice: instalamos pytest 9.2.0 con `python -m pip install pytest` (el ejecutable quedó fuera del PATH; se usa siempre `python -m pytest`). Tres conceptos: descubrimiento por convención (`test_*.py` y `test_*`), lectura de un fallo con la reescritura de asserts (`assert 780.0 <= 500`) y selección con node id y `-k`. Ejercicio en `Python Practica\S1_06\test_refugio.py`, fuera del repo: una prueba pasa y otra falla a propósito; comprobado `1 failed, 1 passed` y `1 failed, 1 deselected`.
+- Falló / dudas: al empezar se escribió `verificar_refugio()` sin `test_`; pytest responde "no tests ran" con código 0, indistinguible de un éxito. Horas estimadas, sin medir.
+- Siguiente paso exacto: commit `docs: cerrar S1-06, pytest básico`, push, PR con `Closes #8`, review de B y merge; comprobar en `main` que `contexto.md` quede en 12 de 20. Después, B: S1-10 (#12) → S1-11; A: S1-13 en pareja cuando B cierre S1-10.
+
 ### 2026-11-26 · S1-12: diseño de Hecho, Patrón y Regla · 1,5 h
 - Hice: revisamos el estado real (S1-09 fusionada en `main`, 10 de 20) y corregimos `contexto.md`, que seguía en 9 de 20. Agregamos a `AGENTS.md` la regla de explicar con analogías, un concepto a la vez. Redactamos **D23**: `Hecho` como `NamedTuple` (tupla, inmutable y hashable por la firma de D21), `Patron` con variables `?x` y operador, `Regla` con prioridad espaciada y desempate por posición en el catálogo, memoria acumulativa y pseudocódigo de `unificar`/`aplicar`. Agregamos tres términos al glosario (patrón, variable de regla, unificación) y ajustamos prioridad y especificidad. Validamos `mina_prueba.json` contra D22 y D10: 185,00 m y 409,87 m. Rama `miguel/s1-12` creada; cambios aún sin `git add`.
 - Falló / dudas: primero recomendé `@dataclass(frozen=True)` para `Hecho`; al contrastar `AGENTS.md` y el glosario, que lo definen como tupla, se cambió a `NamedTuple`. El commit 516f52d decía "actualizar contexto" pero `main` seguía en 9 de 20; quedó como trampa. Dos PR (#33 y #34) de la misma rama: no bloquea, pero conviene un PR por tarjeta. Horas estimadas, sin medir.
