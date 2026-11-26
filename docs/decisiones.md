@@ -205,3 +205,146 @@ Con este ejemplo, `tunel_int_1_int_2` mide 120 m, `rampa_int_1_sal_1` mide ≈ 4
 - S1-16 prueba una mina válida y un archivo con error (nodo inexistente o `tipo` inválido).
 - La heurística euclidiana 3D del Nivel 2 usa la misma fórmula, sin cambios de esquema.
 
+## D23 — Hechos, patrones y reglas del motor
+
+**Fecha:** 2026-11-26
+**Decisión:** un hecho es una tupla con nombre `(entidad, atributo, valor)`; una regla declara sus condiciones como patrones con variables `?x` y operador de comparación, y su conclusión como un hecho con variables. La prioridad ordena las reglas y la posición en el catálogo desempata; la memoria acumula hechos y nunca los borra.
+
+**Estructura:**
+
+### Hecho
+
+| Campo | Tipo | Obligatorio | Significado |
+|---|---|---|---|
+| `entidad` | `str` | sí | Nodo o arista a la que se refiere el dato (`tunel_int_1_int_2`, `frente_1`). |
+| `atributo` | `str` | sí | Nombre del dato (`co_ppm`, `nivel_co`, `riesgo`, `cerrado`, `costo_factor`). |
+| `valor` | `str`, `int`, `float` o `bool` | sí | Valor del dato (`35`, `alerta`, `True`). |
+
+Se implementa como `NamedTuple`: tupla, con nombres, inmutable y hashable.
+
+### Patrón
+
+| Campo | Tipo | Obligatorio | Significado |
+|---|---|---|---|
+| `entidad` | `str` | sí | Literal o variable (`?t`). |
+| `atributo` | `str` | sí | Literal o variable (`?a`). |
+| `operador` | `str` | sí | `=`, `>=`, `>`, `<=`, `<`. Por defecto `=`. |
+| `valor` | `str`, `int`, `float`, `bool` o `?v` | sí | Literal contra el que se compara, o variable que se liga. |
+
+Un patrón es la forma de una condición; **no es un hecho** y no entra en la memoria.
+
+### Regla
+
+| Campo | Tipo | Obligatorio | Significado |
+|---|---|---|---|
+| `id` | `str` | sí | Identificador legible (`R1`); aparece en la traza. |
+| `categoria` | `str` | sí | `DIAG`, `RIESGO`, `RUTA` o `DEC`. |
+| `prioridad` | `int` | sí | Entero; **mayor número = más urgente**. Se escribe espaciado (10, 20, 30…). |
+| `condiciones` | tupla de `Patron` | sí | El SI; deben cumplirse **todas** a la vez. |
+| `conclusion` | `Hecho` con variables | sí | El ENTONCES; al disparar se sustituyen las variables. |
+| `fuente` | `str` | sí | Artículo del DS 024-2016-EM o "SUPUESTO del equipo". |
+| `tipo_fuente` | `str` | sí | `NORMA` o `SUPUESTO` (D11). |
+
+El catálogo de reglas es una tupla de objetos `Regla` definidos en un módulo Python (`reglas.py`); los umbrales se leen del JSON de configuración (D13).
+
+`justificacion` y la prueba pytest **no** van en la clase: viven en `docs/reglas.md`, que es el catálogo legible.
+
+**Por qué cada pieza:**
+
+- **`Hecho` es `NamedTuple`.** Sigue siendo una tupla, como dicen `AGENTS.md` y el glosario, pero con nombres. Es inmutable y hashable, requisito del `set` de la memoria y de la firma de refracción `(regla_id, frozenset(hechos))` de D21. Un `@dataclass(frozen=True)` también sería hashable, pero dejaría de ser tupla y obligaría a redefinir el glosario; la igualdad estricta no compensa esa inconsistencia.
+- **Variables con `?`.** Una regla habla de "cualquier túnel", no de uno concreto: `(?t, co_ppm, >=, 30)`. El prefijo `?` distingue una variable de un literal en la traza y en el catálogo. Por convención, los ids de la mina (D22) no llevan `?`, así que no hay ambigüedad.
+- **El operador va en el patrón.** Las reglas reales comparan contra umbrales (`co_ppm ≥ 30`, `velocidad < 25`). Un patrón de igualdad sola no alcanza y obligaría a inventar hechos preclasificados por el sensor, que es meter conocimiento en el lugar equivocado.
+- **`fuente` y `tipo_fuente` en la clase.** La explicación "¿por qué?" debe poder citar la norma o advertir que es un supuesto del equipo (D11). `justificacion` y `prueba` se consultan en el catálogo, no en cada disparo.
+- **`categoria`.** Agrupa las reglas y ordena el catálogo; además permite que el motor trate distinto un diagnóstico de una decisión si más adelante hace falta.
+- **La conclusión es un `Hecho` con variables.** Disparar una regla es sustituir variables, no ejecutar código. Eso mantiene el motor genérico y la traza legible.
+- **Prioridad espaciada y desempate por posición.** La prioridad sola no resuelve empates: dos reglas con 50 no tienen orden. Se usa una segunda clave, la posición en el catálogo (la primera escrita gana). La prioridad espaciada permite insertar una regla entre dos sin renumerar.
+- **La memoria acumula.** El motor solo agrega hechos; nunca borra. D01 garantiza que las reglas no reducen costos ni reabren túneles, así que el conjunto final no depende del orden de disparo y la traza es reproducible. La historia la guarda la traza; la memoria guarda solo el estado actual.
+
+**Prioridad, empate y conjunto de conflicto:**
+
+1. Se reúnen todas las reglas cuyas condiciones se cumplen: el **conjunto de conflicto**.
+2. Se ordena por **prioridad descendente** (mayor primero).
+3. A igual prioridad, gana la regla que aparece **antes en el catálogo**.
+4. Se dispara la primera y se repite el ciclo.
+
+La posición no es un campo de `Regla`: es el índice de la regla en la tupla del catálogo.
+
+El conjunto de conflicto es una **lista ordenada**, no un `set`: el orden de iteración de un `set` no está garantizado y dos ejecuciones podrían producir trazas distintas. Si dos reglas empatadas concluyen valores incompatibles sobre el mismo `(entidad, atributo)`, es un error de modelado: hay que separar prioridades o justificar por qué el orden da igual.
+
+**Pseudocódigo:**
+
+```
+funcion unificar(patron, hecho) -> enlaces o None:
+    enlaces = {}
+    para cada campo en (entidad, atributo):
+        si patron.campo es variable "?x":
+            si "?x" ya está ligada y su valor != hecho.campo: return None
+            enlaces["?x"] = hecho.campo
+        si no:
+            si patron.campo != hecho.campo: return None
+    si patron.valor es variable "?v":
+        ligar "?v" o comprobar que ya vale lo mismo que hecho.valor
+    si no:
+        comparar hecho.valor con patron.valor según patron.operador
+        si no se cumple: return None
+    return enlaces
+
+funcion aplicar(regla, enlaces) -> Hecho:
+    sustituir en regla.conclusion cada "?x" por enlaces["?x"]
+    return el Hecho resultante
+```
+
+Una regla es aplicable si existe **una misma** asignación de variables que satisface todas sus condiciones a la vez. Ese recorrido de combinaciones es S1-13; aquí solo se define la unidad.
+
+**Ejemplo:**
+
+Hechos iniciales:
+
+```
+(tunel_int_1_int_2, co_ppm, 35)
+```
+
+Reglas:
+
+```
+R1  DIAG    prioridad 10
+    SI      (?t, co_ppm, >=, 30)
+    ENTONCES (?t, nivel_co, alerta)
+
+R2  RIESGO  prioridad 20
+    SI      (?t, nivel_co, =, alerta)
+    ENTONCES (?t, riesgo, alto)
+
+R3  DEC     prioridad 30
+    SI      (?t, riesgo, =, alto)
+    ENTONCES (?t, cerrado, True)
+```
+
+Secuencia: R1 liga `?t = tunel_int_1_int_2` y agrega `nivel_co = alerta`; R2 usa ese hecho y agrega `riesgo = alto`; R3 cierra el túnel. Cada ENTONCES alimenta el SI siguiente, que es la comprobación que faltó en S1-07. La firma de refracción de R1 es `(R1, {(tunel_int_1_int_2, co_ppm, 35)})`.
+
+**Qué no hace el motor:**
+
+- No lee umbrales: vienen del JSON de configuración (D13).
+- No hace aritmética en las conclusiones: multiplicar costos llega con las reglas `RUTA` del Nivel 2.
+- No valida la regla de los 500 m (D10): eso es del planificador.
+- No conoce el dominio de la mina: solo compara patrones y dispara.
+
+**Limitación conocida:** en Python `False == 0` y `True == 1`, así que `(t, cerrado, False)` y `(t, cerrado, 0)` son el mismo hecho en un `set`. Se evita por convención: cada atributo tiene un tipo fijo (`cerrado` siempre booleano, `co_ppm` siempre numérico). No se valida en `Hecho` para no meter conocimiento del dominio en el tipo.
+
+**Alternativas consideradas:**
+
+1. Tupla simple `("t", "co_ppm", 35)`: descartada, sin nombres y fácil de confundir con cualquier otra tupla de tres elementos.
+2. `@dataclass(frozen=True)` para `Hecho`: válida, pero deja de ser tupla y contradice `AGENTS.md` y el glosario.
+3. Reglas en JSON desde el Sprint 1: descartada, obliga a escribir un intérprete antes de tener motor; los umbrales sí van a JSON (D13).
+4. Prioridad única sin desempate: descartada, insertar una regla obliga a renumerar el catálogo.
+5. Memoria como `dict` con clave `(entidad, atributo)`: descartada para el Sprint 1, porque el dominio es monótono y el glosario define la memoria como conjunto de hechos. Se reevalúa si aparece un atributo de valor único.
+6. Indicador `disparada = True` por regla: ya descartado en D21.
+
+**Consecuencias:**
+
+- S1-13 implementa la memoria como `set` de `Hecho`, el reconocimiento de reglas y el conjunto de conflicto como lista ordenada.
+- S1-14 implementa el disparo, la refracción con la firma de D21 y la traza.
+- S1-15 prueba la cadena R1 → R2 → R3 y que cada regla se dispara una sola vez con los mismos hechos.
+- S1-17 escribe las primeras 5 reglas en `docs/reglas.md` con esta misma estructura.
+- El cargador de S1-11 no cambia: la mina sigue siendo solo estructura.
+
