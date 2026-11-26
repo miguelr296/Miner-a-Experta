@@ -112,7 +112,8 @@ Todas las siglas y términos técnicos usados en el proyecto, explicados para qu
 | **Regla (SI–ENTONCES)** | Unidad de conocimiento: si se cumplen ciertas condiciones, entonces se concluye algo. |
 | **Antecedente** | La parte "SI" de una regla (las condiciones). |
 | **Consecuente** | La parte "ENTONCES" de una regla (la conclusión o acción). |
-| **Patrón** | Forma de una condición de regla: `(entidad, atributo, operador, valor)`, donde los campos pueden ser literales o variables, p. ej. `(?t, co_ppm, >=, 30)`. No es un hecho y no entra en la memoria (D23). |
+| **Escalada** | Regla que sube un nivel de riesgo ya diagnosticado (`alerta` → `riesgo_alto` → `peligro_inmediato`) en vez de volver a leer el sensor desde cero; así la cadena avanza un paso por regla y no se salta niveles (D23). |
+| **Patrón** | Forma de una condición de regla: `(entidad, atributo, operador, valor)`, donde los campos pueden ser literales o variables, p. ej. `(?t, co_ppm, >, 25)`. No es un hecho y no entra en la memoria (D23). |
 | **Variable de regla** | Nombre precedido por `?` (`?t`, `?v`) que un patrón usa en lugar de un valor concreto; el motor la liga a un valor al comparar con un hecho. Por convención, los ids de la mina no llevan `?` (D23). |
 | **Unificación** | Comparar un patrón con un hecho y obtener la asignación de variables que los hace coincidir, o `None` si no coinciden. |
 | **Hecho** | Dato conocido en un momento. En el proyecto: tupla `(entidad, atributo, valor)`, p. ej. `(tunel_4_7, co_ppm, 30)`. |
