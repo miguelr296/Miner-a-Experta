@@ -252,8 +252,8 @@ El catálogo de reglas es una tupla de objetos `Regla` definidos en un módulo P
 **Por qué cada pieza:**
 
 - **`Hecho` es `NamedTuple`.** Sigue siendo una tupla, como dicen `AGENTS.md` y el glosario, pero con nombres. Es inmutable y hashable, requisito del `set` de la memoria y de la firma de refracción `(regla_id, frozenset(hechos))` de D21. Un `@dataclass(frozen=True)` también sería hashable, pero dejaría de ser tupla y obligaría a redefinir el glosario; la igualdad estricta no compensa esa inconsistencia.
-- **Variables con `?`.** Una regla habla de "cualquier túnel", no de uno concreto: `(?t, co_ppm, >=, 30)`. El prefijo `?` distingue una variable de un literal en la traza y en el catálogo. Por convención, los ids de la mina (D22) no llevan `?`, así que no hay ambigüedad.
-- **El operador va en el patrón.** Las reglas reales comparan contra umbrales (`co_ppm ≥ 30`, `velocidad < 25`). Un patrón de igualdad sola no alcanza y obligaría a inventar hechos preclasificados por el sensor, que es meter conocimiento en el lugar equivocado.
+- **Variables con `?`.** Una regla habla de "cualquier túnel", no de uno concreto: `(?t, co_ppm, >, 25)`. El prefijo `?` distingue una variable de un literal en la traza y en el catálogo. Por convención, los ids de la mina (D22) no llevan `?`, así que no hay ambigüedad.
+- **El operador va en el patrón.** Las reglas reales comparan contra umbrales (`co_ppm > 25`, `velocidad < 25`). Un patrón de igualdad sola no alcanza y obligaría a inventar hechos preclasificados por el sensor, que es meter conocimiento en el lugar equivocado.
 - **`fuente` y `tipo_fuente` en la clase.** La explicación "¿por qué?" debe poder citar la norma o advertir que es un supuesto del equipo (D11). `justificacion` y `prueba` se consultan en el catálogo, no en cada disparo.
 - **`categoria`.** Agrupa las reglas y ordena el catálogo; además permite que el motor trate distinto un diagnóstico de una decisión si más adelante hace falta.
 - **La conclusión es un `Hecho` con variables.** Disparar una regla es sustituir variables, no ejecutar código. Eso mantiene el motor genérico y la traza legible.
@@ -301,26 +301,30 @@ Una regla es aplicable si existe **una misma** asignación de variables que sati
 Hechos iniciales:
 
 ```
-(tunel_int_1_int_2, co_ppm, 35)
+(tunel_int_1_int_2, co_ppm, 120)
 ```
 
-Reglas:
+Reglas (las mismas R1–R4 del borrador de `docs/reglas.md`):
 
 ```
 R1  DIAG    prioridad 10
-    SI      (?t, co_ppm, >=, 30)
+    SI      (?t, co_ppm, >, 25)
     ENTONCES (?t, nivel_co, alerta)
 
 R2  RIESGO  prioridad 20
-    SI      (?t, nivel_co, =, alerta)
-    ENTONCES (?t, riesgo, alto)
+    SI      (?t, nivel_co, =, alerta) y (?t, co_ppm, >, 50)
+    ENTONCES (?t, nivel_co, riesgo_alto)
 
-R3  DEC     prioridad 30
-    SI      (?t, riesgo, =, alto)
+R3  RIESGO  prioridad 30
+    SI      (?t, nivel_co, =, riesgo_alto) y (?t, co_ppm, >, 100)
+    ENTONCES (?t, nivel_co, peligro_inmediato)
+
+R4  RUTA    prioridad 40
+    SI      (?t, nivel_co, =, peligro_inmediato)
     ENTONCES (?t, cerrado, True)
 ```
 
-Secuencia: R1 liga `?t = tunel_int_1_int_2` y agrega `nivel_co = alerta`; R2 usa ese hecho y agrega `riesgo = alto`; R3 cierra el túnel. Cada ENTONCES alimenta el SI siguiente, que es la comprobación que faltó en S1-07. La firma de refracción de R1 es `(R1, {(tunel_int_1_int_2, co_ppm, 35)})`.
+Secuencia: R1 liga `?t = tunel_int_1_int_2` y agrega `nivel_co = alerta`; R2 usa ese hecho y el sensor (120 > 50) y agrega `nivel_co = riesgo_alto`; R3 agrega `nivel_co = peligro_inmediato`; R4 cierra el túnel. Cada ENTONCES alimenta el SI siguiente, que es la comprobación que faltó en S1-07, y solo el último nivel cierra (D09/D12). La firma de refracción de R1 es `(R1, {(tunel_int_1_int_2, co_ppm, 120)})`.
 
 **Qué no hace el motor:**
 
@@ -344,7 +348,7 @@ Secuencia: R1 liga `?t = tunel_int_1_int_2` y agrega `nivel_co = alerta`; R2 usa
 
 - S1-13 implementa la memoria como `set` de `Hecho`, el reconocimiento de reglas y el conjunto de conflicto como lista ordenada.
 - S1-14 implementa el disparo, la refracción con la firma de D21 y la traza.
-- S1-15 prueba la cadena R1 → R2 → R3 y que cada regla se dispara una sola vez con los mismos hechos.
+- S1-15 prueba la cadena R1 → R2 → R3 → R4 y que cada regla se dispara una sola vez con los mismos hechos.
 - S1-17 escribe las primeras 5 reglas en `docs/reglas.md` con esta misma estructura.
 - El cargador de S1-11 no cambia: la mina sigue siendo solo estructura.
 
