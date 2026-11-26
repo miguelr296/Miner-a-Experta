@@ -4,7 +4,7 @@ Proyecto académico (curso Sistemas Expertos, 2 integrantes: A y B). Todo en esp
 
 ## Estado actual
 
-- **Aún no hay código**: `src/`, `tests/` y `data/escenarios/` solo tienen `.gitkeep`. No existen manifiestos, dependencias, CI, linter ni comandos de build/test. No inventes comandos
+- **Aún no hay código**: `src/` y `tests/` solo tienen `.gitkeep`; `data/escenarios/mina_prueba.json` existe desde S1-09. No existen manifiestos, dependencias, CI, linter ni comandos de build/test. No inventes comandos
 - Lo que existe es documentación en `docs/` más `BITACORA.md`. El plan es la fuente de verdad de lo que se debe construir.
 - Plan: 8 semanas, 4 sprints de 2 semanas. Puntos de control en las semanas 4 y 6 (reglas de recorte en `docs/plan/alcance.md`). La semana actual está en `docs/contexto.md`.
 
