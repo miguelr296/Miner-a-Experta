@@ -2,10 +2,10 @@
 
 ## Estado actual
 - Sprint: 1 (semanas 1–2) · 21 nov – 5 dic 2026 · Objetivo: motor mínimo + cargador JSON
-- S1-00, S1-01, S1-02, S1-03, S1-03b, S1-04, S1-05, S1-07, S1-08 y S1-09 cerradas y fusionadas (10 de 20 tarjetas); quedan 10 en Ready. Nada en In Progress ni In Review; `main` sincronizada (`59556d8`).
+- S1-00, S1-01, S1-02, S1-03, S1-03b, S1-04, S1-05, S1-06, S1-07, S1-08, S1-09 y S1-12 cerradas y fusionadas (12 de 20 tarjetas); quedan 8 en Ready. Nada en In Progress ni In Review; `main` sincronizada (`e759553`).
 - Existe en src/: (nada aún)
 - Semana 1: umbrales, nivelación de Python, Git/PR, JSON y motor (teoría) listos; S1-09 cerrada.
-- Siguiente: A: S1-12 (diseñar `Hecho` y `Regla` en `decisiones.md`); B: S1-10 (clases `Nodo`, `Arista` y `Mina`). S1-09 desbloqueó S1-11; S1-07 desbloqueó S1-12.
+- Siguiente: B: S1-10 (clases `Nodo`, `Arista` y `Mina`, #12) → S1-11; A: S1-13 en pareja cuando B cierre S1-10. S1-12 desbloqueó S1-13; S1-10 desbloquea S1-11.
 
 ## Comandos
 - (se agregan cuando existan)
@@ -24,7 +24,7 @@
 - La automatización "PR con `Closes #N` → Done" funciona: S1-02 (PR #27) pasó sola a Done. S1-01 y S1-04 se habían cerrado a mano; no hace falta repetirlo.
 - Los enlaces de dependencia se crean en la tarjeta que espera ("Blocked by"). Un enlace invertido en una tarjeta de cierre (S1-18) bloquea en silencio a media columna: al revisar el tablero, comprobar que ninguna tarjeta de cierre bloquee a otras.
 - Cuando una decisión mueve una tarea de sprint, actualizar los cuatro lugares: tabla de `sprints.md`, cronograma, tabla del sprint en `kanban.md` y títulos del Backlog. "Varios mineros" estaba en Nivel 1 en `alcance.md` y en el Sprint 3 en `sprints.md` a la vez.
-- Al cerrar una tarjeta, comprobar el contenido de `contexto.md` después del merge, no solo que exista el commit que dice "actualizar contexto": el 2026-11-25 el commit 516f52d no dejó el estado en 10 de 20.
+- Al cerrar una tarjeta, comprobar el contenido de `contexto.md` en `main` después del merge (`git show origin/main:docs/contexto.md`), no solo que exista el commit que dice "actualizar contexto". Ya falló dos veces: 516f52d (2026-11-25) y el PR #35 (2026-11-26), que dejó el estado en 10 de 20 al cerrar S1-12.
 
 ## Pendientes que no son del sprint actual
 - (ninguno por ahora)
