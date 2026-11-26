@@ -112,6 +112,9 @@ Todas las siglas y términos técnicos usados en el proyecto, explicados para qu
 | **Regla (SI–ENTONCES)** | Unidad de conocimiento: si se cumplen ciertas condiciones, entonces se concluye algo. |
 | **Antecedente** | La parte "SI" de una regla (las condiciones). |
 | **Consecuente** | La parte "ENTONCES" de una regla (la conclusión o acción). |
+| **Patrón** | Forma de una condición de regla: `(entidad, atributo, operador, valor)`, donde los campos pueden ser literales o variables, p. ej. `(?t, co_ppm, >=, 30)`. No es un hecho y no entra en la memoria (D23). |
+| **Variable de regla** | Nombre precedido por `?` (`?t`, `?v`) que un patrón usa en lugar de un valor concreto; el motor la liga a un valor al comparar con un hecho. Por convención, los ids de la mina no llevan `?` (D23). |
+| **Unificación** | Comparar un patrón con un hecho y obtener la asignación de variables que los hace coincidir, o `None` si no coinciden. |
 | **Hecho** | Dato conocido en un momento. En el proyecto: tupla `(entidad, atributo, valor)`, p. ej. `(tunel_4_7, co_ppm, 30)`. |
 | **Hecho derivado** | Hecho que no venía de los sensores, sino que fue concluido por una regla. |
 | **Memoria de trabajo** | Conjunto de hechos conocidos en el momento actual. |
@@ -122,8 +125,8 @@ Todas las siglas y términos técnicos usados en el proyecto, explicados para qu
 | **Disparar una regla** | Ejecutar su consecuente porque su antecedente se cumple. |
 | **Conjunto de conflicto (agenda)** | Lista de reglas que podrían dispararse en un mismo momento. |
 | **Resolución de conflictos** | Criterio para elegir qué regla se dispara primero cuando varias aplican. |
-| **Prioridad** | Número asignado a cada regla; a mayor prioridad, se dispara antes. |
-| **Especificidad** | Criterio de resolución: gana la regla con más condiciones, porque describe un caso más concreto. |
+| **Prioridad** | Número asignado a cada regla; a mayor prioridad, se dispara antes. A igual prioridad, desempata la posición en el catálogo (D23). |
+| **Especificidad** | Criterio de resolución: gana la regla con más condiciones, porque describe un caso más concreto. No se usa en el proyecto: D23 desempata por posición en el catálogo. |
 | **Refracción** | Evitar que una regla se dispare dos veces con los mismos hechos (evita bucles infinitos). |
 | **Firma de activación** | Par `(regla, hechos que la activaron)` que se guarda para aplicar la refracción; permite que la misma regla vuelva a disparar si la activan otros hechos. |
 | **Punto fijo** | Estado en el que ninguna regla es aplicable y el motor termina. No significa que el problema esté resuelto, solo que no quedan reglas que aplicar. |
@@ -178,6 +181,9 @@ Todas las siglas y términos técnicos usados en el proyecto, explicados para qu
 | **Lista** | Secuencia ordenada y modificable de elementos, normalmente escrita entre corchetes: `[1, 2, 3]`. |
 | **REPL** | *Read-Eval-Print Loop*: entorno interactivo que lee y ejecuta una expresión y muestra su resultado. |
 | **Tupla** | Secuencia inmutable de Python, p. ej. `(entidad, atributo, valor)`. |
+| **Inmutable** | Objeto que no cambia después de crearse; en Python, una tupla o un `@dataclass(frozen=True)`. |
+| **Hashable** | Objeto con un hash estable que puede usarse como elemento de un `set` o clave de un `dict`. Los hechos deben serlo para la memoria y la firma de refracción (D21). |
+| **`NamedTuple`** | Tupla de Python con campos con nombre; es inmutable y hashable. Es la forma elegida para `Hecho` (D23). |
 | **Módulo** | Archivo `.py` con código reutilizable. |
 | **`__init__` / `self`** | Constructor de una clase en Python / referencia al propio objeto (equivale a `this` en Java/C#). |
 | **`@dataclass`** | Decorador de Python que genera automáticamente el constructor de clases que solo guardan datos. |
