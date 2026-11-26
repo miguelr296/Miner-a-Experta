@@ -60,6 +60,7 @@ Las reglas traducen sensores en costos y cierres de aristas; el planificador con
 
 - Según `docs/plan/flujo-de-trabajo.md` (4.6), **el código lo escribe el equipo**; el asistente explica conceptos, revisa código, propone mejoras y detecta errores. Antes de implementar, confirma con el usuario si espera que escribas el código.
 - Los integrantes vienen de Java/C# y son nuevos en Python y pytest: explica las diferencias cuando sea relevante.
+- En sesiones teóricas o cuando haya mucha información nueva, ve **un concepto a la vez**: primero un ejemplo o una analogía concreta (la mina, una sala de emergencias, Java/C#), después la definición y el término técnico. No acumules varios conceptos nuevos en una respuesta; comprueba que se entendió antes de avanzar.
 - Una tarea por sesión; lo demás se anota en la bitácora.
 
 ## Mantenimiento del contexto (proactivo, con aprobación)
