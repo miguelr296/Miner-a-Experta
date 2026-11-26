@@ -2,10 +2,10 @@
 
 ## Estado actual
 - Sprint: 1 (semanas 1–2) · 21 nov – 5 dic 2026 · Objetivo: motor mínimo + cargador JSON
-- S1-00, S1-01, S1-02, S1-03, S1-03b, S1-04, S1-05, S1-06, S1-07, S1-08, S1-09 y S1-12 cerradas y fusionadas (12 de 20 tarjetas); quedan 8 en Ready. Nada en In Progress ni In Review; `main` sincronizada (`e759553`).
+- S1-00, S1-01, S1-02, S1-03, S1-03b, S1-04, S1-05, S1-06, S1-07, S1-08, S1-09 y S1-12 cerradas y fusionadas (12 de 20 tarjetas); 7 en Ready y S1-17 en In Progress (A, borrador de 5 reglas); nada en In Review; `main` sincronizada (`03d2874`).
 - Existe en src/: (nada aún)
 - Semana 1: umbrales, nivelación de Python, Git/PR, JSON y motor (teoría) listos; S1-09 cerrada.
-- Siguiente: B: S1-10 (clases `Nodo`, `Arista` y `Mina`, #12) → S1-11; A: S1-13 en pareja cuando B cierre S1-10. S1-12 desbloqueó S1-13; S1-10 desbloquea S1-11.
+- Siguiente: A: S1-17 (borrador de 5 reglas) → S1-13; B: S1-10 (clases `Nodo`, `Arista` y `Mina`, #12) → S1-11. S1-12 desbloqueó S1-13; S1-10 desbloquea S1-11.
 
 ## Comandos
 - (se agregan cuando existan)
@@ -27,4 +27,4 @@
 - Al cerrar una tarjeta, comprobar el contenido de `contexto.md` en `main` después del merge (`git show origin/main:docs/contexto.md`), no solo que exista el commit que dice "actualizar contexto". Ya falló dos veces: 516f52d (2026-11-25) y el PR #35 (2026-11-26), que dejó el estado en 10 de 20 al cerrar S1-12.
 
 ## Pendientes que no son del sprint actual
-- (ninguno por ahora)
+- Ramas remotas `luis/motor-python`, `luis/pulir-prototipo-web` y `revert-23-luis/nivel-1-entrega`: **ignorar por ahora**. No estorban, no bloquean el sprint 1 y no se revisan, fusionan ni borran hasta que el equipo lo mencione.
